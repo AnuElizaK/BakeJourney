@@ -127,7 +127,7 @@ h1, h2, h3 {
 .search-input{
     width: 100%;
     padding: 12px 45px;
-    background: transparent url("search.png") no-repeat 10px center;
+    background: transparent url("media/search.png") no-repeat 10px center;
     border: 1.5px solid #d1d5db;
     border-radius: 0.65rem;
     font-size: 1rem;
