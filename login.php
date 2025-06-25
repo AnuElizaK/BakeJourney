@@ -10,7 +10,6 @@
 
    <body>
     <div class="overlay"></div>
-    
     <div class="dialog">
       <button class="close-button" onclick="window.history.back()">×</button>
       
@@ -24,7 +23,7 @@
       </div>
 
       <div class="dialog-content">
-        <form>
+        <form method="POST" action="login.php">
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="Enter your email" required>
@@ -47,17 +46,18 @@
             <a href="#" class="forgot-password">Forgot password?</a>
           </div>
 
-          <button type="submit" class="btn">Sign In</button>
+          <button type="submit" name="signin" class="btn">Sign In</button>
         </form>
 
         <div class="signup-link">
-          New to BakeJourney? <a href="customersignup.html">Create an account.</a><br>
-          If you are a baker, <a href="bakersignup.html">join us here.</a>
+          New to BakeJourney? <a href="customersignup.php">Create an account.</a><br>
+          If you are a baker, <a href="bakersignup.php">join us here.</a>
         </div>
       </div>
     </div>
-
+<!-- //////////////////////////////////////////////////////////////////////////////////////// -->
     <script>
+    
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
         const button = input.nextElementSibling;
@@ -77,12 +77,48 @@
         window.history.back();
       });
 
-      // Form submission
-      document.querySelector('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        alert('Login successful! (This is a demo)');
-      });
+      
     </script>
+
+<!-- ----------- PHP Code for Login Functionality ------------- -->
+<?php
+session_start();
+include 'db.php'; // connect to DB
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+
+  // Fetch user
+  $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows == 1) {
+    $user = $result->fetch_assoc();
+
+    if (password_verify($password, $user['password'])) {
+      $_SESSION['user_id'] = $user['user_id'];
+      $_SESSION['name'] = $user['full_name'];
+      $_SESSION['role'] = $user['role'];
+
+      // Redirect based on role
+      if ($user['role'] === 'baker') {
+        header("Location: baker_dashboard.php");
+      } else {
+        header("Location: customerdashboard.php");
+      }
+      exit();
+    } else {
+      echo "Incorrect password.";
+    }
+  } else {
+    echo "No account found with that email.";
+  }
+}
+?>
+
   </body>
 </html>
 </html>   
