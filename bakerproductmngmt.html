@@ -240,6 +240,9 @@
                 </div>
             </div>
         </div>
+        <div id="no-results-message" style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+            No products found.
+        </div>
     </main>
 
     <!-- Upload Modal -->
@@ -264,6 +267,11 @@
                         <option value="cakes">Cakes</option>
                         <option value="pastries">Pastries</option>
                         <option value="cookies">Cookies</option>
+                        <option value="brownies">Brownies</option>
+                        <option value="crackers">Crackers</option>
+                        <option value="candy">Candy</option>
+                        <option value="pudding">Pudding</option>
+                        <option value="piestarts">Pies & Tarts</option>
                     </select>
                 </div>
 
@@ -400,6 +408,8 @@
         function filterProducts(category) {
             const products = document.querySelectorAll('.product-card');
             const buttons = document.querySelectorAll('.filter-btn');
+            const noResults = document.getElementById('no-results-message');
+            let visibleCount = 0;
             
             // Update active button
             buttons.forEach(btn => {
@@ -416,7 +426,32 @@
                     product.style.display = 'none';
                 }
             });
+            if (noResults) {
+                noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
         }
+
+        // Search Functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchValue = e.target.value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+            const noResults = document.getElementById('no-results-message');
+            let visibleCount = 0;
+
+            products.forEach(product => {
+                const title = product.querySelector('.product-title').textContent.toLowerCase();
+                const desc = product.querySelector('.product-description').textContent.toLowerCase();
+                if (title.includes(searchValue) || desc.includes(searchValue)) {
+                    product.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    product.style.display = 'none';
+                }
+            });
+            if (noResults) {
+                noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+        });
 
         // Social Functions
         function toggleLike(button, productId) {
