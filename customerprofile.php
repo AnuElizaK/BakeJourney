@@ -1,4 +1,7 @@
-<?php session_start();?>
+<?php 
+session_start();
+// include 'custnavbar.php'
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,7 +14,7 @@
 
   <body>
     <div class="container">
-      <a href="postlogin.html" class="back-link">← Back to Home</a>
+      <a href="customerdashboard.php" class="back-link">← Back to Home</a>
       
       <h1 class="page-title">Your Profile</h1>
       <div class="customer-data">

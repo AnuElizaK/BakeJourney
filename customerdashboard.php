@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@bakejourney" />
 
-  <link rel="stylesheet" href="postlogin.css">
+  <link rel="stylesheet" href="customerdashboard.css">
 </head>
 
 <body>
@@ -33,15 +33,15 @@
         </div>
 
         <div class="nav-links">
-          <a href="postlogin.html" class="nav-link">Home</a>
+          <a href="#" class="nav-link">Home</a>
           <a href="#products" class="nav-link">Products</a>
           <a href="#bakers" class="nav-link">Find Your Baker</a>
           <a href="#services" class="nav-link">Services</a>
           <a href="#contact" class="nav-link">Contact Us</a>
-          <a href="cart.html" class="nav-link"><img src="media/cart.png" title="Cart" alt="Cart" width="30"
+          <a href="cart.php" class="nav-link"><img src="media/cart.png" title="Cart" alt="Cart" width="30"
               height="30"></a>
-          <a href="customerprofile.html" class="nav-link nav-cta">Your Profile</a>
-          <a href="signout.html" class="nav-link nav-cta">Sign Out</a>
+          <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
+          <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 
         <div class="nav-mobile-toggle" id="mobileToggle">
