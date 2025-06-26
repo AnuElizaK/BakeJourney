@@ -1,3 +1,4 @@
+<?php session_start();?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -28,13 +29,13 @@
           </div>
           
           <div class="nav-links">
-            <a href="index.html" class="nav-link">Home</a>
+            <a href="index.php" class="nav-link">Home</a>
             <a href="#featured" class="nav-link">Menu</a>
             <a href="#services" class="nav-link">Services</a>
             <a href="#about" class="nav-link">About</a>
             <a href="#contact" class="nav-link">Contact Us</a>
-            <a href="bakersignup.html" class="nav-link nav-cta">Join as Baker</a>
-            <a href="login.html" class="nav-link nav-cta">Login or Sign Up</a>
+            <a href="bakersignup.php?role=baker" class="nav-link nav-cta">Join as Baker</a>
+            <a href="login.php" class="nav-link nav-cta">Login or Sign Up</a>
           </div>
           
           <div class="nav-mobile-toggle" id="mobileToggle">
@@ -65,7 +66,7 @@
         
         <div class="hero-buttons">
           <button class="btn btn-primary" onclick="document.getElementById('featured').scrollIntoView({behavior: 'smooth'})">Explore</button>
-          <a href="login.html"><button class="btn btn-outline">Order Now</button></a>
+          <a href="customerdashboard.php"><button class="btn btn-outline">Order Now</button></a>
         </div>
       </div>
     </section>
@@ -79,7 +80,7 @@
         </div>
 
         <div class="bakers-grid">
-          <div class="baker-card" onclick="window.location.href='login.html'">
+          <div class="baker-card" onclick="window.location.href='bakerprofile.php'">
             <div class="baker-image">
               <img src="https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sarah Johnson">
               <div class="ranking-badge">#1</div>

@@ -1,3 +1,4 @@
+<?php session_start();?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,7 +11,7 @@
 
   <body>
     <div class="container">
-      <a href="bakerhomepage.html" class="back-link">← Back to Home</a>
+      <a href="bakerhomepage.php" class="back-link">← Back to Home</a>
 
       <h1 class="page-title">Baker Profile</h1>
       <div class="baker-data">

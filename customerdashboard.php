@@ -1,3 +1,4 @@
+<?php session_start();?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,10 +10,11 @@
     content="BakeJourney - Handcrafted with love, baked to perfection. Fresh breads, pastries, and custom cakes made daily with the finest ingredients." />
   <meta name="author" content="BakeJourney" />
 
-  <meta property="og:title" content="BakeJourney - Handcrafted Baked Goods" />
-  <meta property="og:description"
-    content="Experience the warmth of homemade goodness in every bite. Fresh breads, pastries, and custom cakes." />
-  <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@bakejourney" />
+    
+    <link rel="stylesheet" href="customerdashboard.css">
+  </head>
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@bakejourney" />
@@ -106,12 +108,16 @@
               alt="Artisan Sourdough">
             <button class="cart-button">Add to Cart</button>
           </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Artisan Sourdough</h3>
-              <span class="product-price">$8.50</span>
-            </div>
-            <p>Traditional 48-hour fermented sourdough with a perfect crust.</p>
+          
+          <div class="nav-links">
+            <a href="index.php" class="nav-link">Home</a>
+            <a href="#featured" class="nav-link">Products</a>
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#about" class="nav-link">About</a>
+            <a href="#contact" class="nav-link">Contact Us</a>
+            <a href="#orderplacement.php" class="nav-link"><img src="media/cart.png" title="Cart" alt="Cart" width="30" height="30"></a>
+            <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
+            <a href="signout.html" class="nav-link nav-cta">Sign Out</a>
           </div>
         </div>
 

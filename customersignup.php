@@ -1,3 +1,4 @@
+<?php session_start();?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,11 +27,12 @@
       </div>
 
       <div class="dialog-content">
-        <form>
+        <form method="POST" action="customersignup.php" onsubmit="return data()">
+
           <div class="form-row">
             <div class="form-group">
               <label for="fullName">Full Name</label>
-              <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required>
+              <input type="text" id="fullName" name="full_name" placeholder="Enter your full name" required>
             </div>
             <div class="form-group">
               <label for="phone">Phone Number</label>
@@ -38,9 +40,15 @@
             </div>
           </div>
 
+          <div class="form-row">
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+          </div>
+           <div class="form-group">
+            <label for="email">City</label>
+            <input type="text" id="city" name="city" placeholder="Enter your city" required>
+          </div>
           </div>
 
           <div class="form-row">
@@ -75,16 +83,42 @@
             <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
           </div>
 
-          <button type="submit" class="btn">Create Account</button>
+          <button type="submit" name="create" class="btn">Create Account</button>
         </form>
 
         <div class="login-link">
-          Already have an account? <a href="login.html">Log in.</a>
+          Already have an account? <a href="login.php">Log in.</a>
         </div>
       </div>
     </div>
-
+<!-- =============================================================================== -->
     <script>
+      // Validate form data
+      function data(){
+        var ph=document.getElementById("phone").value;
+        var pass=document.getElementById("password").value;
+        var conpass=document.getElementById("confirmPassword").value;
+        var terms=document.getElementById("terms").checked;
+        if(ph.length<10 || isNaN(ph)){
+          alert("Phone number should be a 10-digit number");
+          return false;
+        }
+        if(pass.length<8){
+          alert("Password should be at least 8 characters long");
+          return false;
+        }
+        if(pass !== conpass){
+          alert("Passwords do not match");
+          return false;
+        }
+        if(!terms){
+          alert("Please agree to the terms and conditions");
+          return false;
+        }
+        return true;
+      }
+
+      //toggle password visibility
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
         const button = input.nextElementSibling;
@@ -99,31 +133,51 @@
         }
       }
 
-      // Form validation
-      document.querySelector('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const terms = document.getElementById('terms').checked;
-        
-        if (password !== confirmPassword) {
-          alert('Passwords do not match!');
-          return;
-        }
-        
-        if (!terms) {
-          alert('Please agree to the terms and conditions');
-          return;
-        }
-        
-        alert('Account created successfully! (This is a demo)');
-      });
-
       // Close dialog when clicking overlay
       document.querySelector('.overlay').addEventListener('click', function() {
         window.history.back();
       });
     </script>
+
+<!-- ////////////////////////////////////////////////////////////////////// -->
+ <?php
+
+include 'db.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create']))
+{
+    $full_name = $_POST['full_name'];
+    $phone = $_POST['phone'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $city = $_POST['city'];
+    $role = 'customer';
+
+    // Hash the password
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    // Check if email already exists
+    $check = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $check->bind_param("s", $email);
+    $check->execute();
+    $check->store_result();
+
+    if ($check->num_rows > 0) {
+        echo "<script>alert('Email already exists. Please log in.'); window.location.href = 'login.php';</script>";
+    } else {
+        // Insert user
+        $stmt = $conn->prepare("INSERT INTO users (full_name,phone, email, password,city, role) VALUES (?,?,?,?,?,?)");
+        $stmt->bind_param("ssssss", $full_name,$phone, $email, $hashedPassword,$city, $role);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('🎉 Account created successfully!'); window.location.href = 'customerdashboard.php';</script>";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+    }
+}
+?>
+
+ 
   </body>
 </html>
