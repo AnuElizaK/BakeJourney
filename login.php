@@ -15,7 +15,7 @@
       
       <div class="dialog-header">
         <div class="logo-icon">
-          <img src="media/LogoOpp.png" alt="BakeJourney Logo" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-image">
+          <img src="media/LogoOpp.png" alt="BakeJourney Logo" width="40" height="40" class="logo-image">
         </div>
         <h1 class="brand-name">BakeJourney</h1>
         <p>Welcome Back!</p>
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
 
       // Redirect based on role
       if ($user['role'] === 'baker') {
-        header("Location: baker_dashboard.php");
+        header("Location: bakerdashboard.php");
       } else {
         header("Location: customerdashboard.php");
       }

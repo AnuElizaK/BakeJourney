@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Join as a Baker | BakeJouney</title>
+    <title>Join as a Baker | BakeJourney</title>
     <meta name="description" content="Join our community of talented homebakers and showcase your delicious creations." />
     <link rel="stylesheet" href="bakersignup.css">
    </head>

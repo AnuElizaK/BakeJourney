@@ -11,7 +11,7 @@
 
   <body>
     <div class="container">
-      <a href="bakerhomepage.php" class="back-link">← Back to Home</a>
+      <a href="bakerdashboard.php" class="back-link">← Back to Home</a>
 
       <h1 class="page-title">Baker Profile</h1>
       <div class="baker-data">

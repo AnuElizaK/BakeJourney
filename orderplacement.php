@@ -23,7 +23,7 @@
               <p class="brand-subtitle">Place Your Order</p>
             </div>
           </div>
-          <a href="postlogin.html" class="back-btn">
+          <a href="customerdashboard.php" class="back-btn">
             ← Back to Home
           </a>
         </div>

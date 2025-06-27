@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Baker Dashboard | BakeJourney</title>
     <meta name="description" content="Baker dashboard for managing orders, products, and profile" />
-    <link rel="stylesheet" href="bakerhomepage.css" />
+    <link rel="stylesheet" href="bakerdashboard.css" />
   </head>
 
   <body>
@@ -26,11 +26,14 @@
           
           <div class="header-actions">
             <button class="btn">
-              <img src="media/alert.gif" alt="BakeJourney Logo" width="25" height="25"> Notifications
+              <img src="media/alert.gif" alt="notifications" width="25" height="25">Notifications
               <span class="notification-badge">3</span>
             </button>
             <button class="btn">
-              <img src="media/settings.png" alt="BakeJourney Logo" width="25" height="25"> Settings
+              <img src="media/settings.png" alt="settings" width="25" height="25">Settings
+            </button>
+            <button class="btn" onclick="window.location.href='bakerprofile.php'">
+              <img src="media/profile.png" alt="profile" width="25" height="25">Profile
             </button>
           </div>
         </div>
