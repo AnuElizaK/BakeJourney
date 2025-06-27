@@ -28,7 +28,6 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   right: 0;
   background: rgba(255, 255, 255, 0.769);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 1000;
   transform: translateY(-100%);
   transition: all 0.4s ease;

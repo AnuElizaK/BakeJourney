@@ -29,11 +29,9 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   right: 0;
   background: rgba(255, 255, 255, 0.769);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
-
 
 .nav-content {
   display: flex;
@@ -215,6 +213,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.432);
+  border-bottom: 300px solid #ffb73a1d;
 }
 
 .hero-content {
@@ -266,15 +265,6 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   margin-right: auto;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
   line-height: 1.2;
-}
-
-.hero-buttons {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 4px;
 }
 
 @media (max-width: 600px) {
@@ -352,7 +342,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   margin-bottom: 20px;
 }
 
-.services .section-header {
+.services .section-header, .contact .section-header {
   margin-bottom: 80px;
 }
 
@@ -376,18 +366,17 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 
 /* Filter Tabs */
 .filter-section {
-    background: #ffffff;
-
+    background: none;
     padding: 15px 20px;
     border-radius: 0.75rem;
     margin-bottom: 2rem;
 }
 
-.search-input{
+.product-search-input, .baker-search-input {
     width: 100%;
     padding: 12px 45px;
     background: transparent url("media/search.png") no-repeat 10px center;
-    border: 1.5px solid #d1d5db;
+    border: 1.5px solid #c6c8ca;
     border-radius: 0.65rem;
     font-size: 1rem;
     outline: none;
@@ -396,12 +385,17 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
     margin-bottom: 0.5rem;
 }
 
-.search-input:hover {
+.product-search-input:hover{
     border-color: #8b919c;
-    background-color: #fef3c7;
+    background-color: #f8f9fa;
 }
 
-.search-input:focus {
+.baker-search-input:hover {
+  border-color: #8b919c;
+  background-color: #fef3c7;
+}
+
+.product-search-input:focus, .baker-search-input:focus {
     outline: none;
     border-color: #f59e0b;
     box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
@@ -419,7 +413,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .filter-btn {
     padding: 12px 15px;
     border: none;
-    background: #f3f4f6;
+    background: #f8f9fa;
     border-radius: 0.65rem;
     font-size: 0.9rem;
     font-weight: 500;
@@ -439,7 +433,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 
 .products {
   padding: 100px 0;
-  background: white;
+  background: linear-gradient(#fff1bb, #ffffff);
 }
 
 .products-grid {
@@ -460,7 +454,6 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.4s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .product-card:hover {

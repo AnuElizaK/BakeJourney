@@ -1,4 +1,4 @@
-<?php session_start();?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,20 +6,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home | BakeJourney</title>
-  <meta name="description"
-    content="BakeJourney - Handcrafted with love, baked to perfection. Fresh breads, pastries, and custom cakes made daily with the finest ingredients." />
+  <meta name="description" content="BakeJourney - The Home Baker's Marketplace" />
   <meta name="author" content="BakeJourney" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@bakejourney" />
-    
-    <link rel="stylesheet" href="customerdashboard.css">
-  </head>
-
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@bakejourney" />
-
   <link rel="stylesheet" href="customerdashboard.css">
+</head>
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@bakejourney" />
+<link rel="stylesheet" href="customerdashboard.css">
 </head>
 
 <body>
@@ -84,7 +79,7 @@
       <!-- Product Search and Filter -->
       <div class="filter-section">
         <div class="search-box">
-          <input type="search" placeholder="Search or filter products..." class="search-input">
+          <input type="search" placeholder="Search or filter products..." class="product-search-input">
         </div>
         <div class="filter-tabs">
           <button onclick="filterProducts('all')" class="filter-btn active">All Products</button>
@@ -96,32 +91,28 @@
           <button onclick="filterProducts('crackers')" class="filter-btn">Crackers</button>
           <button onclick="filterProducts('candy')" class="filter-btn">Candy</button>
           <button onclick="filterProducts('pudding')" class="filter-btn">Pudding</button>
-          <button onclick="filterProducts('piestarts')" class="filter-btn">Pies & Tarts</button>
+          <button onclick="filterProducts('pies tarts')" class="filter-btn">Pies & Tarts</button>
         </div>
       </div>
 
       <div class="products-grid">
-        <div class="product-card">
+        <div class="product-card" data-category="breads">
           <div class="product-image">
             <img
               src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Artisan Sourdough">
             <button class="cart-button">Add to Cart</button>
           </div>
-          
-          <div class="nav-links">
-            <a href="index.php" class="nav-link">Home</a>
-            <a href="#featured" class="nav-link">Products</a>
-            <a href="#services" class="nav-link">Services</a>
-            <a href="#about" class="nav-link">About</a>
-            <a href="#contact" class="nav-link">Contact Us</a>
-            <a href="#orderplacement.php" class="nav-link"><img src="media/cart.png" title="Cart" alt="Cart" width="30" height="30"></a>
-            <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
-            <a href="signout.html" class="nav-link nav-cta">Sign Out</a>
+          <div class="product-content">
+            <div class="product-header">
+              <h3>Artisan Sourdough</h3>
+              <span class="product-price">$8.50</span>
+            </div>
+            <p>Traditional 48-hour fermented sourdough with a perfect crust.</p>
           </div>
         </div>
 
-        <div class="product-card">
+        <div class="product-card" data-category="pastries">
           <div class="product-image">
             <img
               src="https://images.unsplash.com/photo-1722085609594-1bc764876867?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -137,7 +128,7 @@
           </div>
         </div>
 
-        <div class="product-card">
+        <div class="product-card" data-category="pies tarts">
           <div class="product-image">
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -153,55 +144,7 @@
           </div>
         </div>
 
-        <div class="product-card">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</butt>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</butt>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</butt>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card">
+        <div class="product-card" data-category="pies tarts">
           <div class="product-image">
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -217,7 +160,7 @@
           </div>
         </div>
 
-        <div class="product-card">
+        <div class="product-card" data-category="pies tarts">
           <div class="product-image">
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -232,6 +175,58 @@
             <p>Classic key lime pie with a graham cracker crust.</p>
           </div>
         </div>
+
+        <div class="product-card" data-category="pies tarts">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Key Lime Pie">
+            <button class="cart-button">Add to Cart</button>
+          </div>
+          <div class="product-content">
+            <div class="product-header">
+              <h3>Key Lime Pie</h3>
+              <span class="product-price">$15.00</span>
+            </div>
+            <p>Classic key lime pie with a graham cracker crust.</p>
+          </div>
+        </div>
+
+        <div class="product-card" data-category="pies tarts">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Key Lime Pie">
+            <button class="cart-button">Add to Cart</button>
+          </div>
+          <div class="product-content">
+            <div class="product-header">
+              <h3>Key Lime Pie</h3>
+              <span class="product-price">$15.00</span>
+            </div>
+            <p>Classic key lime pie with a graham cracker crust.</p>
+          </div>
+        </div>
+
+        <div class="product-card" data-category="pies tarts">
+          <div class="product-image">
+            <img
+              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Key Lime Pie">
+            <button class="cart-button">Add to Cart</button>
+          </div>
+          <div class="product-content">
+            <div class="product-header">
+              <h3>Key Lime Pie</h3>
+              <span class="product-price">$15.00</span>
+            </div>
+            <p>Classic key lime pie with a graham cracker crust.</p>
+          </div>
+        </div>
+      </div>
+      <div id="no-products-message"
+        style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+        No products found.
       </div>
     </div>
   </section>
@@ -249,12 +244,12 @@
       <!-- Baker Search -->
       <div class="filter-section">
         <div class="search-box">
-          <input type="search" placeholder="Search bakers by name or specialty..." class="search-input">
+          <input type="search" placeholder="Search bakers by name or specialty..." class="baker-search-input">
         </div>
       </div>
 
       <div class="bakers-grid">
-        <div class="baker-card" onclick="window.location.href='login.html'">
+        <div class="baker-card" onclick="window.location.href='userpage.php'">
           <div class="baker-image">
             <img
               src="https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -271,7 +266,7 @@
           </div>
         </div>
 
-        <div class="baker-card" onclick="window.location.href='login.html'">
+        <div class="baker-card" onclick="window.location.href='userpage.php'">
           <div class="baker-image">
             <img
               src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
@@ -289,7 +284,7 @@
           </div>
         </div>
 
-        <div class="baker-card" onclick="window.location.href='login.html'">
+        <div class="baker-card" onclick="window.location.href='userpage.php'">
           <div class="baker-image">
             <img
               src="https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -305,6 +300,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="no-bakers-message"
+        style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+        No bakers found.
       </div>
     </div>
   </section>
@@ -502,8 +501,76 @@
       });
     });
 
-    // Product search and filter
-    // Baker search
+    // ---Product Search and Filter Functions---
+    function filterProducts(category) {
+      const products = document.querySelectorAll('.product-card');
+      const buttons = document.querySelectorAll('.filter-btn');
+      const noProducts = document.getElementById('no-products-message');
+      let visibleCount = 0;
+
+      // Update active button
+      buttons.forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Products Filters
+      products.forEach(product => {
+        if (category === 'all' || product.dataset.category === category) {
+          product.style.display = 'block';
+          product.classList.add('fade-in');
+        } else {
+          product.style.display = 'none';
+        }
+      });
+      if (noProducts) {
+        noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    }
+
+    // Product Search
+    document.querySelector('.product-search-input').addEventListener('input', function (e) {
+      const searchValue = e.target.value.toLowerCase();
+      const products = document.querySelectorAll('.product-card');
+      const noProducts = document.getElementById('no-products-message');
+      let visibleCount = 0;
+
+      products.forEach(product => {
+        const title = product.querySelector('.product-content').textContent.toLowerCase();
+        const desc = product.querySelector('.product-header').textContent.toLowerCase();
+        if (title.includes(searchValue) || desc.includes(searchValue)) {
+          product.style.display = 'block';
+          visibleCount++;
+        } else {
+          product.style.display = 'none';
+        }
+      });
+      if (noProducts) {
+        noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    });
+
+    // ---Baker Search Function---
+    document.querySelector('.baker-search-input').addEventListener('input', function (e) {
+      const searchValue = e.target.value.toLowerCase();
+      const bakers = document.querySelectorAll('.baker-card');
+      const noBakers = document.getElementById('no-bakers-message');
+      let visibleCount = 0;
+
+      bakers.forEach(baker => {
+        const title = baker.querySelector('.baker-content').textContent.toLowerCase();
+        const specialty = baker.querySelector('.baker-specialty').textContent.toLowerCase();
+        if (title.includes(searchValue) || specialty.includes(searchValue)) {
+          baker.style.display = 'block';
+          visibleCount++;
+        } else {
+          baker.style.display = 'none';
+        }
+      });
+      if (noBakers) {
+        noBakers.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    });
 
   </script>
 </body>
