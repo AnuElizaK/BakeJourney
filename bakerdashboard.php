@@ -35,6 +35,9 @@
             <button class="btn" onclick="window.location.href='bakerprofile.php'">
               <img src="media/profile.png" alt="profile" width="25" height="25">Profile
             </button>
+            <button class="btn" onclick="window.location.href='signout.php'">
+              <img src="media/sign-out.png" alt="sign out" width="25" height="25">Sign Out
+            </button>
           </div>
         </div>
       </div>

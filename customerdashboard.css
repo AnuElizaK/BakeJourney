@@ -305,6 +305,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .btn-primary {
   background: linear-gradient(135deg, #fcd34d, #f59e0b);
   color: white;
+  cursor: pointer;
   box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
 }
 
@@ -339,10 +340,6 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 /* Section Headers */
 .section-header {
   text-align: center;
-  margin-bottom: 20px;
-}
-
-.services .section-header, .contact .section-header {
   margin-bottom: 80px;
 }
 
@@ -360,6 +357,22 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.7;
+}
+
+.more{
+  font-weight: 600; 
+  margin: 32px 0; 
+  transition: all 0.3s ease;
+  border-radius: 15px; 
+  padding: 10px 20px; 
+  width: fit-content; 
+  margin-left: auto; 
+  margin-right: auto;
+}
+
+.more:hover{
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  transition: all 0.3s ease;
 }
 
 /* Products */
@@ -392,7 +405,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 
 .baker-search-input:hover {
   border-color: #8b919c;
-  background-color: #fef3c7;
+  background-color: #f8f9fa;
 }
 
 .product-search-input:focus, .baker-search-input:focus {
@@ -534,6 +547,11 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 /* Top Bakers Section */
 .top-bakers {
   background: white;
+}
+
+.all-bakers{
+  padding: 100px 0;
+  background: linear-gradient(#fff1bb, #ffffff);
 }
 
 .bakers-grid {
@@ -889,6 +907,11 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .contact {
   padding: 100px 0;
   background: linear-gradient(#fee996, #b8c1ce);
+}
+
+.linked-page-contact {
+  padding: 100px 0;
+  background: linear-gradient(#ffffff 40%, #d4dbe7 100%);
 }
 
 .contact-content {
