@@ -111,10 +111,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
       }
       exit();
     } else {
-      echo "Incorrect password.";
+      echo "<script>alert('Incorrect password.')</script>";
     }
   } else {
-    echo "No account found with that email.";
+     echo "<script>alert('No account found with that email.')</script>";
   }
 }
 ?>
