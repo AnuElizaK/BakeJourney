@@ -16,7 +16,7 @@
   <div class="overlay"></div>
 
   <div class="dialog">
-    <button class="close-button" onclick="window.history.back()">×</button>
+   <button class="close-button" onclick="window.location.href='index.php'">×</button>
 
     <div class="dialog-header">
       <div class="logo-icon">
@@ -140,8 +140,9 @@
 
     // Close dialog when clicking overlay
     document.querySelector('.overlay').addEventListener('click', function () {
-      window.history.back();
-    });
+  window.location.href = "index.php";
+});
+
   </script>
 
   <!-- ////////////////////////////////////////////////////////////////////// -->
@@ -174,7 +175,7 @@
       $stmt->bind_param("ssssss", $full_name, $phone, $email, $hashedPassword, $city, $role);
 
       if ($stmt->execute()) {
-        echo "<script>alert('🎉 Account created successfully!'); window.location.href = 'customerdashboard.php';</script>";
+        echo "<script>alert('Account created successfully!'); window.location.href = 'customerdashboard.php';</script>";
       } else {
         echo "Error: " . $stmt->error;
       }

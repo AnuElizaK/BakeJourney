@@ -65,14 +65,14 @@
         </p>
         
         <div class="hero-buttons">
-          <button class="btn btn-primary" onclick="document.getElementById('featured').scrollIntoView({behavior: 'smooth'})">Explore</button>
+          <button class="btn btn-primary" onclick="document.getElementById('tpbakers').scrollIntoView({behavior: 'smooth'})">Explore</button>
           <a href="customerdashboard.php"><button class="btn btn-outline">Order Now</button></a>
         </div>
       </div>
     </section>
 
     <!-- Top Bakers Section -->
-    <section class="top-bakers">
+    <section class="top-bakers" id="tpbakers">
       <div class="container">
         <div class="section-header">
           <h2>Top Rated Bakers</h2>

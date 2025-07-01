@@ -15,7 +15,7 @@
     <div class="overlay"></div>
     
     <div class="dialog">
-      <button class="close-button" onclick="window.history.back()">×</button>
+      <button class="close-button" onclick="window.location.href='index.php'">×</button>
       
       <div class="dialog-header">
         <div class="logo-icon">
@@ -159,9 +159,10 @@
         return true;
       }
       // Close dialog when clicking overlay
-      document.querySelector('.overlay').addEventListener('click', function() {
-        window.history.back();
+      document.querySelector('.overlay').addEventListener('click', function () {
+      window.location.href = "index.php";
       });
+
     </script>
 
 <?php
