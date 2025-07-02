@@ -158,10 +158,6 @@
         }
         return true;
       }
-      // Close dialog when clicking overlay
-      document.querySelector('.overlay').addEventListener('click', function () {
-      window.location.href = "index.php";
-      });
 
     </script>
 

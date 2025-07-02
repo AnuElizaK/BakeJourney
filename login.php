@@ -55,6 +55,7 @@
         </div>
       </div>
     </div>
+    
 <!-- //////////////////////////////////////////////////////////////////////////////////////// -->
     <script>
     
@@ -71,14 +72,6 @@
           icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
       }
-
-     // Close dialog when clicking overlay
-     document.querySelector('.overlay').addEventListener('click', function () {
-     window.location.href = "index.php";
-     });
-
-
-      
     </script>
 
 <!-- ----------- PHP Code for Login Functionality ------------- -->
