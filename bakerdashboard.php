@@ -1,4 +1,6 @@
-<?php session_start();?>
+<?php session_start();
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -20,7 +22,7 @@
             </div>
             <div>
               <h1 class="brand-title">BakeJourney</h1>
-              <p class="brand-subtitle">Welcome back, Sarah Johnson!</p>
+              <p class="brand-subtitle">Welcome back,  <?php echo htmlspecialchars($_SESSION['name']); ?>!</p>
             </div>
           </div>
           
