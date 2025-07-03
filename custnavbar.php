@@ -27,7 +27,9 @@
     </div>
   </nav>
 <style>
-    .navbar {
+
+
+.navbar {
   position: fixed;
   top: 0;
   left: 0;

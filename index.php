@@ -448,11 +448,12 @@
            <div class="footer-social">
             <h3 class="follow-us">Follow Us</h3>
             <ul>
-              <li><a href="#">Facebook</a></li>
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">Pinterest</a></li>
-              <li><a href="#">Twitter</a></li>
-              <li><a href="#">LinkedIn</a></li>
+              <li><a href="#"><img src="media/facebook.svg" alt="Facebook" style="vertical-align: bottom;">&nbsp;Facebook</a></li>
+              <li><a href="#"><img src="media/instagram.svg" alt="Instagram" style="vertical-align: bottom;">&nbsp;Instagram</a></li>
+              <li><a href="#"><img src="media/pinterest.svg" alt="Pinterest" style="vertical-align: bottom;">&nbsp;Pinterest</a></li>
+              <li><a href="#"><img src="media/x.svg" alt="X (Twitter)" style="vertical-align: bottom;">&nbsp;X</a></li>
+              <li><a href="#"><img src="media/linkedin.svg" alt="LinkedIn" style="vertical-align: bottom;">&nbsp;LinkedIn</a></li>
+              <li><a href="#"><img src="media/github.svg" alt="GitHub" style="vertical-align: bottom;">&nbsp;GitHub</a></li>
             </ul>
           </div>
           <div class="footer-attributions">
