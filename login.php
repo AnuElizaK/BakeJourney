@@ -95,6 +95,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
     if (password_verify($password, $user['password'])) {
       $_SESSION['user_id'] = $user['user_id'];
       $_SESSION['name'] = $user['full_name'];
+      $_SESSION['email'] = $user['email'];
+      $_SESSION['phone'] = $user['phone'];
+      $_SESSION['city'] = $user['city'];
+      $_SESSION['created_at'] = $user['created_at'];
       $_SESSION['role'] = $user['role'];
 
       // Redirect based on role

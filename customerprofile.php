@@ -20,9 +20,17 @@ session_start();
       <div class="customer-data">
         <!-- Profile Header -->
         <div class="profile-header">
-          <div class="profile-avatar">JD</div>
-          <h1 class="profile-name">John Doe</h1>
-          <p class="profile-contact">john.doe@example.com • +91 xxxxx 86576</p>
+         <div class="profile-avatar">
+        <?php
+           $name = $_SESSION['name'] ;
+           $parts = explode(' ', $name);
+           $initials = strtoupper($parts[0][0] . ($parts[1][0] ?? ''));
+           echo $initials;
+        ?>
+         </div>
+
+          <h1 class="profile-name"> <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
+          <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> • <?php echo htmlspecialchars($_SESSION['phone']); ?></p>
           
           <div class="profile-stats">
             <div class="stat-card">
