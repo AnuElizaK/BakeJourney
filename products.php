@@ -24,7 +24,7 @@
       <div class="nav-content">
         <div class="nav-brand">
           <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-          <span class="nav-title">BakeJourney</span>
+          <span><a class="nav-title" href="customerdashboard.php">BakeJourney</a></span>
         </div>
 
         <div class="nav-links">

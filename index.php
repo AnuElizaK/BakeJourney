@@ -25,7 +25,7 @@
         <div class="nav-content">
           <div class="nav-brand">
               <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-              <span class="nav-title">BakeJourney</span>
+              <span class="nav-title"><a href="index.php">BakeJourney</a></span>
           </div>
           
           <div class="nav-links">
@@ -460,7 +460,7 @@
             <h3 class="attributions">Attributions</h3>
             <ul>
               <li>Icons by <a href="https://icons8.com">Icons8</a> & <a href="https://www.flaticon.com/">Flaticon</a></li>
-              <li>Images by <a href="https://unsplash.com/">Unsplash</a></li>
+              <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a></li>
               <li>Fonts by <a href="https://fonts.google.com/">Google Fonts</a></li>
               <li>Branding font (Puanto) by <a href="https://creativemarket.com/pasha.larin">Larin Type Co.</a></li>
             </ul>
