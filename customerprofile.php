@@ -5,7 +5,7 @@ include 'db.php';
 $user_id = $_SESSION['user_id']; 
 
 // Fetch user details
-$stmt = $conn->prepare("SELECT full_name, email, phone, city FROM users WHERE user_id = ?");
+$stmt = $conn->prepare("SELECT full_name, email, phone, city, bio FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -40,8 +40,7 @@ $user = $result->fetch_assoc();
          </div>
 
           <h1 class="profile-name"> <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
-          <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> • 
-                                     <?php echo htmlspecialchars($_SESSION['phone']); ?> <br> 
+          <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> <br>
                                      <?php echo htmlspecialchars($_SESSION['created_at']); ?>
           </p>
           <p> </p>
@@ -68,7 +67,7 @@ $user = $result->fetch_assoc();
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="full_name" placeholder="Enter your full name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
+                <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
               </div>
               <div class="form-group">
                 <label for="email">Email Address</label>
@@ -84,16 +83,20 @@ $user = $result->fetch_assoc();
                 <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?php echo htmlspecialchars($user['phone']); ?>">
               </div>
               <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" name="bio" rows="2" placeholder="Tell us a little about yourself"><?php echo isset($user['bio']) ? htmlspecialchars($user['bio']) : ''; ?></textarea>
+              </div>
+              <div class="form-group">
                 <div class="address-label-row">
                   <label for="address">Delivery Address</label>
                   <div class="add-more-addresses">
                     <button class="btn-more" type="button">+</button>
                   </div>
                 </div>
-                <textarea id="address" name="address" rows="3" placeholder="Enter your full delivery address"><?php echo htmlspecialchars($user['city']); ?></textarea>
+                <textarea id="address" name="city" rows="3" placeholder="Enter your full delivery address"><?php echo htmlspecialchars($user['city']); ?></textarea>
               </div>
             </div>
-            <button type="submit" class="btn">Update Profile</button>
+            <button type="submit" name="update" class="btn">Update Profile</button>
           </form>
         </div>
       </div>
@@ -159,13 +162,31 @@ $user = $result->fetch_assoc();
     </div>
 
     <script>
-      // Form submission handlers
-      document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          alert('Profile updated successfully! (This is a demo)');
-        });
-      });
+      
     </script>
+    <?php 
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
+    $updated_name = $_POST['full_name'];
+    $updated_email = $_POST['email'];
+    $updated_phone = $_POST['phone'];
+    $updated_bio = $_POST['bio'];
+    $updated_address = $_POST['city'];
+
+    // Update query
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, email = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
+    $stmt->bind_param("sssssi", $updated_name, $updated_email, $updated_phone, $updated_bio, $updated_address, $user_id);
+
+    if ($stmt->execute()) {
+        // Update session name so it's reflected immediately
+        $_SESSION['name'] = $updated_name;
+        echo "<script>alert('✅ Profile updated successfully!'); window.location.href = 'customerprofile.php';</script>";
+    } else {
+        echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
+    }
+
+    $stmt->close();
+}
+
+    ?>
   </body>
 </html>
