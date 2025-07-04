@@ -191,6 +191,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['bcreate']))
         $stmt->bind_param("ssssss", $full_name,$phone, $email, $hashedPassword,$city, $role);
 
         if ($stmt->execute()) {
+          // Set session variables for new users
+             $_SESSION['user_id'] = $conn->insert_id; // Get the last inserted user ID
+             $_SESSION['name'] = $full_name;
+             $_SESSION['email'] = $email;
+             $_SESSION['phone'] = $phone;
+             $_SESSION['city'] = $city;
+             $_SESSION['created_at'] = date('F Y');
+             $_SESSION['role'] = $role;
             echo "<script>alert('🎉 Account created successfully!'); window.location.href = 'bakerdashboard.php';</script>";
         } else {
             echo "Error: " . $stmt->error;

@@ -1,7 +1,17 @@
 <?php 
 session_start();
-// include 'custnavbar.php'
+include 'db.php'; 
+
+$user_id = $_SESSION['user_id']; 
+
+// Fetch user details
+$stmt = $conn->prepare("SELECT full_name, email, phone, city FROM users WHERE user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -30,8 +40,11 @@ session_start();
          </div>
 
           <h1 class="profile-name"> <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
-          <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> • <?php echo htmlspecialchars($_SESSION['phone']); ?></p>
-          
+          <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> • 
+                                     <?php echo htmlspecialchars($_SESSION['phone']); ?> <br> 
+                                     <?php echo htmlspecialchars($_SESSION['created_at']); ?>
+          </p>
+          <p> </p>
           <div class="profile-stats">
             <div class="stat-card">
               <span class="stat-number">12</span>
@@ -51,15 +64,15 @@ session_start();
         <!-- Personal Information -->
         <div class="profile-section">
           <h2 class="section-title">Personal Information</h2>
-          <form>
+          <form method="post">
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" value="John Doe">
+                <input type="text" id="full_name" placeholder="Enter your full name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
               </div>
               <div class="form-group">
                 <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" value="john.doe@example.com">
+                <input type="email" id="email" placeholder="Enter your email address" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
               </div>
               <div class="form-group">
                 <div class="phone-label-row">
@@ -68,7 +81,7 @@ session_start();
                     <button class="btn-more" type="button">+</button>
                   </div>
                 </div>
-                <input type="tel" id="phone" name="phone" value="+91 xxxxx 83124">
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?php echo htmlspecialchars($user['phone']); ?>">
               </div>
               <div class="form-group">
                 <div class="address-label-row">
@@ -77,7 +90,7 @@ session_start();
                     <button class="btn-more" type="button">+</button>
                   </div>
                 </div>
-                <textarea id="address" name="address" rows="3" placeholder="Enter your full delivery address">123 Main Street, Apt 4B, Anytown, ST 12345</textarea>
+                <textarea id="address" name="address" rows="3" placeholder="Enter your full delivery address"><?php echo htmlspecialchars($user['city']); ?></textarea>
               </div>
             </div>
             <button type="submit" class="btn">Update Profile</button>

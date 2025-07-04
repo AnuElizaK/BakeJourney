@@ -49,7 +49,8 @@
           </div>
           <div class="form-group">
             <label for="email">City</label>
-            <input type="text" id="city" name="city" placeholder="Enter your city" required>
+           <textarea id="city" name="city" rows="3" placeholder="Enter your address" required></textarea>
+
           </div>
         </div>
 
@@ -169,6 +170,15 @@
       $stmt->bind_param("ssssss", $full_name, $phone, $email, $hashedPassword, $city, $role);
 
       if ($stmt->execute()) {
+        // Set session variables for new users
+        $_SESSION['user_id'] = $conn->insert_id; // Get the last inserted user ID
+        $_SESSION['name'] = $full_name;
+        $_SESSION['email'] = $email;
+        $_SESSION['phone'] = $phone;
+        $_SESSION['city'] = $city;
+         $_SESSION['created_at'] = date('F Y');
+        $_SESSION['role'] = $role;
+
         echo "<script>alert('Account created successfully!'); window.location.href = 'customerdashboard.php';</script>";
       } else {
         echo "Error: " . $stmt->error;

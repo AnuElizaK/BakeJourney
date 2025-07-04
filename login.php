@@ -93,12 +93,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
     $user = $result->fetch_assoc();
 
     if (password_verify($password, $user['password'])) {
+      // Set session variables for already existing users
       $_SESSION['user_id'] = $user['user_id'];
       $_SESSION['name'] = $user['full_name'];
       $_SESSION['email'] = $user['email'];
       $_SESSION['phone'] = $user['phone'];
       $_SESSION['city'] = $user['city'];
-      $_SESSION['created_at'] = $user['created_at'];
+      $_SESSION['created_at'] = date('F Y');
       $_SESSION['role'] = $user['role'];
 
       // Redirect based on role
