@@ -160,11 +160,8 @@ $user = $result->fetch_assoc();
 
     <script>
       //update form validation
-      function data() {
-        const full_name = document.getElementById('full_name').value;
-        const phone = document.getElementById('phone').value;
-        const bio = document.getElementById('bio').value;
-        const address = document.getElementById('address').value;
+      function data() {       
+        const phone = document.getElementById('phone').value;      
 
         if (phone.length !== 10 || isNaN(phone)) {
           alert("Phone number should be a 10-digit number");
