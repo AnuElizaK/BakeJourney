@@ -55,6 +55,11 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   text-decoration: none;
 }
 
+.nav-title{
+  text-decoration: none;
+  color: #1f2a38;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
