@@ -49,7 +49,7 @@
           </div>
           <div class="form-group">
             <label for="email">City</label>
-           <textarea id="city" name="city" rows="3" placeholder="Enter your address" required></textarea>
+           <input type="text" id="city" name="city" placeholder="Enter your address" required></input>
 
           </div>
         </div>

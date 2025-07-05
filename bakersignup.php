@@ -140,7 +140,7 @@
         var pass=document.getElementById("password").value;
         var conpass=document.getElementById("confirmPassword").value;
         var terms=document.getElementById("terms").checked;
-        if(ph.length<10 || isNaN(ph)){
+        if(ph.length!==10 || isNaN(ph)){
           alert("Phone number should be a 10-digit number");
           return false;
         }

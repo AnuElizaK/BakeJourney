@@ -1,4 +1,16 @@
-<?php session_start();?>
+<?php 
+session_start();
+include 'db.php'; 
+
+$user_id = $_SESSION['user_id']; 
+
+// Fetch user details
+$stmt = $conn->prepare("SELECT full_name, email, phone, city, bio FROM users WHERE user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -18,13 +30,19 @@
         <!-- Profile Header -->
         <div class="profile-header">
           <div class="profile-avatar">
-            SJ
+           <?php
+           $name = $_SESSION['name'] ;
+           $parts = explode(' ', $name);
+           $initials = strtoupper($parts[0][0] . ($parts[1][0] ?? ''));
+           echo $initials;
+        ?>
             <div class="ranking-badge">#1 Baker</div>
           </div>
           
           <div class="profile-info">
-            <h1>Sarah Johnson</h1>
-            <p>sarah.baker@bakejourney.com • +91 xxxxx 34568</p>
+            <h1><?php echo htmlspecialchars($_SESSION['name']); ?></h1>
+            <p><?php echo htmlspecialchars($_SESSION['email']); ?><br>
+              Created at <?php echo htmlspecialchars($_SESSION['created_at']); ?></p>
             <div class="baker-rating">
               <div class="stars">
                 <span class="star">★</span>
@@ -39,10 +57,7 @@
           </div>
 
           <div class="profile-stats">
-            <div class="stat-card">
-              <span class="stat-number">5+</span>
-              <span class="stat-label">Years Experience</span>
-            </div>
+           
             <div class="stat-card">
               <span class="stat-number">200+</span>
               <span class="stat-label">Orders Completed</span>
@@ -57,19 +72,20 @@
         <!-- Baker Information -->
         <div class="profile-section">
           <h2 class="section-title">Baker Information</h2>
-          <form>
+          <form method="post">
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="fullName" name="fullName" value="Sarah Johnson">
+                <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
               </div>
-              <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" value="sarah.baker@bakejourney.com">
-              </div>
+              
               <div class="form-group">
                 <label for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" value="+91 xxxxx 34568">
+                <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+              </div>
+               <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" value="<?php echo htmlspecialchars($user['city']); ?>">
               </div>
               <div class="form-group">
                 <label for="specialty">Baking Specialty</label>
@@ -85,10 +101,10 @@
               </div>
               <div class="form-group">
                 <label for="bio">Baker Bio</label>
-                <textarea id="bio" name="bio" rows="4" placeholder="Tell customers about your baking journey and specialties">Sarah started her baking journey 5 years ago in her grandmother's kitchen, learning traditional sourdough techniques passed down through generations. Her passion for creating the perfect crust and crumb has made her the most sought-after artisan bread baker in our community.</textarea>
+               <textarea id="bio" name="bio" rows="2" placeholder="Tell us a little about yourself"><?php echo htmlspecialchars($user['bio']);?></textarea>
               </div>
             </div>
-            <button type="submit" class="btn">Update Profile</button>
+            <button type="submit" name="bkupdate" class="btn">Update Profile</button>
           </form>
         </div>
       </div>
@@ -134,27 +150,44 @@
     </div>
 
     <script>
-      // Form submission handlers
-      document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          alert('Profile updated successfully! (This is a demo)');
-        });
-      });
+       //update form validation
+      function data() {
+        const full_name = document.getElementById('full_name').value;
+        const phone = document.getElementById('phone').value;
+        const bio = document.getElementById('bio').value;
+        const address = document.getElementById('address').value;
 
-      // Product management
-      document.querySelectorAll('.product-card .btn.small').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (this.textContent === 'Edit') {
-            alert('Edit product functionality (This is a demo)');
-          } else if (this.textContent === 'Remove') {
-            if (confirm('Are you sure you want to remove this product?')) {
-              this.closest('.product-card').remove();
-            }
-          }
-        });
-      });
+        if (phone.length !== 10 || isNaN(phone)) {
+          alert("Phone number should be a 10-digit number");
+          return false;
+        }
+        
+        return true;
+      }
     </script>
+ <?php 
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['bkupdate'])) {
+    $updated_name = $_POST['full_name'];
+    $updated_phone = $_POST['phone'];
+    $updated_bio = $_POST['bio'];
+    $updated_address = $_POST['city'];
+
+    // Update query
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
+    $stmt->bind_param("ssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
+
+    if ($stmt->execute()) {
+        // Update session name so it's reflected immediately
+        $_SESSION['name'] = $updated_name;
+        echo "<script>alert('✅ Profile updated successfully!'); window.location.href = 'bakerprofile.php';</script>";
+    } else {
+        echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
+    }
+
+    $stmt->close();
+}
+
+    ?>
+
   </body>
 </html>

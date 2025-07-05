@@ -41,7 +41,7 @@ $user = $result->fetch_assoc();
 
           <h1 class="profile-name"> <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
           <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> <br>
-                                     <?php echo htmlspecialchars($_SESSION['created_at']); ?>
+                        Created at <?php echo htmlspecialchars($_SESSION['created_at']); ?>
           </p>
           <p> </p>
           <div class="profile-stats">
@@ -63,16 +63,13 @@ $user = $result->fetch_assoc();
         <!-- Personal Information -->
         <div class="profile-section">
           <h2 class="section-title">Personal Information</h2>
-          <form method="post">
+          <form method="post" onsubmit="return data()">
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
                 <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
               </div>
-              <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" placeholder="Enter your email address" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
-              </div>
+        
               <div class="form-group">
                 <div class="phone-label-row">
                   <label for="phone">Phone Number</label>
@@ -84,7 +81,7 @@ $user = $result->fetch_assoc();
               </div>
               <div class="form-group">
                 <label for="bio">Bio</label>
-                <textarea id="bio" name="bio" rows="2" placeholder="Tell us a little about yourself"><?php echo isset($user['bio']) ? htmlspecialchars($user['bio']) : ''; ?></textarea>
+                <textarea id="bio" name="bio" rows="2" placeholder="Tell us a little about yourself"><?php echo htmlspecialchars($user['bio']);?></textarea>
               </div>
               <div class="form-group">
                 <div class="address-label-row">
@@ -162,19 +159,32 @@ $user = $result->fetch_assoc();
     </div>
 
     <script>
+      //update form validation
+      function data() {
+        const full_name = document.getElementById('full_name').value;
+        const phone = document.getElementById('phone').value;
+        const bio = document.getElementById('bio').value;
+        const address = document.getElementById('address').value;
+
+        if (phone.length !== 10 || isNaN(phone)) {
+          alert("Phone number should be a 10-digit number");
+          return false;
+        }
+        
+        return true;
+      }
       
     </script>
     <?php 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $updated_name = $_POST['full_name'];
-    $updated_email = $_POST['email'];
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
     $updated_address = $_POST['city'];
 
     // Update query
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, email = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
-    $stmt->bind_param("sssssi", $updated_name, $updated_email, $updated_phone, $updated_bio, $updated_address, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
+    $stmt->bind_param("ssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
 
     if ($stmt->execute()) {
         // Update session name so it's reflected immediately
