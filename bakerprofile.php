@@ -42,7 +42,7 @@ $user = $result->fetch_assoc();
           <div class="profile-info">
             <h1><?php echo htmlspecialchars($_SESSION['name']); ?></h1>
             <p><?php echo htmlspecialchars($_SESSION['email']); ?><br>
-              Created at <?php echo htmlspecialchars($_SESSION['created_at']); ?></p>
+              Created on <?php echo htmlspecialchars($_SESSION['created_at']); ?></p>
             <div class="baker-rating">
               <div class="stars">
                 <span class="star">★</span>
