@@ -57,7 +57,6 @@ $user = $result->fetch_assoc();
           </div>
 
           <div class="profile-stats">
-           
             <div class="stat-card">
               <span class="stat-number">200+</span>
               <span class="stat-label">Orders Completed</span>
@@ -101,7 +100,7 @@ $user = $result->fetch_assoc();
               </div>
               <div class="form-group">
                 <label for="bio">Baker Bio</label>
-               <textarea id="bio" name="bio" rows="2" placeholder="Tell us a little about yourself"><?php echo htmlspecialchars($user['bio']);?></textarea>
+                <textarea id="bio" name="bio" rows="2" placeholder="Tell us a little about yourself"><?php echo htmlspecialchars($user['bio']);?></textarea>
               </div>
             </div>
             <button type="submit" name="bkupdate" class="btn">Update Profile</button>
@@ -148,6 +147,40 @@ $user = $result->fetch_assoc();
         </form>
       </div>
 
+      <!-- Change Password -->
+      <div class="profile-section">
+        <h2 class="section-title">Change Password</h2>
+        <form>
+          <div class="form-grid">
+            <div class="form-group password-group">
+              <label for="newPassword">New password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+                <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-group password-group">
+              <label for="confirmPassword">Confirm</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">
+                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn">Change Password</button>
+        </form>
+      </div>
+
       <!-- Delete Account -->
       <div class="profile-section">
         <h2 class="section-title">Delete Account</h2>
@@ -174,6 +207,20 @@ $user = $result->fetch_assoc();
         }
         
         return true;
+      }
+
+      function togglePassword(inputId) {
+        const input = document.getElementById(inputId);
+        const button = input.nextElementSibling;
+        const icon = button.querySelector('svg');
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+        } else {
+          input.type = 'password';
+          icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+        }
       }
     </script>
  <?php 
