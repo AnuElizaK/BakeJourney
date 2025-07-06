@@ -63,7 +63,7 @@ $user = $result->fetch_assoc();
         <!-- Personal Information -->
         <div class="profile-section">
           <h2 class="section-title">Personal Information</h2>
-          <form method="post" onsubmit="return data()">
+          <form method="post" onsubmit="return data1()">
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
@@ -160,12 +160,12 @@ $user = $result->fetch_assoc();
       <!-- Change Password -->
       <div class="profile-section">
         <h2 class="section-title">Change Password</h2>
-        <form>
+        <form method="post" onsubmit="return data2()">
           <div class="form-grid">
             <div class="form-group password-group">
               <label for="newPassword">New password</label>
               <div class="password-input-wrapper">
-                <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+                <input type="password" id="newPassword" name="password" placeholder="Enter new password">
                 <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -188,7 +188,7 @@ $user = $result->fetch_assoc();
             </div>
             
           </div>
-          <button type="submit" class="btn">Change Password</button>
+          <button type="submit" name="changepwd" class="btn">Change Password</button>
         </form>
       </div>
 
@@ -209,7 +209,7 @@ $user = $result->fetch_assoc();
 
     <script>
       //update form validation
-      function data() {       
+      function data1() {       
         const phone = document.getElementById('phone').value;      
 
         if (phone.length !== 10 || isNaN(phone)) {
@@ -219,6 +219,21 @@ $user = $result->fetch_assoc();
         
         return true;
       }
+      //change pwd form validation
+      function data2(){
+        const pwd = document.getElementById('newPassword').value;
+        const conpwd=document.getElementById('confirmPassword').value;
+         if (pwd.length < 8) {
+        alert("Password should be at least 8 characters long");
+        return false;
+      }
+        if(pwd!==conpwd){
+          alert("Passwords do not match")
+          return false;
+        }
+        return true;
+      }
+
       
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
@@ -233,14 +248,15 @@ $user = $result->fetch_assoc();
           icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
       }
-    </script>
+      
+</script>
     <?php 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $updated_name = $_POST['full_name'];
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
     $updated_address = $_POST['city'];
-
+  
     // Update query
     $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
     $stmt->bind_param("ssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
@@ -248,14 +264,39 @@ $user = $result->fetch_assoc();
     if ($stmt->execute()) {
         // Update session name so it's reflected immediately
         $_SESSION['name'] = $updated_name;
-        echo "<script>alert('✅ Profile updated successfully!'); window.location.href = 'customerprofile.php';</script>";
+        echo "<script>alert('✅ Profile updated successfully!'); </script>";
     } else {
         echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
     }
-
     $stmt->close();
 }
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['changepwd'])) {
+  $updated_pwd = $_POST['password'];
+  // hash the password
+   $hashedPassword = password_hash($updated_pwd, PASSWORD_DEFAULT);
 
+  $stmt=$conn->prepare("UPDATE users SET password=? where user_id=?");
+  $stmt->bind_param("si", $hashedPassword, $user_id);
+  $stmt->execute();
+  echo "<script>alert('✅ Password changed successfully!');</script>";
+  $stmt->close();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
+  $stmt = $conn->prepare("DELETE FROM users WHERE user_id = ?");
+  $stmt->bind_param("i", $user_id);
+  if ($stmt->execute()) {
+      // Destroy session and redirect
+      session_destroy();
+      echo "<script>alert('✅ Your account has been deleted.'); window.location.href = 'index.php';</script>";
+      exit();
+    } else {
+      echo "<script>alert('❌ Failed to delete account. Please try again.');</script>";
+    }
+    $stmt->close();
+    $conn->close();
+
+}
     ?>
   </body>
 </html>
