@@ -63,7 +63,7 @@ $user = $result->fetch_assoc();
         <!-- Personal Information -->
         <div class="profile-section">
           <h2 class="section-title">Personal Information</h2>
-          <form method="post" onsubmit="return data1()">
+          <form method="post" onsubmit="return data()">
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
@@ -160,7 +160,7 @@ $user = $result->fetch_assoc();
       <!-- Change Password -->
       <div class="profile-section">
         <h2 class="section-title">Change Password</h2>
-        <form method="post" onsubmit="return data2()">
+        <form method="post" onsubmit="return data()">
           <div class="form-grid">
             <div class="form-group password-group">
               <label for="newPassword">New password</label>
@@ -208,21 +208,11 @@ $user = $result->fetch_assoc();
     </div>
 
     <script>
-      //update form validation
-      function data1() {       
-        const phone = document.getElementById('phone').value;      
-
-        if (phone.length !== 10 || isNaN(phone)) {
-          alert("Phone number should be a 10-digit number");
-          return false;
-        }
-        
-        return true;
-      }
-      //change pwd form validation
-      function data2(){
-        const pwd = document.getElementById('newPassword').value;
+      function data() {    
+        const phone = document.getElementById('phone').value;
+         const pwd = document.getElementById('newPassword').value;
         const conpwd=document.getElementById('confirmPassword').value;
+
          if (pwd.length < 8) {
         alert("Password should be at least 8 characters long");
         return false;
@@ -232,8 +222,14 @@ $user = $result->fetch_assoc();
           return false;
         }
         return true;
+  
+        if (phone.length !== 10 || isNaN(phone)) {
+          alert("Phone number should be a 10-digit number");
+          return false;
+        }
+        
+        return true;
       }
-
       
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
@@ -247,9 +243,9 @@ $user = $result->fetch_assoc();
           input.type = 'password';
           icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
-      }
-      
+      }      
 </script>
+
     <?php 
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $updated_name = $_POST['full_name'];
@@ -270,6 +266,7 @@ $user = $result->fetch_assoc();
     }
     $stmt->close();
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['changepwd'])) {
   $updated_pwd = $_POST['password'];
   // hash the password

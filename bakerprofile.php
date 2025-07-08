@@ -150,12 +150,12 @@ $user = $result->fetch_assoc();
       <!-- Change Password -->
       <div class="profile-section">
         <h2 class="section-title">Change Password</h2>
-        <form>
+        <form method="post" onsubmit="return data()">
           <div class="form-grid">
             <div class="form-group password-group">
               <label for="newPassword">New password</label>
               <div class="password-input-wrapper">
-                <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password">
+                <input type="password" id="newPassword" name="password" placeholder="Enter new password">
                 <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -177,7 +177,7 @@ $user = $result->fetch_assoc();
               </div>
             </div>
           </div>
-          <button type="submit" class="btn">Change Password</button>
+          <button type="submit" name="chngpwd" class="btn">Change Password</button>
         </form>
       </div>
 
@@ -200,7 +200,19 @@ $user = $result->fetch_assoc();
        //update form validation
       function data() {    
         const phone = document.getElementById('phone').value;
+         const pwd = document.getElementById('newPassword').value;
+        const conpwd=document.getElementById('confirmPassword').value;
 
+         if (pwd.length < 8) {
+        alert("Password should be at least 8 characters long");
+        return false;
+      }
+        if(pwd!==conpwd){
+          alert("Passwords do not match")
+          return false;
+        }
+        return true;
+  
         if (phone.length !== 10 || isNaN(phone)) {
           alert("Phone number should be a 10-digit number");
           return false;
@@ -243,6 +255,34 @@ $user = $result->fetch_assoc();
     }
 
     $stmt->close();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['chngpwd'])) {
+  $updated_pwd = $_POST['password'];
+  // hash the password
+   $hashedPassword = password_hash($updated_pwd, PASSWORD_DEFAULT);
+
+  $stmt=$conn->prepare("UPDATE users SET password=? where user_id=?");
+  $stmt->bind_param("si", $hashedPassword, $user_id);
+  $stmt->execute();
+  echo "<script>alert('✅ Password changed successfully!');</script>";
+  $stmt->close();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
+  $stmt = $conn->prepare("DELETE FROM users WHERE user_id = ?");
+  $stmt->bind_param("i", $user_id);
+  if ($stmt->execute()) {
+      // Destroy session and redirect
+      session_destroy();
+      echo "<script>alert('✅ Your account has been deleted.'); window.location.href = 'index.php';</script>";
+      exit();
+    } else {
+      echo "<script>alert('❌ Failed to delete account. Please try again.');</script>";
+    }
+    $stmt->close();
+    $conn->close();
+
 }
 
     ?>
