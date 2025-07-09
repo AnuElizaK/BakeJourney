@@ -37,7 +37,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 14px 0;
 }
 
 .nav-brand {
@@ -218,7 +218,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.432);
-  border-bottom: 300px solid #ffb73a1d;
+  border-bottom: 300px solid #ffb73a3c;
 }
 
 .hero-content {
