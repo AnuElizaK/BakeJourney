@@ -46,7 +46,7 @@
 
           <div class="form-group">
               <label for="brandName">Brand Name</label>
-              <input type="text" id="brand_name" name="brand_name" placeholder="Enter your brand name">
+              <input type="text" id="brand_name" name="brand_name" placeholder="Enter your brand name" required>
           </div>
 
           <div class="form-group">
@@ -61,7 +61,7 @@
 
           <div class="form-group">
               <label for="identity">Proof of Identity</label>
-              <input type="file" id="identity" name="identity_proof" accept=".pdf,.jpg,.jpeg,.png" >
+              <input type="file" id="identity" name="identity_proof" accept=".pdf,.jpg,.jpeg,.png" required>
           </div>
 
           <div class="form-group">
