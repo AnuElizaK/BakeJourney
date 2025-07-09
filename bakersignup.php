@@ -27,7 +27,7 @@
       </div>
 
       <div class="dialog-content">
-        <form method="POST" action="bakersignup.php"  onsubmit="return data()" >
+        <form method="POST" action="bakersignup.php"  onsubmit="return data()" enctype="multipart/form-data" >
           <div class="form-row">
             <div class="form-group">
               <label for="fullName">Full Name</label>
@@ -46,12 +46,12 @@
 
           <div class="form-group">
               <label for="brandName">Brand Name</label>
-              <input type="text" id="brandName" name="brandName" placeholder="Enter your brand name">
+              <input type="text" id="brand_name" name="brand_name" placeholder="Enter your brand name">
           </div>
 
           <div class="form-group">
               <label for="brandReg">Proof of Brand Registration</label>
-              <input type="file" id="brandReg" name="brandReg" accept=".pdf,.jpg,.jpeg,.png" >
+              <input type="file" id="brand_reg" name="brand_proof" accept=".pdf,.jpg,.jpeg,.png" >
           </div>
 
           <div class="form-group">
@@ -61,7 +61,7 @@
 
           <div class="form-group">
               <label for="identity">Proof of Identity</label>
-              <input type="file" id="identity" name="identity" accept=".pdf,.jpg,.jpeg,.png" >
+              <input type="file" id="identity" name="identity_proof" accept=".pdf,.jpg,.jpeg,.png" >
           </div>
 
           <div class="form-group">
@@ -185,25 +185,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['bcreate']))
 
     if ($check->num_rows > 0) {
         echo "<script>alert('Email already exists. Please log in.'); window.location.href = 'login.php';</script>";
-    } else {
+    } 
+    else {
         // Insert user
         $stmt = $conn->prepare("INSERT INTO users (full_name,phone, email, password,city, role) VALUES (?,?,?,?,?,?)");
         $stmt->bind_param("ssssss", $full_name,$phone, $email, $hashedPassword,$city, $role);
 
         if ($stmt->execute()) {
-          // Set session variables for new users
-             $_SESSION['user_id'] = $conn->insert_id; // Get the last inserted user ID
-             $_SESSION['name'] = $full_name;
-             $_SESSION['email'] = $email;
-             $_SESSION['phone'] = $phone;
-             $_SESSION['city'] = $city;
-             $_SESSION['created_at'] = date('F Y');
-             $_SESSION['role'] = $role;
-            echo "<script>alert('🎉 Account created successfully!'); window.location.href = 'bakerdashboard.php';</script>";
-        } else {
-            echo "Error: " . $stmt->error;
-        }
+            // Get the user ID of the newly created user
+            $user_id = $conn->insert_id;
+
+    // Get additional baker details
+    $brand_name = $_POST['brand_name'];
+    $specialty = $_POST['specialty'];
+
+    // Handle uploaded files
+    $brandRegFile = $_FILES['brand_proof']['name'];
+    $identityFile = $_FILES['identity_proof']['name'];
+
+    $uploadDir = "uploads/";
+    $brandRegPath = $uploadDir . basename($brandRegFile);
+    $identityPath = $uploadDir . basename($identityFile);
+
+    // Create uploads directory if it doesn't exist
+    if (!file_exists($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
     }
+
+    move_uploaded_file($_FILES['brand_proof']['tmp_name'], $brandRegPath);
+    move_uploaded_file($_FILES['identity_proof']['tmp_name'], $identityPath);
+
+    // Insert into bakers table
+    $bakerStmt = $conn->prepare("INSERT INTO bakers (user_id, brand_name, brand_proof, identity_proof, specialty) VALUES (?, ?, ?, ?, ?)");
+    $bakerStmt->bind_param("issss", $user_id, $brand_name, $brandRegFile, $identityFile, $specialty);
+    $bakerStmt->execute();
+
+    // Set session variables
+    $_SESSION['user_id'] = $user_id;
+    $_SESSION['name'] = $full_name;
+    $_SESSION['email'] = $email;
+    $_SESSION['phone'] = $phone;
+    $_SESSION['city'] = $city;
+    $_SESSION['created_at'] = date('F Y');
+    $_SESSION['role'] = $role;
+    $_SESSION['brand_name'] = $brand_name;
+    $_SESSION['specialty'] = $specialty;
+
+
+    // Redirect to dashboard
+    echo "<script>alert('Account created successfully!'); window.location.href = 'bakerdashboard.php';</script>";
+} else {
+    echo "Error: " . $stmt->error;
+}
+}
 }
 ?>
   </body>

@@ -5,7 +5,10 @@ include 'db.php';
 $user_id = $_SESSION['user_id']; 
 
 // Fetch user details
-$stmt = $conn->prepare("SELECT full_name, email, phone, city, bio FROM users WHERE user_id = ?");
+$stmt = $conn->prepare(
+  "SELECT full_name, email, phone, city, bio, brand_name, specialty 
+  FROM users, bakers 
+  WHERE users.user_id = bakers.user_id AND users.user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -53,7 +56,7 @@ $user = $result->fetch_assoc();
               </div>
               <span class="rating-number">5.0 (127 reviews)</span>
             </div>
-            <p><strong>Specialty:</strong> Artisan Breads & Sourdoughs</p>
+            <p><strong>Specialty:</strong> <?php echo htmlspecialchars($user['specialty']); ?></p>
           </div>
 
           <div class="profile-stats">
@@ -74,6 +77,10 @@ $user = $result->fetch_assoc();
           <form method="post">
             <div class="form-grid">
               <div class="form-group">
+                <label for="fullName">Brand Name</label>
+                <input type="text" id="brand_name" name="brand_name" value="<?php echo htmlspecialchars($user['brand_name']); ?>">
+              </div>
+              <div class="form-group">
                 <label for="fullName">Full Name</label>
                 <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
               </div>
@@ -89,12 +96,12 @@ $user = $result->fetch_assoc();
               <div class="form-group">
                 <label for="specialty">Baking Specialty</label>
                 <select id="specialty" name="specialty">
-                  <option value="breads" selected>Artisan Breads & Sourdoughs</option>
-                  <option value="cakes">Custom Cakes & Pastries</option>
-                  <option value="gluten-free">Gluten-Free Treats</option>
-                  <option value="desserts">Desserts & Sweets</option>
-                  <option value="cookies">Cookies & Biscuits</option>
-                  <option value="pies">Pies & Tarts</option>
+                  <option value="breads" <?php echo ($user['specialty'] == 'breads') ? 'selected' : ''; ?>>Artisan Breads & Sourdoughs</option>
+                  <option value="cakes" <?php echo ($user['specialty'] == 'cakes') ? 'selected' : ''; ?>>Custom Cakes & Pastries</option>
+                  <option value="gluten-free" <?php echo ($user['specialty'] == 'gluten-free') ? 'selected' : ''; ?>>Gluten-Free Treats</option>
+                  <option value="desserts" <?php echo ($user['specialty'] == 'desserts') ? 'selected' : ''; ?>>Desserts & Sweets</option>
+                  <option value="cookies" <?php echo ($user['specialty'] == 'cookies') ? 'selected' : ''; ?>>Cookies & Biscuits</option>
+                  <option value="pies" <?php echo ($user['specialty'] == 'pies') ? 'selected' : ''; ?>>Pies & Tarts</option>
                   <option value="other">Other</option>
                 </select>
               </div>
@@ -241,10 +248,12 @@ $user = $result->fetch_assoc();
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
     $updated_address = $_POST['city'];
+    $updated_brand = $_POST['brand_name'];
+    $updated_specialty = $_POST['specialty'];
 
     // Update query
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
-    $stmt->bind_param("ssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
+    $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, city = ?, brand_name = ?, specialty = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
+    $stmt->bind_param("ssssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $updated_brand, $updated_specialty, $user_id);
 
     if ($stmt->execute()) {
         // Update session name so it's reflected immediately
