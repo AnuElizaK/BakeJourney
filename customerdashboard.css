@@ -217,8 +217,8 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.432);
-  border-bottom: 300px solid #ffb73a3c;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 300px solid #ffb73a25;
 }
 
 .hero-content {
