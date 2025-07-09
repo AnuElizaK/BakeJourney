@@ -350,7 +350,7 @@ h1, h2 {
 }
 
 .btn.danger{
-  background: linear-gradient(135deg, #f59e0b, #f45757);
+  background: linear-gradient(135deg, #f87171, #dc2626);
   display: inline-flex;
   align-items: center;
   padding: 5px 15px;
@@ -358,7 +358,7 @@ h1, h2 {
 }
 
 .btn.danger:hover{
-  background: linear-gradient(135deg, #f87171, #dc2626);
+  background: linear-gradient(135deg, #dc2626, #dc2626);
   transform: scale(1.05);
 }
 
