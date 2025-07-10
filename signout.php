@@ -1,13 +1,10 @@
 <?php
-session_start(); // Start the session
+session_start();
 
-// Unset all session variables
-$_SESSION = [];
+// Destroy all session data
+$_SESSION = array();
 
-// Destroy the session
-session_destroy();
-
-// Clear the session cookie (optional but recommended for security)
+// If it's desired to kill the session, also delete the session cookie.
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
@@ -16,12 +13,10 @@ if (ini_get("session.use_cookies")) {
     );
 }
 
-// Clear browser cache to prevent back button access
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
-header("Pragma: no-cache");
+// Finally, destroy the session
+session_destroy();
 
-// Redirect to login or home page
-header("Location: index.php");
-exit;
+// Redirect to home page with logout message
+header('Location: index.php?logout=1');
+exit();
 ?>
