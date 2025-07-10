@@ -41,7 +41,7 @@ $user = $result->fetch_assoc();
 
           <h1 class="profile-name"> <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
           <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> <br>
-                        Created on <?php echo htmlspecialchars($_SESSION['created_at']); ?>
+                        Joined at <?php echo htmlspecialchars($_SESSION['created_at']); ?>
           </p>
           <p> </p>
           <div class="profile-stats">

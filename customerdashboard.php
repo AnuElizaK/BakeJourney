@@ -1,4 +1,10 @@
-<?php session_start(); ?>
+<?php 
+session_start();
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+    header("Location: index.php"); // Redirect to login if not authorized
+    exit();
+}
+ ?>
 <!DOCTYPE html>
 <html lang="en">
 
