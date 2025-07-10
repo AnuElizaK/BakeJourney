@@ -101,6 +101,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
       $_SESSION['city'] = $user['city'];
       $_SESSION['created_at'] = date('F Y');
       $_SESSION['role'] = $user['role'];
+      $_SESSION['brand_name'] = $user['brand_name'];
+      $_SESSION['specialty'] = $user['specialty'];
 
       // Redirect based on role
       if ($user['role'] === 'baker') {
