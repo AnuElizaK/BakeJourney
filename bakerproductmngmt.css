@@ -10,6 +10,7 @@ body {
     background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
     min-height: 100vh;
     color: #1f2a38;
+    padding-top: 100px;
 }
 
 .container {
@@ -69,11 +70,22 @@ h1, h2, h3 {
   font-size: 0.875rem;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.add-product-section{
+    margin-bottom: 2rem;
+}
+
+.add-container {
+    background: #ffffff;
+    border: 1.5px solid #d1d5db;
+    padding: 20px 20px;
+    border-radius: 0.75rem;
+}
+
+.add-action {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .btn {

@@ -1,6 +1,5 @@
 <?php 
 session_start();
-// include 'custnavbar.php'
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,8 +11,13 @@ session_start();
     <link rel="stylesheet" href="cart.css" />
   </head>
 
+  <?php
+  include 'custnavbar.php';
+  ?>
+
   <body>
-    <!-- Header -->
+    <!-- Backup Header -->
+    <!--
     <header class="header">
       <div class="container">
         <div class="header-content">
@@ -32,6 +36,7 @@ session_start();
         </div>
       </div>
     </header>
+    -->
 
     <!-- Main Content -->
     <main class="main">
@@ -257,6 +262,9 @@ session_start();
         </div>
       </div>
     </main>
+
+    <?php include 'globalfooter.php'; ?>
+    
     <script>
       function toggleSelect(card) {
         card.classList.toggle('selected');
