@@ -22,9 +22,12 @@ $user = $result->fetch_assoc();
     <link rel="stylesheet" href="customerprofile.css" />
   </head>
 
+  <!-- Sticky Navigation Bar -->
+  <?php include 'custnavbar.php'; ?>
+
+
   <body>
     <div class="container">
-      <a href="customerdashboard.php" class="back-link">← Back to Home</a>
       
       <h1 class="page-title">Your Profile</h1>
       <div class="customer-data">
@@ -219,6 +222,7 @@ $user = $result->fetch_assoc();
   <button class="alert-button" onclick="closeAlert()">OK</button>
 </div>
 
+<?php include 'globalfooter.php'; ?>
 
 <script>
   
