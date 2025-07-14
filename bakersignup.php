@@ -97,8 +97,8 @@
                   <circle cx="12" cy="12" r="3" />
                 </svg>
               </button>
-              <div id="passwordError" class="error"></div>
             </div>
+              <div id="passwordError" class="error"></div>
           </div>
           <div class="form-group">
             <label for="confirmPassword">Confirm Password</label>
@@ -111,10 +111,10 @@
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-                <div id="confirmPasswordError" class="error"></div>
-              </button>
+              </button>            
             </div>
-          </div>
+             <div id="confirmPasswordError" class="error"></div>
+          </div>          
         </div>
 
         <div class="checkbox-group">
@@ -124,13 +124,19 @@
 
         <button type="submit" class="btn" name="bcreate">Create Baker Account</button>
       </form>
-
       <div class="login-link">
         Already have an account? <a href="login.php">Log in.</a>
       </div>
     </div>
   </div>
-  <!-- ================================================================================================================================= -->
+    <div class="alert-overlay" id="alertOverlay"></div>
+        <div class="custom-alert" id="customAlert">
+          <h3 id="alertTitle"></h3>
+            <p id="alertMessage"></p>
+              <button class="alert-button" onclick="closeAlert()">OK</button>
+      </div>
+
+<!-- ================================================================================================================================= -->
   <script>
     // Toggle password visibility
     function togglePassword(inputId) {
@@ -147,8 +153,9 @@
       }
     }
 
+//-----------FROM VALIDATION ---------------------
     // Global validation state
-    let isValid = {
+  let isValid = {
   name: false,
   phone: false,
   email: false,
@@ -249,20 +256,46 @@ document.querySelector('form').onsubmit = function(e) {
   // Check if all validations pass
   if (!Object.values(isValid).every(Boolean)) {
     e.preventDefault();
-    alert("Please fix all errors before submitting the form");
+    showAlert("Please fix all errors before submitting the form");
     return false;
   }
   
   // Check terms checkbox
   if (!document.getElementById("terms").checked) {
     e.preventDefault();
-    alert("Please accept the Terms of Service and Privacy Policy");
+    showAlert("Please accept the Terms of Service and Privacy Policy");
     return false;
   }
   
   return true;
 };
-  </script>
+
+//Alert functions
+function showAlert(title, message, type = 'error') {
+  const alertEl = document.getElementById('customAlert');
+  const overlayEl = document.getElementById('alertOverlay');
+  const titleEl = document.getElementById('alertTitle');
+  const messageEl = document.getElementById('alertMessage');
+
+  alertEl.classList.remove('alert-error', 'alert-success');
+  alertEl.classList.add(`alert-${type}`);
+
+  titleEl.textContent = title;
+  messageEl.textContent = message;
+
+  alertEl.style.display = 'block';
+  overlayEl.style.display = 'block';
+}
+
+function closeAlert() {
+  const alertEl = document.getElementById('customAlert');
+  const overlayEl = document.getElementById('alertOverlay');
+  
+  alertEl.style.display = 'none';
+  overlayEl.style.display = 'none';
+}
+
+</script>
 
   <?php
 
@@ -286,7 +319,7 @@ document.querySelector('form').onsubmit = function(e) {
     $check->store_result();
 
     if ($check->num_rows > 0) {
-      echo "<script>alert('Email already exists. Please log in.'); window.location.href = 'login.php';</script>";
+      echo "<script>showAlert('Email already exists. Please log in.'); </script>";
     } else {
       // Insert user
       $stmt = $conn->prepare("INSERT INTO users (full_name,phone, email, password,city, role) VALUES (?,?,?,?,?,?)");
@@ -334,9 +367,10 @@ document.querySelector('form').onsubmit = function(e) {
 
 
         // Redirect to dashboard
-        echo "<script>alert('Account created successfully!'); window.location.href = 'bakerdashboard.php';</script>";
-      } else {
-        echo "Error: " . $stmt->error;
+        echo "<script>showAlert('Success!', 'Account created successfully!', 'success'); 
+          setTimeout(() => window.location.href = 'bakerdashboard.php', 2000);</script>";
+  } else {
+       echo "<script>showAlert('Error', 'Error creating account: " . $stmt->error . "', 'error');</script>";
       }
     }
   }

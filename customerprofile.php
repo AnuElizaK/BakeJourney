@@ -63,11 +63,12 @@ $user = $result->fetch_assoc();
         <!-- Personal Information -->
         <div class="profile-section">
           <h2 class="section-title">Personal Information</h2>
-          <form method="post" onsubmit="return data()">
+          <form method="post" id="updateProfileForm" >
             <div class="form-grid">
               <div class="form-group">
                 <label for="fullName">Full Name</label>
-                <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
+                <input type="text" id="full_name" name="full_name"  placeholder="Enter your full name"  required value="<?php echo htmlspecialchars($user['full_name']); ?>">
+                 <div id="nameError" class="error"></div>
               </div>
         
               <div class="form-group">
@@ -77,7 +78,8 @@ $user = $result->fetch_assoc();
                     <button class="btn-more" type="button">+</button>
                   </div>
                 </div>
-                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="<?php echo htmlspecialchars($user['phone']); ?>">
+                <input type="tel" id="phone" name="phone" maxlength="10" placeholder="Enter your phone number" value="<?php echo htmlspecialchars($user['phone']); ?>">
+                <div id="phoneError" class="error"></div>
               </div>
               <div class="form-group">
                 <label for="bio">Bio</label>
@@ -160,12 +162,12 @@ $user = $result->fetch_assoc();
       <!-- Change Password -->
       <div class="profile-section">
         <h2 class="section-title">Change Password</h2>
-        <form method="post" onsubmit="return pwddata()">
+        <form method="post" id="updatePasswordForm">
           <div class="form-grid">
             <div class="form-group password-group">
               <label for="newPassword">New password</label>
               <div class="password-input-wrapper">
-                <input type="password" id="newPassword" name="password" placeholder="Enter new password">
+                <input type="password" id="newPassword" name="password" placeholder="Enter new password">              
                 <button type="button" class="password-toggle" onclick="togglePassword('newPassword')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -173,11 +175,12 @@ $user = $result->fetch_assoc();
                   </svg>
                 </button>
               </div>
+                <div id="passwordError" class="error"></div>
             </div>
             <div class="form-group password-group">
               <label for="confirmPassword">Confirm</label>
               <div class="password-input-wrapper">
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">   
                 <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
@@ -185,6 +188,7 @@ $user = $result->fetch_assoc();
                   </svg>
                 </button>
               </div>
+                 <div id="confirmPasswordError" class="error"></div>
             </div>
             
           </div>
@@ -196,7 +200,7 @@ $user = $result->fetch_assoc();
       <div class="profile-section">
         <h2 class="section-title">Delete Account</h2>
         <p class="warning">This action is irreversible. Please proceed with caution. Once deleted, your account details cannot be recovered.</p>
-        <form method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
+        <form method="POST" id="deleteAccountForm">
           <button type="submit" name="delete_account" class="btn danger">
             <svg class="action-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -207,33 +211,123 @@ $user = $result->fetch_assoc();
       </div>
     </div>
 
-       <script>
-      //Update form validation
-      function data() {
-        const phone = document.getElementById('phone').value;
-        if (phone.length !==10 || isNaN(phone)) {
-          alert("Please enter a valid 10-digit phone number");
-          return false;
-        }
-        return true;
-      }
-       //Password update form validation
-      function pwddata() {    
-        
-         const pwd = document.getElementById('newPassword').value;
-        const conpwd=document.getElementById('confirmPassword').value;
+<!-- custom Alert -->
+ <div class="alert-overlay" id="alertOverlay"></div>
+<div class="custom-alert" id="customAlert">
+  <h3 id="alertTitle"></h3>
+  <p id="alertMessage"></p>
+  <button class="alert-button" onclick="closeAlert()">OK</button>
+</div>
 
-         if (pwd.length < 8) {
-        alert("Password should be at least 8 characters long");
-        return false;
-      }
-        if(pwd!==conpwd){
-          alert("Passwords do not match")
-          return false;
-        } 
-        return true;
-      }
 
+<script>
+  
+// -------- FORM SUBMIT VALIDATION --------
+document.getElementById("updateProfileForm").onsubmit = function (e) {
+  const nameInput = document.getElementById("full_name");
+  const phoneInput = document.getElementById("phone");
+  const name = nameInput.value.trim();
+  const phone = phoneInput.value.trim();
+
+  let isValid = true;
+
+  // Name validation
+  if (!/^[a-zA-Z\s]+$/.test(name)) {
+    document.getElementById("nameError").textContent = "Full name should only contain letters and spaces";
+    isValid = false;
+  } else {
+    document.getElementById("nameError").textContent = "";
+  }
+
+  // Phone validation
+  if (!/^\d{10}$/.test(phone)) {
+    document.getElementById("phoneError").textContent = "Phone number must be 10 digits";
+    isValid = false;
+  } else {
+    document.getElementById("phoneError").textContent = "";
+  }
+
+  if (!isValid) {
+    e.preventDefault();
+    showAlert("Error", "Please fix all profile errors before submitting the form");
+    return false;
+  }
+  return true;
+};
+
+document.getElementById("updatePasswordForm").onsubmit = function (e) {
+  const pwd = document.getElementById("newPassword").value;
+  const confirmPwd = document.getElementById("confirmPassword").value;
+  let isValid = true;
+
+  // Password validation
+  if (pwd.length < 8) {
+    document.getElementById("passwordError").textContent = "Password must be at least 8 characters";
+    isValid = false;
+  } else {
+    document.getElementById("passwordError").textContent = "";
+  }
+
+  // Confirm password validation
+  if (confirmPwd !== pwd) {
+    document.getElementById("confirmPasswordError").textContent = "Passwords do not match";
+    isValid = false;
+  } else {
+    document.getElementById("confirmPasswordError").textContent = "";
+  }
+
+  if (!isValid) {
+    e.preventDefault();
+    showAlert("Error", "Please fix all password errors before submitting the form");
+    return false;
+  }
+  return true;
+};
+
+// Delete account confirmation
+document.getElementById('deleteAccountForm').onsubmit = function(e) {
+  if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+    e.preventDefault();
+  }
+};
+
+//------------ Alert functions---------------------------------------
+function showAlert(title, message, type = 'error') {   
+  const alertEl = document.getElementById('customAlert');
+  const overlayEl = document.getElementById('alertOverlay');
+  const titleEl = document.getElementById('alertTitle');
+  const messageEl = document.getElementById('alertMessage');
+
+  // Remove existing classes
+  alertEl.classList.remove('alert-error', 'alert-success');
+  // Add new class based on type
+  alertEl.classList.add(`alert-${type}`);
+
+  titleEl.textContent = title;
+  messageEl.textContent = message;
+
+  alertEl.style.display = 'block';
+  overlayEl.style.display = 'block';
+  
+
+ 
+  // Add event listener to close alert when clicking outside
+  overlayEl.onclick = closeAlert;
+}
+
+function closeAlert() {
+  const alertEl = document.getElementById('customAlert');
+  const overlayEl = document.getElementById('alertOverlay');
+  
+  alertEl.style.display = 'none';
+  overlayEl.style.display = 'none';
+}
+//--------------------------------------------------------------------
+
+
+
+
+// Toggle password visibility
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
         const button = input.nextElementSibling;
@@ -258,14 +352,14 @@ $user = $result->fetch_assoc();
   
     // Update query
     $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
-    $stmt->bind_param("sissi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
+    $stmt->bind_param("ssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
 
     if ($stmt->execute()) {
         // Update session name so it's reflected immediately
         $_SESSION['name'] = $updated_name;
-       echo "<script>alert('✅ Profile updated successfully!'); window.location.href = 'customerprofile.php';</script>";
+       echo "<script>showAlert('Success!', 'Profile updated successfully!', 'success');</script>";
     } else {
-        echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
+        echo "<script>showAlert('Error', 'Failed to update profile. Please try again.', 'error');</script>";
     }
     $stmt->close();
 }
@@ -278,7 +372,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['changepwd'])) {
   $stmt=$conn->prepare("UPDATE users SET password=? where user_id=?");
   $stmt->bind_param("si", $hashedPassword, $user_id);
   $stmt->execute();
-  echo "<script>alert('✅ Password changed successfully!');</script>";
+  echo "<script>showAlert('Success!', 'Password changed successfully!', 'success');</script>";
   $stmt->close();
 }
 
@@ -288,10 +382,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_account'])) {
   if ($stmt->execute()) {
       // Destroy session and redirect
       session_destroy();
-      echo "<script>alert('✅ Your account has been deleted.'); window.location.href = 'index.php';</script>";
-      exit();
+      echo "<script>showAlert('Account deleted successfully!', 'We are sad to see you go :(', 'success'); 
+      setTimeout(() => window.location.href = 'index.php', 2000);</script>";
+      
     } else {
-      echo "<script>alert('❌ Failed to delete account. Please try again.');</script>";
+      echo "<script>showAlert('Error', 'Failed to delete account. Please try again.', 'error');</script>";
     }
     $stmt->close();
     $conn->close();

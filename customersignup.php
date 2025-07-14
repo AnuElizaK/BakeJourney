@@ -29,16 +29,18 @@
     </div>
 
     <div class="dialog-content">
-      <form method="POST" action="customersignup.php" onsubmit="return data()">
+      <form method="POST" action="customersignup.php" >
 
         <div class="form-row">
           <div class="form-group">
             <label for="fullName">Full Name</label>
-            <input type="text" id="fullName" name="full_name" placeholder="Enter your full name" required>
+            <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" required>
+            <div id="nameError" class="error"></div>
           </div>
           <div class="form-group">
             <label for="phone">Phone Number</label>
             <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+            <div id="phoneError" class="error"></div>
           </div>
         </div>
 
@@ -46,9 +48,10 @@
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+            <div id="emailError" class="error"></div>
           </div>
           <div class="form-group">
-            <label for="email">City</label>
+            <label for="city">City</label>
            <input type="text" id="city" name="city" placeholder="Enter your address" required></input>
 
           </div>
@@ -67,6 +70,7 @@
                 </svg>
               </button>
             </div>
+            <div id="passwordError" class="error"></div>
           </div>
           <div class="form-group">
             <label for="confirmPassword">Confirm Password</label>
@@ -81,6 +85,7 @@
                 </svg>
               </button>
             </div>
+            <div id="confirmPasswordError" class="error"></div>
           </div>
         </div>
 
@@ -97,32 +102,160 @@
       </div>
     </div>
   </div>
+   <div class="alert-overlay" id="alertOverlay"></div>
+<div class="custom-alert" id="customAlert">
+  <h3 id="alertTitle"></h3>
+  <p id="alertMessage"></p>
+  <button class="alert-button" onclick="closeAlert()">OK</button>
+</div>
+
   <!-- =============================================================================== -->
   <script>
     // Validate form data
-    function data() {
-      var ph = document.getElementById("phone").value;
-      var pass = document.getElementById("password").value;
-      var conpass = document.getElementById("confirmPassword").value;
-      var terms = document.getElementById("terms").checked;
-      if (ph.length < 10 || isNaN(ph)) {
-        alert("Phone number should be a 10-digit number");
-        return false;
-      }
-      if (pass.length < 8) {
-        alert("Password should be at least 8 characters long");
-        return false;
-      }
-      if (pass !== conpass) {
-        alert("Passwords do not match");
-        return false;
-      }
-      if (!terms) {
-        alert("Please agree to the terms and conditions");
-        return false;
-      }
-      return true;
-    }
+   let isValid = {
+  name: false,
+  phone: false,
+  email: false,
+  password: false,
+  confirmPassword: false
+};
+
+// Full Name validation
+document.getElementById("full_name").oninput = function() {
+  const error = document.getElementById("nameError");
+  const value = this.value.trim();
+
+  if (value === "") {
+    error.textContent = "";
+    isValid.name = false;
+  } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+    error.textContent = "Full name should only contain letters and spaces";
+    isValid.name = false;
+  } else {
+    error.textContent = "";
+    isValid.name = true;
+  }
+};
+
+// Phone validation
+document.getElementById("phone").oninput = function() {
+  const error = document.getElementById("phoneError");
+  const value = this.value.trim();
+
+  if (value === "") {
+    error.textContent = "";
+    isValid.phone = false;
+  } else if (value.length !== 10 || value.length <10) {
+    error.textContent = "Please enter a valid 10-digit phone number";
+    isValid.phone = false;
+  } else {
+    error.textContent = "";
+    isValid.phone = true;
+  }
+};
+
+// Email validation
+document.getElementById("email").oninput = function() {
+  const error = document.getElementById("emailError");
+  const value = this.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (value === "") {
+    error.textContent = "Email is required";
+    isValid.email = false;
+  } else if (!emailRegex.test(value)) {
+    error.textContent = "Please enter a valid email address";
+    isValid.email = false;
+  } else {
+    error.textContent = "";
+    isValid.email = true;
+  }
+};
+
+// Password validation
+document.getElementById("password").oninput = function() {
+  const error = document.getElementById("passwordError");
+
+  const value = this.value;
+  
+  if (value.length < 8) {
+    error.textContent = "Password must be at least 8 characters long";
+    isValid.password = false;
+  }  else {
+    error.textContent = "";
+    isValid.password = true;
+  }
+  validateConfirmPassword();
+};
+
+// Confirm Password validation
+document.getElementById("confirmPassword").oninput = validateConfirmPassword;
+
+function validateConfirmPassword() {
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const error = document.getElementById("confirmPasswordError");
+
+  if (confirmPassword === "") {
+    error.textContent = "";
+    isValid.confirmPassword = false;
+  } else if (confirmPassword !== password) {
+    error.textContent = "Passwords do not match";
+    isValid.confirmPassword = false;
+  } else {
+    error.textContent = "";
+    isValid.confirmPassword = true;
+  }
+}
+
+// Form submission validation
+document.querySelector('form').onsubmit = function(e) {
+  // Check if all validations pass
+  if (!Object.values(isValid).every(Boolean)) {
+    e.preventDefault();
+    showAlert("Please fix all errors before submitting the form");
+    return false;
+  }
+  
+  // Check terms checkbox
+  if (!document.getElementById("terms").checked) {
+    e.preventDefault();
+    showAlert("Please accept the Terms of Service and Privacy Policy");
+    return false;
+  }
+  
+  return true;
+};
+
+// Alert functions
+function showAlert(title, message, type = 'error') {
+  const alertEl = document.getElementById('customAlert');
+  const overlayEl = document.getElementById('alertOverlay');
+  const titleEl = document.getElementById('alertTitle');
+  const messageEl = document.getElementById('alertMessage');
+
+  // Remove existing classes
+  alertEl.classList.remove('alert-error', 'alert-success');
+  // Add new class based on type
+  alertEl.classList.add(`alert-${type}`);
+
+  titleEl.textContent = title;
+  messageEl.textContent = message;
+
+  alertEl.style.display = 'block';
+  overlayEl.style.display = 'block';
+
+  // Add event listener to close alert when clicking outside
+  overlayEl.onclick = closeAlert;
+}
+
+function closeAlert() {
+  const alertEl = document.getElementById('customAlert');
+  const overlayEl = document.getElementById('alertOverlay');
+  
+  alertEl.style.display = 'none';
+  overlayEl.style.display = 'none';
+}
 
     //toggle password visibility
     function togglePassword(inputId) {
@@ -163,7 +296,7 @@
     $check->store_result();
 
     if ($check->num_rows > 0) {
-      echo "<script>alert('Email already exists. Please log in.'); window.location.href = 'login.php';</script>";
+      echo "<script>showAlert('Email already exists. Please log in.'); </script>";
     } else {
       // Insert user
       $stmt = $conn->prepare("INSERT INTO users (full_name,phone, email, password,city, role) VALUES (?,?,?,?,?,?)");
@@ -179,9 +312,10 @@
          $_SESSION['created_at'] = date('F Y');
         $_SESSION['role'] = $role;
 
-        echo "<script>alert('Account created successfully!'); window.location.href = 'customerdashboard.php';</script>";
-      } else {
-        echo "Error: " . $stmt->error;
+         echo "<script>showAlert('Success!', 'Account created successfully!', 'success'); 
+          setTimeout(() => window.location.href = 'customerdashboard.php', 2000);</script>";
+  } else {
+        echo "<script>showAlert('Error', 'Error creating account: " . $stmt->error . "', 'error');</script>";
       }
     }
   }
@@ -189,5 +323,4 @@
 
 
 </body>
-
 </html>

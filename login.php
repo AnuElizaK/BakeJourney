@@ -72,33 +72,12 @@
           icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
       }
-
-      //This ensures that if the user presses the back button and the browser tries to show a cached login page,
-      //  it will reload and immediately redirect to the correct page if the user is logged in
-       window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            window.location.reload();
-        }
-      });
-
     </script>
 
 <!-- ----------- PHP Code for Login Functionality ------------- -->
 <?php
 session_start();
 include 'db.php'; // connect to DB
-
-//if already logged in once,will not require to login again..i will redirect to dashboard
-if (isset($_SESSION['email']) && isset($_SESSION['role'])) {
-    if ($_SESSION['role'] === 'baker') {
-        header("Location: bakerdashboard.php");
-        exit();
-    } else if ($_SESSION['role'] === 'customer') {
-        header("Location: customerdashboard.php");
-        exit();
-    }
-}
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
   $email = $_POST['email'];
