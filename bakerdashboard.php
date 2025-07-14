@@ -31,7 +31,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
             </div>
             <div>
               <h1 class="brand-title">BakeJourney</h1>
-              <p class="brand-subtitle">Welcome back, <?php echo htmlspecialchars($_SESSION['name']); ?>!</p>
+              <p class="brand-subtitle">Welcome back, ?*<?php echo htmlspecialchars($_SESSION['name']); ?>!</p>
             </div>
           </div>
           
@@ -140,7 +140,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
         </div>
         <div class="card-content">
           <div class="actions-grid">
-            <a href="bakerproductmngmt.html" class="action-btn primary">
+            <a href="bakerproductmngmt.php" class="action-btn primary">
               <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
