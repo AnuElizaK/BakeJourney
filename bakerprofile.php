@@ -24,10 +24,10 @@ $user = $result->fetch_assoc();
     <link rel="stylesheet" href="bakerprofile.css" />
   </head>
 
+  <?php include 'bakernavbar.php'; ?>
+
   <body>
     <div class="container">
-      <a href="bakerdashboard.php" class="back-link">← Back to Home</a>
-
       <h1 class="page-title">Baker Profile</h1>
       <div class="baker-data">
         <!-- Profile Header -->
@@ -202,6 +202,8 @@ $user = $result->fetch_assoc();
         </form>
       </div>
     </div>
+
+    <?php include 'globalfooter.php'; ?>
 
     <script>
       //Update form validation

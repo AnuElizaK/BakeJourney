@@ -9,7 +9,7 @@
       box-sizing: border-box;
     }
 
-    .custnav-container {
+    .bakernav-container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 24px;
@@ -149,7 +149,7 @@
         padding-top: 70px;
       }
 
-      .custnav-container {
+      .bakernav-container {
         margin-top: 0;
       }
 
@@ -207,7 +207,7 @@
 
 <body>
   <nav class="navbar" id="navbar">
-    <div class="custnav-container">
+    <div class="bakernav-container">
       <div class="nav-content">
         <div class="nav-brand">
           <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
@@ -215,15 +215,14 @@
         </div>
 
         <div class="nav-links">
-          <a href="customerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
-          <a href="products.php" class="nav-link" onclick="toggleSelect(this)">Products</a>
-          <a href="bakers.php" class="nav-link" onclick="toggleSelect(this)">Find Your Baker</a>
-          <a href="#services" class="nav-link" onclick="toggleSelect(this)">Services</a>
-          <a href="#contact" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
-          <a href="cart.php" class="nav-link" onclick="toggleSelect(this)"><img src="media/cart.png" title="Cart"
-              alt="Cart" width="30" height="30"></a>
-          <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
-          <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
+            <a href="bakerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
+            <a href="bakerproductmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Products</a>
+            <a href="bakerclientmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
+            <a href="#services" class="nav-link" onclick="toggleSelect(this)">Orders</a>
+            <a href="#services" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
+            <a href="#contact" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
+            <a href="bakerprofile.php" class="nav-link nav-cta">You</a>
+            <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 
         <div class="nav-mobile-toggle" id="mobileToggle">
@@ -284,5 +283,4 @@
     });
   </script>
 </body>
-
 </html>

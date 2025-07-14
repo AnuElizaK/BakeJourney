@@ -19,7 +19,7 @@
   </head>
 
   <body>
-     <!-- Sticky Navigation Bar -->
+     <!-- Sticky Pre-login Navigation Bar -->
     <nav class="navbar" id="navbar">
       <div class="container">
         <div class="nav-content">
@@ -80,7 +80,7 @@
         </div>
 
         <div class="bakers-grid">
-          <div class="baker-card" onclick="window.location.href='bakerprofile.php'">
+          <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
               <img src="https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sarah Johnson">
               <div class="ranking-badge">#1</div>
@@ -105,7 +105,7 @@
             </div>
           </div>
 
-          <div class="baker-card" onclick="window.location.href='login.html'">
+          <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
               <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Mike Chen">
               <div class="ranking-badge">#2</div>
@@ -130,7 +130,7 @@
             </div>
           </div>
 
-          <div class="baker-card" onclick="window.location.href='login.html'">
+          <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
               <img src="https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Emma Williams">
               <div class="ranking-badge">#3</div>

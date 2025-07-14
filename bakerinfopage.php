@@ -7,8 +7,13 @@
     <title>Sarah Johnson - Baker Profile | BakeJourney</title>
     <link rel="stylesheet" href="userpage.css">
 </head>
+
+<!-- Sticky Navigation Bar -->
+<?php include 'custnavbar.php'; ?>
+
 <body>
-    <!-- Header -->
+    <!-- Backup Header -->
+    <!--
     <header class="header">
       <div class="container">
         <div class="header-content">
@@ -27,6 +32,7 @@
         </div>
       </div>
     </header>
+    -->
 
     <!-- Main Content -->
     <main class="container">
@@ -219,5 +225,6 @@
             </div>
         </section>
     </main>
+    <?php include 'globalfooter.php'; ?>
 </body>
 </html>

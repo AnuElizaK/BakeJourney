@@ -23,37 +23,10 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
 <link rel="stylesheet" href="customerdashboard.css">
 </head>
 
+<!-- Sticky Navigation Bar -->
+<?php include 'custnavbar.php'; ?>
+
 <body>
-  <!-- Sticky Navigation Bar -->
-  <nav class="navbar" id="navbar">
-    <div class="container">
-      <div class="nav-content">
-        <div class="nav-brand">
-          <a href="customerdashboard.php"><img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40" style="vertical-align: top;"></a>
-          <span><a class="nav-title" href="customerdashboard.php">BakeJourney</a></span>
-        </div>
-
-        <div class="nav-links">
-          <a href="customerdashboard.php" class="nav-link">Home</a>
-          <a href="products.php" class="nav-link">Products</a>
-          <a href="bakers.php" class="nav-link">Find Your Baker</a>
-          <a href="#services" class="nav-link">Services</a>
-          <a href="#contact" class="nav-link">Contact Us</a>
-          <a href="cart.php" class="nav-link"><img src="media/cart.png" title="Cart" alt="Cart" width="30"
-              height="30"></a>
-          <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
-          <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
-        </div>
-
-        <div class="nav-mobile-toggle" id="mobileToggle">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    </div>
-  </nav>
-
   <!-- Hero Section -->
   <section class="hero" id="home">
     <div class="hero-overlay"></div>
@@ -422,97 +395,9 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-main">
-          <div class="footer-brand">
-            <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-            <span class="footer-title">BakeJourney</span>
-          </div>
-          <p class="footer-subtitle">The Home Baker's Marketplace</p>
-          <p>Handcrafted with love, baked to perfection. Experience the warmth of homemade goodness in every bite.</p>
-          <div class="footer-contact">
-            <p>123 Baker Street, Cake Valley, SV 12345</p>
-            <p>Phone: +91 xxxxx baker</p>
-            <p>Email: hello@bakejourney.com</p>
-          </div>
-        </div>
-
-        <div class="footer-links">
-          <h3 class="quick-links">Quick Links</h3>
-          <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">Sitemap</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Blog</a></li>
-          </ul>
-        </div>
-        <div class="footer-social">
-          <h3 class="follow-us">Follow Us</h3>
-          <ul>
-            <li><a href="#"><img src="media/facebook.svg" alt="Facebook" style="vertical-align: bottom;">&nbsp;Facebook</a></li>
-            <li><a href="#"><img src="media/instagram.svg" alt="Instagram" style="vertical-align: bottom;">&nbsp;Instagram</a></li>
-            <li><a href="#"><img src="media/pinterest.svg" alt="Pinterest" style="vertical-align: bottom;">&nbsp;Pinterest</a></li>
-            <li><a href="#"><img src="media/x.svg" alt="X (Twitter)" style="vertical-align: bottom;">&nbsp;X</a></li>
-            <li><a href="#"><img src="media/linkedin.svg" alt="LinkedIn" style="vertical-align: bottom;">&nbsp;LinkedIn</a></li>
-            <li><a href="#"><img src="media/github.svg" alt="GitHub" style="vertical-align: bottom;">&nbsp;GitHub</a></li>
-          </ul>
-        </div>
-        <div class="footer-attributions">
-          <h3 class="attributions">Attributions</h3>
-          <ul>
-            <li>Icons by <a href="https://icons8.com">Icons8</a> & <a href="https://www.flaticon.com/">Flaticon</a></li>
-            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a></li>
-            <li>Fonts by <a href="https://fonts.google.com/">Google Fonts</a></li>
-            <li>Branding font (Puanto) by <a href="https://creativemarket.com/pasha.larin">Larin Type Co.</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>&copy; 2025 BakeJourney. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
+  <?php include 'globalfooter.php'; ?>
 
   <script>
-    // Navbar scroll behavior
-    window.addEventListener('scroll', function () {
-      const navbar = document.getElementById('navbar');
-      const heroHeight = document.querySelector('.hero').offsetHeight;
-
-      if (window.scrollY > heroHeight - 100) {
-        navbar.classList.add('navbar-visible');
-      } else {
-        navbar.classList.remove('navbar-visible');
-      }
-    });
-
-    // Mobile menu toggle
-    document.getElementById('mobileToggle').addEventListener('click', function () {
-      const navLinks = document.querySelector('.nav-links');
-      navLinks.classList.toggle('nav-links-active');
-      this.classList.toggle('active');
-    });
-
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-
     // ---Product Search and Filter Functions---
     function filterProducts(category) {
       const products = document.querySelectorAll('.product-card');

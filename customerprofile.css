@@ -13,7 +13,7 @@ body {
   font-family: 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   min-height: 100vh;
-  padding: 20px;
+  padding-top: 120px;
 }
 
 h1, h2 {
@@ -23,6 +23,7 @@ h1, h2 {
 .container {
   max-width: 1000px;
   margin: 0 auto;
+  padding-bottom: 40px;
 }
 
 .page-title{
@@ -456,6 +457,10 @@ h1, h2 {
     padding: 20px;
   }
   
+  .container{
+    padding: 30px 24px;
+  }
+
   .profile-header {
     padding: 20px;
   }

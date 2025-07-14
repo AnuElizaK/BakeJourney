@@ -7,33 +7,23 @@
     <title>Product Management | BakeJourney</title>
     <link rel="stylesheet" href="bakerproductmngmt.css">
 </head>
+
+<?php include 'bakernavbar.php'; ?>
+
 <body>
-    <!-- Header -->
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <div class="brand">
-            <div class="brand-icon">
-              <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-            </div>
-            <div>
-              <h1 class="brand-title">BakeJourney</h1>
-              <p class="brand-subtitle">Manage Your Products</p>
-            </div>
-          </div>
-          
-          <div class="header-actions">
-            <button onclick="toggleUploadModal()" class="btn">
-              + Add product
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
 
     <!-- Main Content -->
     <main class="main-content">
         <!-- Filter Tabs -->
+         <div class="add-product-section">
+            <div class="add-container">
+                <div class="add-action">
+                    <button onclick="toggleUploadModal()" class="btn">
+                        + Add product
+                    </button> Got something new cooking? Add it here!
+                </div>
+            </div>
+        </div>
         <div class="filter-section">
             <div class="search-box">
                 <input type="search" placeholder="Search or filter products..." class="search-input">
@@ -353,6 +343,8 @@
             </form>
         </div>
     </div>
+
+    <?php include 'globalfooter.php'; ?>
 
     <script>
         // Modal Functions
