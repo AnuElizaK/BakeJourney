@@ -217,10 +217,10 @@
         <div class="nav-links">
             <a href="bakerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
             <a href="bakerproductmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Products</a>
-            <a href="bakerclientmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
-            <a href="#services" class="nav-link" onclick="toggleSelect(this)">Orders</a>
-            <a href="#services" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
-            <a href="#contact" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
+            <a href="bakercustomermngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
+            <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
+            <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
+            <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
             <a href="bakerprofile.php" class="nav-link nav-cta">You</a>
             <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
