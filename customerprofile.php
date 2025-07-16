@@ -2,10 +2,24 @@
 session_start();
 include 'db.php'; 
 
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+    header("Location: index.php"); // Redirect to login if not authorized
+    exit();
+}
+
+// Prevent back after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
+header("Pragma: no-cache");
+
+
 $user_id = $_SESSION['user_id']; 
 
 // Fetch user details
-$stmt = $conn->prepare("SELECT full_name, email, phone, city, bio FROM users WHERE user_id = ?");
+$stmt = $conn->prepare("SELECT full_name, email, phone, city, bio,address
+  FROM users 
+  WHERE user_id = ?
+");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -74,28 +88,47 @@ $user = $result->fetch_assoc();
                  <div id="nameError" class="error"></div>
               </div>
         
-              <div class="form-group">
-                <div class="phone-label-row">
-                  <label for="phone">Phone Number</label>
-                  <div class="add-more-phones">
-                    <button class="btn-more" type="button">+</button>
-                  </div>
-                </div>
-                <input type="tel" id="phone" name="phone" maxlength="10" placeholder="Enter your phone number" value="<?php echo htmlspecialchars($user['phone']); ?>">
-                <div id="phoneError" class="error"></div>
-              </div>
+             <div class="form-group">
+  <label for="phone">Phone Number</label>
+  <div class="phone-input-wrapper">
+    <span class="phone-prefix">+91</span>
+    <input type="tel" id="phone" name="phone" maxlength="10" placeholder="Enter your phone number" required value="<?php echo htmlspecialchars(substr($user['phone'], 3)); ?>">
+  </div>
+  <div id="phoneError" class="error"></div>
+</div>
               <div class="form-group">
                 <label for="bio">Bio</label>
                 <textarea id="bio" name="bio" rows="3" placeholder="Tell us a little about yourself"><?php echo htmlspecialchars($user['bio']);?></textarea>
               </div>
+
+                <div class="form-group">
+                   <label for="city">District</label>
+                     <select id="city" name="city" required>
+                       <option value="">Select your district</option>
+                          <?php
+                             $districts = [
+                               "Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam",
+                               "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta",
+                               "Thiruvananthapuram", "Thrissur", "Wayanad"
+                          ];
+                              foreach ($districts as $district) {
+                                $selected = ($user['city'] === $district) ? "selected" : "";
+                                echo "<option value=\"$district\" $selected>$district</option>";
+                             }
+                          ?>
+                      </select>
+                </div>
+
+
               <div class="form-group">
                 <div class="address-label-row">
-                  <label for="address">Delivery Address</label>
+                  <label for="address">Address</label>
                   <div class="add-more-addresses">
                     <button class="btn-more" type="button">+</button>
                   </div>
                 </div>
-                <textarea id="address" name="city" rows="3" placeholder="Enter your full delivery address"><?php echo htmlspecialchars($user['city']); ?></textarea>
+                <textarea id="address" name="address" rows="3" placeholder="Enter your full delivery address" ><?php echo htmlspecialchars($user['address']);?></textarea>
+
               </div>
             </div>
             <button type="submit" name="update" class="btn">Update Profile</button>
@@ -244,8 +277,8 @@ document.getElementById("updateProfileForm").onsubmit = function (e) {
   }
 
   // Phone validation
-  if (!/^\d{10}$/.test(phone)) {
-    document.getElementById("phoneError").textContent = "Phone number must be 10 digits";
+  if (!/^[5-9][0-9]{9}$/.test(phone)) {
+    document.getElementById("phoneError").textContent = "Phone number must start with 5, 6, 7, 8, or 9 and be 10 digits long.";
     isValid = false;
   } else {
     document.getElementById("phoneError").textContent = "";
@@ -328,9 +361,6 @@ function closeAlert() {
 }
 //--------------------------------------------------------------------
 
-
-
-
 // Toggle password visibility
       function togglePassword(inputId) {
         const input = document.getElementById(inputId);
@@ -352,11 +382,12 @@ function closeAlert() {
     $updated_name = $_POST['full_name'];
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
-    $updated_address = $_POST['city'];
+    $updated_city = $_POST['city'];
+    $updated_address = $_POST['address'];
   
     // Update query
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ? WHERE user_id = ?");
-    $stmt->bind_param("ssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ?, address = ? WHERE user_id = ?");
+    $stmt->bind_param("sssssi", $updated_name, $updated_phone, $updated_bio, $updated_city, $updated_address, $user_id);
 
     if ($stmt->execute()) {
         // Update session name so it's reflected immediately

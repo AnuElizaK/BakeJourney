@@ -72,12 +72,31 @@
           icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         }
       }
+
+      // Force reload if loaded from back/forward cache
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+ });
+ 
     </script>
 
 <!-- ----------- PHP Code for Login Functionality ------------- -->
 <?php
 session_start();
 include 'db.php'; // connect to DB
+
+// Check if user is already logged in
+if (isset($_SESSION['email']) && isset($_SESSION['role'])) {
+    if ($_SESSION['role'] === 'baker') {
+        header("Location: bakerdashboard.php");
+        exit();
+    } else if ($_SESSION['role'] === 'customer') {
+        header("Location: customerdashboard.php");
+        exit();
+    }
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
   $email = $_POST['email'];
@@ -103,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
       $_SESSION['role'] = $user['role'];
       $_SESSION['brand_name'] = $user['brand_name'];
       $_SESSION['specialty'] = $user['specialty'];
-
+      $_SESSION['address'] = $user['address'];
       // Redirect based on role
       if ($user['role'] === 'baker') {
         header("Location: bakerdashboard.php");
