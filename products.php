@@ -54,7 +54,9 @@
             <img
               src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Artisan Sourdough">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -70,7 +72,9 @@
             <img
               src="https://images.unsplash.com/photo-1722085609594-1bc764876867?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Chocolate Croissants">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -86,7 +90,9 @@
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -102,7 +108,9 @@
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -118,7 +126,9 @@
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -134,7 +144,9 @@
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -150,7 +162,9 @@
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
@@ -166,7 +180,9 @@
             <img
               src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Key Lime Pie">
-            <button class="cart-button">Add to Cart</button>
+            <button class="cart-button">
+              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
+            </button>
           </div>
           <div class="product-content">
             <div class="product-header">
