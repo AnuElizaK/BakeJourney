@@ -2,11 +2,22 @@
 session_start();
 include 'db.php'; 
 
+
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
+    header("Location: index.php"); // Redirect to login if not authorized
+    exit();
+}
+
+// Prevent back after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
+header("Pragma: no-cache");
+
 $user_id = $_SESSION['user_id']; 
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, city, bio, brand_name, specialty 
+  "SELECT full_name, email, phone, city, bio, brand_name, specialty, address
   FROM users, bakers 
   WHERE users.user_id = bakers.user_id AND users.user_id = ?");
 $stmt->bind_param("i", $user_id);
@@ -83,16 +94,36 @@ $user = $result->fetch_assoc();
               <div class="form-group">
                 <label for="fullName">Full Name</label>
                 <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($user['full_name']); ?>">
+                <div id="nameError" class="error"></div>
               </div>
               
               <div class="form-group">
                 <label for="phone">Phone Number</label>
                 <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+                <div id="phoneError" class="error"></div>
               </div>
+             <div class="form-group">
+                   <label for="city">District</label>
+                     <select id="city" name="city" required>
+                       <option value="">Select your district</option>
+                          <?php
+                             $districts = [
+                               "Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam",
+                               "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta",
+                               "Thiruvananthapuram", "Thrissur", "Wayanad"
+                          ];
+                              foreach ($districts as $district) {
+                                $selected = ($user['city'] === $district) ? "selected" : "";
+                                echo "<option value=\"$district\" $selected>$district</option>";
+                             }
+                          ?>
+                      </select>
+                </div>
                <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" value="<?php echo htmlspecialchars($user['city']); ?>">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="2" placeholder="Enter your address"><?php echo htmlspecialchars($user['address']);?></textarea>
               </div>
+
               <div class="form-group">
                 <label for="specialty">Baking Specialty</label>
                 <select id="specialty" name="specialty">
@@ -254,10 +285,12 @@ $user = $result->fetch_assoc();
     $updated_address = $_POST['city'];
     $updated_brand = $_POST['brand_name'];
     $updated_specialty = $_POST['specialty'];
+    $updated_city = $_POST['city'];
+    $updated_address = $_POST['address'];
 
     // Update query
-    $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, city = ?, brand_name = ?, specialty = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
-    $stmt->bind_param("ssssssi", $updated_name, $updated_phone, $updated_bio, $updated_address, $updated_brand, $updated_specialty, $user_id);
+    $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, city = ?, brand_name = ?, specialty = ?, address = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
+    $stmt->bind_param("sssssssi", $updated_name, $updated_phone, $updated_bio, $updated_city, $updated_brand, $updated_specialty, $updated_address, $user_id);
 
     if ($stmt->execute()) {
         // Update session name so it's reflected immediately
