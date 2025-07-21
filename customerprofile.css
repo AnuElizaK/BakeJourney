@@ -6,8 +6,7 @@
 }
 
 body {
-  background-image: url('https://images.unsplash.com/photo-1727902432824-f69f0b4491a3?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-  backdrop-filter: blur(1px);
+  background-image: url('https://images.unsplash.com/photo-1645811791051-6031cd3e2ef3?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
   background-size: cover;
   background-position: center;
   font-family: 'Segoe UI', Roboto, sans-serif;
@@ -138,8 +137,8 @@ h2 {
 }
 
 .phone-prefix {
-  background-color:  #f5f5f5;
-  padding: 8px 12px;
+  background-color: white;
+  padding: 7.7px 10px;
   border: 1px solid #d1d5db;
   border-radius: 4px 0 0 4px;
   font-size: 14px;
