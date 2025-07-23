@@ -17,6 +17,7 @@ $user_id = $_SESSION['user_id'];
 // Fetch user details
 $stmt = $conn->prepare(
   "SELECT full_name, email, phone, district, bio, brand_name, specialty, address
+  "SELECT full_name, email, phone, district, bio, brand_name, specialty, address
   FROM users, bakers 
   WHERE users.user_id = bakers.user_id AND users.user_id = ?"
 );
@@ -440,12 +441,16 @@ $user = $result->fetch_assoc();
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
     $updated_district = $_POST['district'];
+    $updated_district = $_POST['district'];
     $updated_brand = $_POST['brand_name'];
     $updated_specialty = $_POST['specialty'];
     $updated_city = $_POST['city'];
     
+    $updated_address = $_POST['address'];
 
     // Update query
+    $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, district = ?, brand_name = ?, specialty = ?, address = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
+    $stmt->bind_param("sssssssi", $updated_name, $updated_phone, $updated_bio, $updated_district, $updated_brand, $updated_specialty, $updated_address, $user_id);
     $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, district = ?, brand_name = ?, specialty = ?, address = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
     $stmt->bind_param("sssssssi", $updated_name, $updated_phone, $updated_bio, $updated_district, $updated_brand, $updated_specialty, $updated_address, $user_id);
 
