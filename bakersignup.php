@@ -75,13 +75,13 @@
           <label for="specialty">Baking Specialty</label>
           <select id="specialty" name="specialty">
             <option value="">Select your specialty</option>
-            <option value="breads">Artisan Breads & Sourdoughs</option>
-            <option value="cakes">Custom Cakes & Pastries</option>
-            <option value="gluten-free">Gluten-Free Treats</option>
-            <option value="desserts">Desserts & Sweets</option>
-            <option value="cookies">Cookies & Biscuits</option>
-            <option value="pies">Pies & Tarts</option>
-            <option value="other">Other</option>
+            <option value="Artisan Breads & Sourdoughs">Artisan Breads & Sourdoughs</option>
+            <option value="Custom Cakes & Pastries">Custom Cakes & Pastries</option>
+            <option value="Gluten-Free Treats">Gluten-Free Treats</option>
+            <option value="Desserts & Sweets">Desserts & Sweets</option>
+            <option value="Cookies & Biscuits">Cookies & Biscuits</option>
+            <option value="Pies & Tarts">Pies & Tarts</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
