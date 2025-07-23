@@ -127,12 +127,12 @@ $user = $result->fetch_assoc();
               <div class="form-group">
                 <label for="specialty">Baking Specialty</label>
                 <select id="specialty" name="specialty">
-                  <option value="breads" <?php echo ($user['specialty'] == 'breads') ? 'selected' : ''; ?>>Artisan Breads & Sourdoughs</option>
-                  <option value="cakes" <?php echo ($user['specialty'] == 'cakes') ? 'selected' : ''; ?>>Custom Cakes & Pastries</option>
-                  <option value="gluten-free" <?php echo ($user['specialty'] == 'gluten-free') ? 'selected' : ''; ?>>Gluten-Free Treats</option>
-                  <option value="desserts" <?php echo ($user['specialty'] == 'desserts') ? 'selected' : ''; ?>>Desserts & Sweets</option>
-                  <option value="cookies" <?php echo ($user['specialty'] == 'cookies') ? 'selected' : ''; ?>>Cookies & Biscuits</option>
-                  <option value="pies" <?php echo ($user['specialty'] == 'pies') ? 'selected' : ''; ?>>Pies & Tarts</option>
+                  <option value="breads" <?php echo ($user['specialty'] == 'Artisan Breads & Sourdoughs') ? 'selected' : ''; ?>>Artisan Breads & Sourdoughs</option>
+                  <option value="cakes" <?php echo ($user['specialty'] == 'Custom Cakes & Pastries') ? 'selected' : ''; ?>>Custom Cakes & Pastries</option>
+                  <option value="gluten-free" <?php echo ($user['specialty'] == 'Gluten-Free Treats') ? 'selected' : ''; ?>>Gluten-Free Treats</option>
+                  <option value="desserts" <?php echo ($user['specialty'] == 'Desserts & Sweets') ? 'selected' : ''; ?>>Desserts & Sweets</option>
+                  <option value="cookies" <?php echo ($user['specialty'] == 'Cookies & Biscuits') ? 'selected' : ''; ?>>Cookies & Biscuits</option>
+                  <option value="pies" <?php echo ($user['specialty'] == 'Pies & Tarts') ? 'selected' : ''; ?>>Pies & Tarts</option>
                   <option value="other">Other</option>
                 </select>
               </div>
