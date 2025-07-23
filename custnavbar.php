@@ -215,12 +215,12 @@
         </div>
 
         <div class="nav-links">
-          <a href="customerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
-          <a href="products.php" class="nav-link" onclick="toggleSelect(this)">Products</a>
-          <a href="bakers.php" class="nav-link" onclick="toggleSelect(this)">Find Your Baker</a>
-          <a href="#services" class="nav-link" onclick="toggleSelect(this)">Services</a>
-          <a href="#contact" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
-          <a href="cart.php" class="nav-link" onclick="toggleSelect(this)"><img src="media/cart.png" title="Cart"
+          <a href="customerdashboard.php" class="nav-link">Home</a>
+          <a href="products.php" class="nav-link">Products</a>
+          <a href="bakers.php" class="nav-link">Find Your Baker</a>
+          <a href="services.php" class="nav-link">Services</a>
+          <a href="contact.php" class="nav-link">Contact Us</a>
+          <a href="cart.php" class="nav-link"><img src="media/cart.png" title="Cart"
               alt="Cart" width="30" height="30"></a>
           <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>

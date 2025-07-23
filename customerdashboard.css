@@ -51,6 +51,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
   background-color: rgba(0, 0, 0, 0.5);
   /*backdrop-filter: blur(1px);*/
   border-radius: 50px;
+  border: 1.5px solid #f59e0b;
 }
 
 .hero-icon {
