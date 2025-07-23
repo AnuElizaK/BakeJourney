@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData();
       formData.append('profile_image', blob, 'profile.jpg');
       formData.append('upload_profile_image', '1');
-      fetch(window.location.pathname, {
+      fetch(window.location.href, {
         method: 'POST',
         body: formData
       })
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!confirm('Are you sure you want to remove your profile image?')) return;
     const formData = new FormData();
     formData.append('remove_profile_image', '1');
-    fetch(window.location.pathname, {
+    fetch(window.location.href, {
       method: 'POST',
       body: formData
     })

@@ -16,7 +16,7 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, district, bio, brand_name, specialty, address
+  "SELECT full_name, email, phone, district,state, bio, brand_name, specialty, address, profile_image
   FROM users, bakers 
   WHERE users.user_id = bakers.user_id AND users.user_id = ?"
 );
@@ -49,12 +49,12 @@ $user = $result->fetch_assoc();
           $name = $_SESSION['name'];
           $parts = explode(' ', $name);
           $initials = strtoupper($parts[0][0] . ($parts[1][0] ?? ''));
-          $profileImgPath = 'uploads/profile_' . $user_id . '.jpg';
-          if (file_exists($profileImgPath)) {
-            echo '<img src="' . htmlspecialchars($profileImgPath) . '" alt="Profile Image" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+          if (!empty($user['profile_image']) && file_exists('uploads/' . $user['profile_image'])) {
+           echo '<img src="uploads/' . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
           } else {
-            echo $initials;
+          echo $initials;
           }
+
           ?>
           <div class="ranking-badge">#1 Baker</div>
         </div>
@@ -66,8 +66,14 @@ $user = $result->fetch_assoc();
             $fileTmp = $_FILES['profile_image']['tmp_name'];
             $fileType = mime_content_type($fileTmp);
             if ($fileType === 'image/jpeg') {
-              $dest = __DIR__ . '/uploads/profile_' . $user_id . '.jpg';
+             $filename = 'profile_' . $user_id . '.jpg';
+            $dest = __DIR__ . '/uploads/' . $filename;
+
               if (move_uploaded_file($fileTmp, $dest)) {
+                  $stmt = $conn->prepare("UPDATE users SET profile_image = ? WHERE user_id = ?");
+                  $stmt->bind_param("si", $filename, $user_id);
+                  $stmt->execute();
+                  $stmt->close();
                 echo "<script>alert('✅ Profile image uploaded successfully!'); window.location.href = 'bakerprofile.php';</script>";
                 exit;
               } else {
@@ -85,6 +91,10 @@ $user = $result->fetch_assoc();
           $profileImgPath = __DIR__ . '/uploads/profile_' . $user_id . '.jpg';
           if (file_exists($profileImgPath)) {
             unlink($profileImgPath);
+            $stmt = $conn->prepare("UPDATE users SET profile_image = NULL WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
             echo "<script>alert('✅ Profile image removed.'); window.location.href = 'bakerprofile.php';</script>";
             exit;
           }
@@ -127,7 +137,7 @@ $user = $result->fetch_assoc();
       <!-- Baker Information -->
       <div class="profile-section">
         <h2 class="section-title">Baker Information</h2>
-        <form method="post" onsubmit="return data()">
+        <form method="post"  id="updateProfileForm">
           <div class="form-grid">
             <div class="form-group">
               <label for="fullName">Brand Name</label>
@@ -135,7 +145,7 @@ $user = $result->fetch_assoc();
                 value="<?php echo htmlspecialchars($user['brand_name']); ?>">
             </div>
             <div class="form-group">
-              <label for="fullName">Full Name</label>
+              <label for="full_name">Full Name</label>
               <input type="text" id="full_name" name="full_name"
                 value="<?php echo htmlspecialchars($user['full_name']); ?>">
               <div id="nameError" class="error"></div>
@@ -143,7 +153,7 @@ $user = $result->fetch_assoc();
 
             <div class="form-group">
               <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+              <input type="tel" id="phone" name="phone"  maxlength="10" value="<?php echo htmlspecialchars($user['phone']); ?>">
               <div id="phoneError" class="error"></div>
             </div>
 
@@ -191,7 +201,8 @@ $user = $result->fetch_assoc();
                   "Puducherry"
                 ];
                 foreach ($states as $state) {
-                  echo "<option value=\"$state\">$state</option>";
+                  $selected = ($state === $selectedState) ? "selected" : "";
+                  echo "<option value=\"$state\" $selected>$state</option>";
                 }
                 ?>
               </select>
@@ -244,6 +255,9 @@ $user = $result->fetch_assoc();
                 "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"]
               };
 
+               const selectedState = "<?php echo htmlspecialchars($user['state']) ?? ''; ?>";
+               const selectedDistrict = "<?php echo htmlspecialchars($user['district']) ?? ''; ?>";
+
               function updateDistricts() {
                 const stateSelect = document.getElementById("state");
                 const districtSelect = document.getElementById("district");
@@ -258,10 +272,23 @@ $user = $result->fetch_assoc();
                     const option = document.createElement("option");
                     option.value = district;
                     option.textContent = district;
+                    
+      // Pre-select saved district
+      if (district === selectedDistrict) {
+        option.selected = true;
+      }
                     districtSelect.appendChild(option);
                   });
                 }
               }
+              // Set state dropdown and update districts on page load
+  window.onload = function () {
+    const stateSelect = document.getElementById("state");
+    if (selectedState) {
+      stateSelect.value = selectedState;
+      updateDistricts(); // Will also select district
+    }
+  };
             </script>
 
             <div class="form-group">
@@ -341,7 +368,7 @@ $user = $result->fetch_assoc();
     <!-- Change Password -->
     <div class="profile-section">
       <h2 class="section-title">Change Password</h2>
-      <form method="post" onsubmit="return pwddata()">
+      <form method="post" id="validatePasswordForm">
         <div class="form-grid">
           <div class="form-group password-group">
             <label for="newPassword">New password</label>
@@ -355,6 +382,7 @@ $user = $result->fetch_assoc();
                 </svg>
               </button>
             </div>
+             <div id="passwordError" class="error"></div>
           </div>
           <div class="form-group password-group">
             <label for="confirmPassword">Confirm</label>
@@ -368,6 +396,7 @@ $user = $result->fetch_assoc();
                 </svg>
               </button>
             </div>
+            <div id="confirmPasswordError" class="error"></div>
           </div>
         </div>
         <button type="submit" name="chngpwd" class="btn">Change Password</button>
@@ -394,32 +423,70 @@ $user = $result->fetch_assoc();
   <?php include 'globalfooter.php'; ?>
 
   <script>
-    //Update form validation
-    function data() {
-      const phone = document.getElementById('phone').value;
-      if (phone.length !== 10 || isNaN(phone)) {
-        alert("Please enter a valid 10-digit phone number");
+    // -------- FORM SUBMIT VALIDATION --------
+    document.getElementById("updateProfileForm").onsubmit = function (e) {
+      const nameInput = document.getElementById("full_name");
+      const phoneInput = document.getElementById("phone");
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+
+      let isValid = true;
+
+      // Name validation
+      if (!/^[a-zA-Z\s]+$/.test(name) || name === "") {
+        document.getElementById("nameError").textContent = "Full name should only contain letters and spaces";
+        isValid = false;
+      } else {
+        document.getElementById("nameError").textContent = "";
+      }
+
+      // Phone validation
+      if (!/^[7-9][0-9]{9}$/.test(phone)) {
+        document.getElementById("phoneError").textContent = "Phone number must start with 7, 8, or 9 and be 10 digits long.";
+        isValid = false;
+      } else {
+        document.getElementById("phoneError").textContent = "";
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert("Error: Please fix all profile errors before submitting the form");
         return false;
       }
       return true;
-    }
-    //Password update form validation
-    function pwddata() {
+    };
 
-      const pwd = document.getElementById('newPassword').value;
-      const conpwd = document.getElementById('confirmPassword').value;
+    document.getElementById("validatePasswordForm").onsubmit = function (e) {
+      const pwd = document.getElementById("newPassword").value;
+      const confirmPwd = document.getElementById("confirmPassword").value;
+      let isValid = true;
 
+      // Password validation
       if (pwd.length < 8) {
-        alert("Password should be at least 8 characters long");
-        return false;
+        document.getElementById("passwordError").textContent = "Password must be at least 8 characters";
+        isValid = false;
+      } else {
+        document.getElementById("passwordError").textContent = "";
       }
-      if (pwd !== conpwd) {
-        alert("Passwords do not match")
+
+      // Confirm password validation
+      if (confirmPwd !== pwd) {
+        document.getElementById("confirmPasswordError").textContent = "Passwords do not match";
+        isValid = false;
+      } else {
+        document.getElementById("confirmPasswordError").textContent = "";
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert("Error: Please fix all password errors before submitting the form");
         return false;
       }
       return true;
-    }
+    };
 
+
+  // Toggle password visibility
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
       const button = input.nextElementSibling;
@@ -439,14 +506,15 @@ $user = $result->fetch_assoc();
     $updated_name = $_POST['full_name'];
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
+    $updated_state = $_POST['state'];
     $updated_district = $_POST['district'];
     $updated_brand = $_POST['brand_name'];
     $updated_specialty = $_POST['specialty'];
     $updated_address = $_POST['address'];
 
     // Update query
-    $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, district = ?, brand_name = ?, specialty = ?, address = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
-    $stmt->bind_param("sssssssi", $updated_name, $updated_phone, $updated_bio, $updated_district, $updated_brand, $updated_specialty, $updated_address, $user_id);
+    $stmt = $conn->prepare("UPDATE users, bakers SET full_name = ?, phone = ?, bio = ?, district = ?, state = ?, brand_name = ?, specialty = ?, address = ? WHERE users.user_id = bakers.user_id AND users.user_id = ?");
+    $stmt->bind_param("ssssssssi", $updated_name, $updated_phone, $updated_bio, $updated_district, $updated_state, $updated_brand, $updated_specialty, $updated_address, $user_id);
 
     if ($stmt->execute()) {
       // Update session name so it's reflected immediately
