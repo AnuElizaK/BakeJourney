@@ -1,4 +1,20 @@
-<?php session_start();?>
+<?php 
+session_start();
+include 'db.php';
+
+// Fetch baker details
+$stmt = $conn->prepare("
+  SELECT u.user_id, u.full_name, u.profile_image, 
+         b.brand_name, b.specialty
+  FROM users u
+  JOIN bakers b ON u.user_id = b.user_id
+  Limit 3
+");
+$stmt->execute();
+$result = $stmt->get_result();
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -80,82 +96,39 @@
         </div>
 
         <div class="bakers-grid">
+          <?php while($baker = $result->fetch_assoc()): ?>
           <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
-              <img src="https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sarah Johnson">
-              <div class="ranking-badge">#1</div>
+              <img src="<?php echo htmlspecialchars($baker['profile_image'] ?: 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); ?>" alt="Profile Image">
+              <div class="ranking-badge">Top</div>
             </div>
             <div class="baker-content">
-              <h3>Sarah Johnson</h3>
-              <div class="baker-rating">
-                <div class="stars">
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                </div>
+              <h3><?php echo htmlspecialchars($baker['brand_name']); ?></h3>
+              <p style="color: #888;">By: <?php echo htmlspecialchars($baker['full_name']); ?></p>
+              <!-- <div class="baker-rating">
+                 <?php 
+            $stars = floor($baker['rating']);
+            for ($i = 0; $i < $stars; $i++) echo "⭐";
+            for ($i = $stars; $i < 5; $i++) echo "☆";
+          ?>
                 <span class="rating-number">5.0 (127 reviews)</span>
-              </div>
-              <p class="baker-specialty">Specialty: Artisan Breads & Sourdoughs</p>
+              </div> -->
+              <p class="baker-specialty">Specialty: <?php echo htmlspecialchars($baker['specialty']); ?></p>
               <div class="baker-stats">
                 <span class="stat">5+ Years Experience</span>
                 <span class="stat">200+ Orders</span>
               </div>
             </div>
           </div>
-
-          <div class="baker-card" onclick="window.location.href='login.php'">
-            <div class="baker-image">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Mike Chen">
-              <div class="ranking-badge">#2</div>
-            </div>
-            <div class="baker-content">
-              <h3>Mike Chen</h3>
-              <div class="baker-rating">
-                <div class="stars">
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star half">★</span>
-                </div>
-                <span class="rating-number">4.8 (89 reviews)</span>
-              </div>
-              <p class="baker-specialty">Specialty: Custom Cakes & Pastries</p>
-              <div class="baker-stats">
-                <span class="stat">3+ Years Experience</span>
-                <span class="stat">150+ Orders</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="baker-card" onclick="window.location.href='login.php'">
-            <div class="baker-image">
-              <img src="https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Emma Williams">
-              <div class="ranking-badge">#3</div>
-            </div>
-            <div class="baker-content">
-              <h3>Emma Williams</h3>
-              <div class="baker-rating">
-                <div class="stars">
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star filled">★</span>
-                  <span class="star half">★</span>
-                </div>
-                <span class="rating-number">4.7 (64 reviews)</span>
-              </div>
-              <p class="baker-specialty">Specialty: Gluten-Free Treats</p>
-              <div class="baker-stats">
-                <span class="stat">4+ Years Experience</span>
-                <span class="stat">120+ Orders</span>
-              </div>
-            </div>
-          </div>
+          <?php endwhile; ?>
         </div>
       </div>
+       <div style="text-align: center; margin-top: 10px;">
+  <a href="login.php" style="text-decoration: none;">
+    View All Bakers →
+  </a>
+</div>
+
     </section>
 
     <!-- Become a Baker CTA Section -->

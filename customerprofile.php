@@ -16,7 +16,7 @@ header("Pragma: no-cache");
 $user_id = $_SESSION['user_id'];
 
 // Fetch user details
-$stmt = $conn->prepare("SELECT full_name, email, phone, city, bio,address
+$stmt = $conn->prepare("SELECT full_name, email, phone, district, bio,address
   FROM users 
   WHERE user_id = ?
 ");
@@ -489,12 +489,12 @@ $user = $result->fetch_assoc();
     $updated_name = $_POST['full_name'];
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
-    $updated_city = $_POST['city'];
+    $updated_district = $_POST['district'];
     $updated_address = $_POST['address'];
 
     // Update query
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, city = ?, address = ? WHERE user_id = ?");
-    $stmt->bind_param("sssssi", $updated_name, $updated_phone, $updated_bio, $updated_city, $updated_address, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, district = ?, address = ? WHERE user_id = ?");
+    $stmt->bind_param("sssssi", $updated_name, $updated_phone, $updated_bio, $updated_district, $updated_address, $user_id);
 
     if ($stmt->execute()) {
       // Update session name so it's reflected immediately

@@ -306,7 +306,7 @@ function closeAlert() {
     $phone = $_POST['phone'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $city = $_POST['city'];
+    $district = $_POST['district'];
     $role = 'baker';
 
     // Hash the password
@@ -322,8 +322,8 @@ function closeAlert() {
       echo "<script>showAlert('Email already exists. Please log in.'); </script>";
     } else {
       // Insert user
-      $stmt = $conn->prepare("INSERT INTO users (full_name,phone, email, password,city, role) VALUES (?,?,?,?,?,?)");
-      $stmt->bind_param("ssssss", $full_name, $phone, $email, $hashedPassword, $city, $role);
+      $stmt = $conn->prepare("INSERT INTO users (full_name,phone, email, password,district, role) VALUES (?,?,?,?,?,?)");
+      $stmt->bind_param("ssssss", $full_name, $phone, $email, $hashedPassword, $district, $role);
 
       if ($stmt->execute()) {
         // Get the user ID of the newly created user
@@ -359,7 +359,7 @@ function closeAlert() {
         $_SESSION['name'] = $full_name;
         $_SESSION['email'] = $email;
         $_SESSION['phone'] = $phone;
-        $_SESSION['city'] = $city;
+        $_SESSION['district'] = $district;
         $_SESSION['created_at'] = date('F Y');
         $_SESSION['role'] = $role;
         $_SESSION['brand_name'] = $brand_name;
