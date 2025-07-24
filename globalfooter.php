@@ -17,6 +17,7 @@
             background: #1f2a38;
             color: white;
             padding: 60px 0 30px;
+            padding-top: 40px;
         }
 
         .footer-content {

@@ -12,14 +12,15 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
-
 $user_id = $_SESSION['user_id'];
 
 // Fetch user details
-$stmt = $conn->prepare("SELECT full_name, email, phone, district, bio,address
+$stmt = $conn->prepare(
+  "SELECT full_name, email, phone, district, state, bio, address, profile_image
   FROM users 
   WHERE user_id = ?
-");
+"
+);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -40,7 +41,6 @@ $user = $result->fetch_assoc();
 <!-- Sticky Navigation Bar -->
 <?php include 'custnavbar.php'; ?>
 
-
 <body>
   <div class="container">
 
@@ -53,9 +53,60 @@ $user = $result->fetch_assoc();
           $name = $_SESSION['name'];
           $parts = explode(' ', $name);
           $initials = strtoupper($parts[0][0] . ($parts[1][0] ?? ''));
+          if (!empty($user['profile_image']) && file_exists('uploads/' . $user['profile_image'])) {
+           echo '<img src="uploads/' . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+          } else {
           echo $initials;
+          }
           ?>
         </div>
+
+        <!-- Edit button and modal handled by JS -->
+        <?php
+        // Handle AJAX upload (from JS/cropper)
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['upload_profile_image'])) {
+          if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
+            $fileTmp = $_FILES['profile_image']['tmp_name'];
+            $fileType = mime_content_type($fileTmp);
+            if ($fileType === 'image/jpeg') {
+             $filename = 'profile_' . $user_id . '.jpg';
+            $dest = __DIR__ . '/uploads/' . $filename;
+
+              if (move_uploaded_file($fileTmp, $dest)) {
+                  $stmt = $conn->prepare("UPDATE users SET profile_image = ? WHERE user_id = ?");
+                  $stmt->bind_param("si", $filename, $user_id);
+                  $stmt->execute();
+                  $stmt->close();
+                echo "<script>alert('✅ Profile image uploaded successfully!'); window.location.href = 'bakerprofile.php';</script>";
+                exit;
+              } else {
+                echo "<script>alert('❌ Failed to upload image.');</script>";
+              }
+            } else {
+              echo "<script>alert('❌ Only JPEG images are allowed.');</script>";
+            }
+          } else {
+            echo "<script>alert('❌ Please select a JPEG image to upload.');</script>";
+          }
+        }
+        // Handle AJAX remove
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_profile_image'])) {
+          $profileImgPath = __DIR__ . '/uploads/profile_' . $user_id . '.jpg';
+          if (file_exists($profileImgPath)) {
+            unlink($profileImgPath);
+            $stmt = $conn->prepare("UPDATE users SET profile_image = NULL WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $stmt->close();
+            echo "<script>alert('✅ Profile image removed.'); window.location.href = 'bakerprofile.php';</script>";
+            exit;
+          }
+        }
+        ?>
+        <!-- Cropper.js CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="avatar-cropper.css">
 
         <h1 class="profile-name"> <?php echo htmlspecialchars($_SESSION['name']); ?></h1>
         <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> <br>
@@ -84,7 +135,7 @@ $user = $result->fetch_assoc();
         <form method="post" id="updateProfileForm">
           <div class="form-grid">
             <div class="form-group">
-              <label for="fullName">Full Name</label>
+              <label for="full_name">Full Name</label>
               <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" required
                 value="<?php echo htmlspecialchars($user['full_name']); ?>">
               <div id="nameError" class="error"></div>
@@ -94,8 +145,7 @@ $user = $result->fetch_assoc();
               <label for="phone">Phone Number</label>
               <div class="phone-input-wrapper">
                 <span class="phone-prefix">+91</span>
-                <input type="tel" id="phone" name="phone" maxlength="10" placeholder="Enter your phone number" required
-                  value="<?php echo htmlspecialchars(substr($user['phone'], 0)); ?>">
+                <input type="tel" id="phone" name="phone" maxlength="10" value="<?php echo htmlspecialchars($user['phone']); ?>">
               </div>
               <div id="phoneError" class="error"></div>
             </div>
@@ -149,7 +199,8 @@ $user = $result->fetch_assoc();
                   "Puducherry"
                 ];
                 foreach ($states as $state) {
-                  echo "<option value=\"$state\">$state</option>";
+                  $selected = ($state === $selectedState) ? "selected" : "";
+                  echo "<option value=\"$state\" $selected>$state</option>";
                 }
                 ?>
               </select>
@@ -202,6 +253,9 @@ $user = $result->fetch_assoc();
                 "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"]
               };
 
+               const selectedState = "<?php echo htmlspecialchars($user['state']) ?? ''; ?>";
+               const selectedDistrict = "<?php echo htmlspecialchars($user['district']) ?? ''; ?>";
+              
               function updateDistricts() {
                 const stateSelect = document.getElementById("state");
                 const districtSelect = document.getElementById("district");
@@ -216,10 +270,23 @@ $user = $result->fetch_assoc();
                     const option = document.createElement("option");
                     option.value = district;
                     option.textContent = district;
+
+                    // Pre-select saved district
+                    if (district === selectedDistrict) {
+                      option.selected = true;
+                    }
                     districtSelect.appendChild(option);
                   });
                 }
               }
+              // Set state dropdown and update districts on page load
+              window.onload = function () {
+                const stateSelect = document.getElementById("state");
+                if (selectedState) {
+                  stateSelect.value = selectedState;
+                  updateDistricts(); // Will also select district
+                }
+              };
             </script>
 
             <div class="form-group">
@@ -489,19 +556,20 @@ $user = $result->fetch_assoc();
     $updated_name = $_POST['full_name'];
     $updated_phone = $_POST['phone'];
     $updated_bio = $_POST['bio'];
+    $updated_state = $_POST['state'];
     $updated_district = $_POST['district'];
     $updated_address = $_POST['address'];
 
     // Update query
-    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, district = ?, address = ? WHERE user_id = ?");
-    $stmt->bind_param("sssssi", $updated_name, $updated_phone, $updated_bio, $updated_district, $updated_address, $user_id);
+    $stmt = $conn->prepare("UPDATE users SET full_name = ?, phone = ?, bio = ?, state = ?, district = ?, address = ? WHERE user_id = ?");
+    $stmt->bind_param("ssssssi", $updated_name, $updated_phone, $updated_bio, $updated_state, $updated_district, $updated_address, $user_id);
 
     if ($stmt->execute()) {
       // Update session name so it's reflected immediately
       $_SESSION['name'] = $updated_name;
-      echo "<script>showAlert('Success!', 'Profile updated successfully!', 'success');</script>";
+      echo "<script>showAlert('Success!', '✅ Profile updated successfully!', 'success'); window.location.href = 'bakerprofile.php';</script>";
     } else {
-      echo "<script>showAlert('Error', 'Failed to update profile. Please try again.', 'error');</script>";
+      echo "<script>showAlert('Error', '❌ Failed to update profile. Please try again.', 'error');</script>";
     }
     $stmt->close();
   }
@@ -514,7 +582,7 @@ $user = $result->fetch_assoc();
     $stmt = $conn->prepare("UPDATE users SET password=? where user_id=?");
     $stmt->bind_param("si", $hashedPassword, $user_id);
     $stmt->execute();
-    echo "<script>showAlert('Success!', 'Password changed successfully!', 'success');</script>";
+    echo "<script>showAlert('Success!', '✅ Password changed successfully!', 'success');</script>";
     $stmt->close();
   }
 
@@ -528,7 +596,7 @@ $user = $result->fetch_assoc();
       setTimeout(() => window.location.href = 'index.php', 2000);</script>";
 
     } else {
-      echo "<script>showAlert('Error', 'Failed to delete account. Please try again.', 'error');</script>";
+      echo "<script>showAlert('Error', '❌ Failed to delete account. Please try again.', 'error');</script>";
     }
     $stmt->close();
     $conn->close();
@@ -536,5 +604,9 @@ $user = $result->fetch_assoc();
   }
   ?>
 </body>
+<!-- Cropper.js JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" crossorigin="anonymous"
+  referrerpolicy="no-referrer"></script>
+<script src="avatar-cropper.js"></script>
 
 </html>

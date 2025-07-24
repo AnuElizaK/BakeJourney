@@ -16,7 +16,7 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, district,state, bio, brand_name, specialty, address, profile_image
+  "SELECT full_name, email, phone, district, state, bio, brand_name, specialty, rating, no_of_reviews, address, profile_image
   FROM users, bakers 
   WHERE users.user_id = bakers.user_id AND users.user_id = ?"
 );
@@ -25,6 +25,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,15 +51,15 @@ $user = $result->fetch_assoc();
           $parts = explode(' ', $name);
           $initials = strtoupper($parts[0][0] . ($parts[1][0] ?? ''));
           if (!empty($user['profile_image']) && file_exists('uploads/' . $user['profile_image'])) {
-           echo '<img src="uploads/' . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+            echo '<img src="uploads/' . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
           } else {
-          echo $initials;
+            echo $initials;
           }
-
           ?>
           <div class="ranking-badge">#1 Baker</div>
         </div>
-        <!-- The edit button and modal are handled by JS -->
+
+        <!-- Edit button and modal handled by JS -->
         <?php
         // Handle AJAX upload (from JS/cropper)
         if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['upload_profile_image'])) {
@@ -66,14 +67,14 @@ $user = $result->fetch_assoc();
             $fileTmp = $_FILES['profile_image']['tmp_name'];
             $fileType = mime_content_type($fileTmp);
             if ($fileType === 'image/jpeg') {
-             $filename = 'profile_' . $user_id . '.jpg';
-            $dest = __DIR__ . '/uploads/' . $filename;
+              $filename = 'profile_' . $user_id . '.jpg';
+              $dest = __DIR__ . '/uploads/' . $filename;
 
               if (move_uploaded_file($fileTmp, $dest)) {
-                  $stmt = $conn->prepare("UPDATE users SET profile_image = ? WHERE user_id = ?");
-                  $stmt->bind_param("si", $filename, $user_id);
-                  $stmt->execute();
-                  $stmt->close();
+                $stmt = $conn->prepare("UPDATE users SET profile_image = ? WHERE user_id = ?");
+                $stmt->bind_param("si", $filename, $user_id);
+                $stmt->execute();
+                $stmt->close();
                 echo "<script>alert('✅ Profile image uploaded successfully!'); window.location.href = 'bakerprofile.php';</script>";
                 exit;
               } else {
@@ -111,13 +112,17 @@ $user = $result->fetch_assoc();
             Joined at <?php echo htmlspecialchars($_SESSION['created_at']); ?></p>
           <div class="baker-rating">
             <div class="stars">
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
-              <span class="star">★</span>
+              <?php
+              $stars = floor($user['rating']);
+              for ($i = 0; $i < $stars; $i++)
+                echo "<span class=\"star filled\">★</span>";
+              for ($i = $stars; $i < 5; $i++)
+                echo "<span class=\"star\">☆</span>";
+              ?>
             </div>
-            <span class="rating-number">5.0 (127 reviews)</span>
+            <span
+              class="rating-number"><?php echo number_format($user['rating'], 1); ?>&nbsp;(<?php echo htmlspecialchars($user['no_of_reviews']); ?>
+              Reviews)</span>
           </div>
           <p><strong>Specialty:</strong> <?php echo htmlspecialchars($user['specialty']); ?></p>
         </div>
@@ -128,8 +133,12 @@ $user = $result->fetch_assoc();
             <span class="stat-label">Orders Completed</span>
           </div>
           <div class="stat-card">
-            <span class="stat-number">98%</span>
-            <span class="stat-label">Customer Satisfaction</span>
+            <span class="stat-number"><?php echo number_format($user['rating'], 1); ?></span>
+            <span class="stat-label">Customer rating</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number"><?php echo htmlspecialchars($user['no_of_reviews']); ?>+</span>
+            <span class="stat-label">Customer Reviews</span>
           </div>
         </div>
       </div>
@@ -137,7 +146,7 @@ $user = $result->fetch_assoc();
       <!-- Baker Information -->
       <div class="profile-section">
         <h2 class="section-title">Baker Information</h2>
-        <form method="post"  id="updateProfileForm">
+        <form method="post" id="updateProfileForm">
           <div class="form-grid">
             <div class="form-group">
               <label for="fullName">Brand Name</label>
@@ -153,7 +162,8 @@ $user = $result->fetch_assoc();
 
             <div class="form-group">
               <label for="phone">Phone Number</label>
-              <input type="tel" id="phone" name="phone"  maxlength="10" value="<?php echo htmlspecialchars($user['phone']); ?>">
+              <input type="tel" id="phone" name="phone" maxlength="10"
+                value="<?php echo htmlspecialchars($user['phone']); ?>">
               <div id="phoneError" class="error"></div>
             </div>
 
@@ -255,8 +265,8 @@ $user = $result->fetch_assoc();
                 "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"]
               };
 
-               const selectedState = "<?php echo htmlspecialchars($user['state']) ?? ''; ?>";
-               const selectedDistrict = "<?php echo htmlspecialchars($user['district']) ?? ''; ?>";
+              const selectedState = "<?php echo htmlspecialchars($user['state']) ?? ''; ?>";
+              const selectedDistrict = "<?php echo htmlspecialchars($user['district']) ?? ''; ?>";
 
               function updateDistricts() {
                 const stateSelect = document.getElementById("state");
@@ -272,23 +282,23 @@ $user = $result->fetch_assoc();
                     const option = document.createElement("option");
                     option.value = district;
                     option.textContent = district;
-                    
-      // Pre-select saved district
-      if (district === selectedDistrict) {
-        option.selected = true;
-      }
+
+                    // Pre-select saved district
+                    if (district === selectedDistrict) {
+                      option.selected = true;
+                    }
                     districtSelect.appendChild(option);
                   });
                 }
               }
               // Set state dropdown and update districts on page load
-  window.onload = function () {
-    const stateSelect = document.getElementById("state");
-    if (selectedState) {
-      stateSelect.value = selectedState;
-      updateDistricts(); // Will also select district
-    }
-  };
+              window.onload = function () {
+                const stateSelect = document.getElementById("state");
+                if (selectedState) {
+                  stateSelect.value = selectedState;
+                  updateDistricts(); // Will also select district
+                }
+              };
             </script>
 
             <div class="form-group">
@@ -382,7 +392,7 @@ $user = $result->fetch_assoc();
                 </svg>
               </button>
             </div>
-             <div id="passwordError" class="error"></div>
+            <div id="passwordError" class="error"></div>
           </div>
           <div class="form-group password-group">
             <label for="confirmPassword">Confirm</label>
@@ -485,8 +495,7 @@ $user = $result->fetch_assoc();
       return true;
     };
 
-
-  // Toggle password visibility
+    // Toggle password visibility
     function togglePassword(inputId) {
       const input = document.getElementById(inputId);
       const button = input.nextElementSibling;
@@ -501,6 +510,7 @@ $user = $result->fetch_assoc();
       }
     }
   </script>
+
   <?php
   if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['bkupdate'])) {
     $updated_name = $_POST['full_name'];
@@ -523,7 +533,6 @@ $user = $result->fetch_assoc();
     } else {
       echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
     }
-
     $stmt->close();
   }
 
@@ -545,16 +554,14 @@ $user = $result->fetch_assoc();
     if ($stmt->execute()) {
       // Destroy session and redirect
       session_destroy();
-      echo "<script>alert('✅ Your account has been deleted.'); window.location.href = 'index.php';</script>";
+      echo "<script>alert('✅ Your account has been deleted. We are sad to see you go.'); window.location.href = 'index.php';</script>";
       exit();
     } else {
       echo "<script>alert('❌ Failed to delete account. Please try again.');</script>";
     }
     $stmt->close();
     $conn->close();
-
   }
-
   ?>
 
 </body>

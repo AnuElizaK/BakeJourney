@@ -306,6 +306,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .btn-primary {
   background: linear-gradient(135deg, #fcd34d, #f59e0b);
   color: white;
+  cursor: pointer;
   box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
 }
 
@@ -491,6 +492,13 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   background-clip: text;
 }
 
+.star.half {
+  background: linear-gradient(90deg, #f59e0b 50%, #d1d5db 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .rating-number {
   font-size: 0.875rem;
   color: #6b7280;
@@ -552,6 +560,22 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   font-size: 0.875rem;
   color: #b45309;
   margin-top: 4px;
+}
+
+.more {
+  font-weight: 600; 
+  margin: 32px 0; 
+  transition: all 0.3s ease;
+  border-radius: 15px; 
+  padding: 10px 20px; 
+  width: fit-content; 
+  margin-left: auto; 
+  margin-right: auto;
+}
+
+.more:hover{
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  transition: all 0.3s ease;
 }
 
 /* Become a Baker CTA Section */
@@ -1270,6 +1294,7 @@ form textarea {
   background: #1f2a38;
   color: white;
   padding: 60px 0 30px;
+  padding-top: 40px;
 }
 
 .footer-content {

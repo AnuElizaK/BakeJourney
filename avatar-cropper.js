@@ -1,6 +1,4 @@
-// Avatar cropper and upload logic for bakerprofile.php
-// Uses Cropper.js (https://fengyuanchen.github.io/cropperjs/)
-// Assumes Cropper.js and its CSS are loaded in the page
+// Using Cropper.js (https://fengyuanchen.github.io/cropperjs/)
 
 document.addEventListener('DOMContentLoaded', function () {
   const avatar = document.querySelector('.profile-avatar');
@@ -8,21 +6,21 @@ document.addEventListener('DOMContentLoaded', function () {
   editBtn.type = 'button';
   editBtn.className = 'avatar-edit-btn';
   editBtn.title = 'Edit profile image';
-  editBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color: #f59e0b;" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
+  editBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="color: #ffffff;" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
   avatar.appendChild(editBtn);
 
-  // Modal HTML styled like product upload modal
-  const modalHtml = `
-    <div class="modal avatar-modal" id="avatarModal" style="display:none;align-items:center;justify-content:center;">
-      <div class="modal-content" style="max-width:420px;padding:0;overflow:visible;">
-        <div class="modal-header" style="padding:1.5rem 1.5rem 1rem 1.5rem;">
-          <h2 class="modal-title" style="font-size:1.5rem;font-weight:bold;color:#1f2a38;">Update Profile Image</h2>
-          <button type="button" id="avatarModalClose" class="close-btn" style="font-size:1.5rem;">&times;</button>
+  // Upload modal
+  const uploadProfile = `
+    <div class="avatar-modal" id="avatarModal">
+      <div class="avatar-modal-content">
+        <div class="avatar-modal-header">
+          <h2 class="avatar-modal-title">Update Profile Image</h2>
+          <button type="button" id="avatarModalClose" class="close-btn">&times;</button>
         </div>
-        <form class="modal-form" style="padding:1.5rem;">
+        <form class="avatar-modal-form" style="padding:1.5rem;">
           <div class="form-group" style="margin-bottom:1.5rem;">
             <label class="form-label" style="display:block;margin-bottom:0.5rem;font-weight:500;color:#374151;">Upload Image (JPEG only)</label>
-            <div class="file-upload" style="border:2px dashed #9ca3af;border-radius:0.5rem;padding:1.5rem;text-align:center;">
+            <div class="file-upload">
               <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:2.5rem;height:2.5rem;color:#9ca3af;margin:0 auto 1rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"/></svg>
               <p class="upload-text" style="color:#6b7280;margin-bottom:0.5rem;">Drag and drop a JPEG image, or</p>
               <button type="button" class="browse-btn" id="avatarBrowseBtn" style="background:linear-gradient(135deg,#fcd34d,#f59e0b);color:white;border:none;padding:0.5rem 1rem;border-radius:0.5rem;cursor:pointer;">Browse Files</button>
@@ -33,13 +31,13 @@ document.addEventListener('DOMContentLoaded', function () {
           <div id="avatarCropContainer" style="margin:10px 0;"></div>
           <div class="form-actions" style="display:flex;gap:1rem;padding-top:1rem;">
             <button type="button" id="avatarSaveBtn" class="btn-primary" style="display:none;flex:1;">Save</button>
-            <button type="button" id="avatarRemoveBtn" class="btn-secondary danger" style="display:none;flex:1;background:#fee996;color:#ef4444;border:1px solid #ef4444;">Remove Image</button>
+            <button type="button" id="avatarRemoveBtn" class="btn-secondary danger">Remove Image</button>
           </div>
         </form>
       </div>
     </div>
   `;
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  document.body.insertAdjacentHTML('beforeend', uploadProfile);
 
   const modal = document.getElementById('avatarModal');
   const closeBtn = document.getElementById('avatarModalClose');

@@ -125,6 +125,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
       $_SESSION['specialty'] = $user['specialty'];
       $_SESSION['address'] = $user['address'];
       $_SESSION['profile_image'] = $user['profile_image'];
+      $_SESSION['rating'] = $user['rating'];
+      $_SESSION['no_of_reviews'] = $user['no_of_reviews'];
       // Redirect based on role
       if ($user['role'] === 'baker') {
         header("Location: bakerdashboard.php");
