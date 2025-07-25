@@ -882,8 +882,6 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   color: #b45309;
 }
 
-/* ... keep existing code (Featured Products, About, Services, Contact, Footer styles) */
-
 /* Featured Products */
 .featured-products {
   padding: 100px 0;
@@ -1051,7 +1049,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 
 .value-item p {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: #374151;
   line-height: 1.6;
 }
 

@@ -193,12 +193,12 @@
                 <div class="footer-links">
                     <h3 class="quick-links">Quick Links</h3>
                     <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Services</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Sitemap</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Blog</a></li>
+                        <li><a href="about.php">About Us</a></li>
+                        <li><a href="services.php">Services</a></li>
+                        <li><a href="contact.php">Contact</a></li>
+                        <li><a href="sitemap.php">Sitemap</a></li>
+                        <li><a href="privacypolicy.php">Privacy Policy</a></li>
+                        <li><a href="blog.php">Blog</a></li>
                     </ul>
                 </div>
                 <div class="footer-social">

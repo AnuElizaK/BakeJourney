@@ -52,7 +52,7 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 32px;
+      gap: 23px;
     }
 
     .nav-link {
@@ -221,7 +221,7 @@
             <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
             <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
             <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
-            <a href="bakerprofile.php" class="nav-link nav-cta">You</a>
+            <a href="bakerprofile.php" class="nav-link nav-cta">Your Profile</a>
             <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 

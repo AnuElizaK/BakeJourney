@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Management | BakeJourney</title>
+    <title>Your Customers | BakeJourney</title>
     <link rel="stylesheet" href="bakercustomermngmt.css">
 </head>
 

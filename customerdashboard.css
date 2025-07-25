@@ -575,7 +575,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 
 @media (min-width: 640px) {
   .values-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -650,7 +650,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 /* Services Section */
 .services {
   padding: 100px 0;
-  background: white;
+  background: linear-gradient(#ffffff, #b8c1ce);
 }
 
 .services-grid {
