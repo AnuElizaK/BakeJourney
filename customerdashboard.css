@@ -276,7 +276,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 }
 
 .products {
-  padding: 100px 0;
+  padding: 10px 0;
   background: linear-gradient(#fff1bb, #ffffff);
 }
 
@@ -382,7 +382,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 }
 
 .all-bakers{
-  padding: 100px 0;
+  padding: 20px 0;
   background: linear-gradient(#fff1bb, #ffffff);
 }
 
@@ -649,7 +649,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 
 /* Services Section */
 .services {
-  padding: 100px 0;
+  padding: 10px 0;
   background: linear-gradient(#ffffff, #b8c1ce);
 }
 
@@ -737,7 +737,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 
 /* Contact Section */
 .contact {
-  padding: 100px 0;
+  padding: 10px 0;
   background: linear-gradient(#fee996, #b8c1ce);
 }
 

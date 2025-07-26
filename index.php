@@ -12,6 +12,17 @@ $stmt = $conn->prepare("
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Fetch products details
+$productStmt = $conn->prepare("
+  SELECT p.product_id, p.name AS product_name, p.price, p.image AS product_image,
+         b.brand_name 
+  FROM products p
+  JOIN bakers b ON p.baker_id = b.baker_id
+  ORDER BY RAND() 
+  LIMIT 4
+");
+$productStmt->execute();
+$productResult = $productStmt->get_result();
 
 ?>
 <!DOCTYPE html>
@@ -194,53 +205,23 @@ $result = $stmt->get_result();
       </div>
 
       <div class="products-grid">
+      <?php while ($product = $productResult->fetch_assoc()): ?> 
         <div class="product-card">
           <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              alt="Artisan Sourdough">
+             <img src="uploads/<?= htmlspecialchars($product['product_image']) ?>" 
+                alt="<?= htmlspecialchars($product['product_name']) ?>">
             <span class="product-badge">Bestseller</span>
           </div>
           <div class="product-content">
             <div class="product-header">
-              <h3>Artisan Sourdough</h3>
-              <span class="product-price">$8.50</span>
+              <h3><?= htmlspecialchars($product['product_name']) ?></h3>
+              <span class="product-price">₹<?= htmlspecialchars($product['price']) ?></span>
             </div>
-            <p>Traditional 48-hour fermented sourdough with a perfect crust.</p>
-          </div>
-        </div>
+           <p>By <?= htmlspecialchars($product['brand_name']) ?></p>
 
-        <div class="product-card">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1722085609594-1bc764876867?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Chocolate Croissants">
-            <span class="product-badge">Fresh Daily</span>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Chocolate Croissants</h3>
-              <span class="product-price">$4.25</span>
-            </div>
-            <p>Buttery, flaky pastry filled with premium Belgian chocolate.</p>
           </div>
         </div>
-
-        <div class="product-card">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <span class="product-badge">Made to Order</span>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
+      <?php endwhile; ?>
       </div>
     </div>
   </section>
@@ -407,7 +388,7 @@ $result = $stmt->get_result();
         <div class="contact-form">
           <div class="form-card">
             <h3 class="contact-form-title">Send us a Message</h3>
-            <form>
+              <form onsubmit="showSubmittedAlert(event)">
               <div class="form-row">
                 <input type="text" placeholder="Your Name" required>
                 <input type="email" placeholder="Email Address" required>
@@ -518,6 +499,15 @@ $result = $stmt->get_result();
         }
       });
     });
+
+   
+    // Alert on form submission
+     function showSubmittedAlert(event) {
+    event.preventDefault(); 
+    alert("Thank you for your message! We'll get back to you soon.");
+    event.target.reset();
+  }
+
   </script>
 </body>
 
