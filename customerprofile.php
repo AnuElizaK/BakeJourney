@@ -77,7 +77,7 @@ $user = $result->fetch_assoc();
                   $stmt->bind_param("si", $filename, $user_id);
                   $stmt->execute();
                   $stmt->close();
-                echo "<script>alert('✅ Profile image uploaded successfully!'); window.location.href = 'bakerprofile.php';</script>";
+                echo "<script>alert('✅ Profile image uploaded successfully!');</script>";
                 exit;
               } else {
                 echo "<script>alert('❌ Failed to upload image.');</script>";
@@ -567,7 +567,7 @@ $user = $result->fetch_assoc();
     if ($stmt->execute()) {
       // Update session name so it's reflected immediately
       $_SESSION['name'] = $updated_name;
-      echo "<script>showAlert('Success!', '✅ Profile updated successfully!', 'success'); window.location.href = 'bakerprofile.php';</script>";
+      echo "<script>showAlert('Success!', '✅ Profile updated successfully!', 'success'); </script>";
     } else {
       echo "<script>showAlert('Error', '❌ Failed to update profile. Please try again.', 'error');</script>";
     }
