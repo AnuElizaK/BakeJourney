@@ -115,9 +115,8 @@ $productResult = $productStmt->get_result();
         <?php while ($baker = $result->fetch_assoc()): ?>
           <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
-              <img
-                src="uploads/<?php echo htmlspecialchars($baker['profile_image'] ?: 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); ?>"
-                alt="Profile Image">
+              <img src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>" alt="Profile Image">
+
               <div class="ranking-badge">Top</div>
             </div>
             <div class="baker-content">
