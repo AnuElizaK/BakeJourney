@@ -207,7 +207,7 @@ $productResult = $productStmt->get_result();
       <?php while ($product = $productResult->fetch_assoc()): ?> 
         <div class="product-card">
           <div class="product-image">
-             <img src="uploads/<?= htmlspecialchars($product['product_image']) ?>" 
+             <img src="<?= !empty($product['product_image']) ? 'uploads/' . htmlspecialchars($product['product_image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>" 
                 alt="<?= htmlspecialchars($product['product_name']) ?>">
             <span class="product-badge">Bestseller</span>
           </div>
