@@ -10,7 +10,298 @@
   <meta name="author" content="BakeJourney" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@bakejourney" />
-  <link rel="stylesheet" href="customerdashboard.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      padding-top: 80px;
+      color: #1f2a38;
+    }
+
+    h1,
+    h2 {
+      font-family: 'Puanto', Roboto, sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 36px;
+      font-size: 1.125rem;
+      font-weight: 600;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #fcd34d, #f59e0b);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(217, 119, 6, 0.4);
+    }
+
+    .btn-large {
+      padding: 18px 48px;
+      font-size: 1.25rem;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-outline {
+      border: 2px solid white;
+      color: white;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: #f59e0b;
+      transform: translateY(-2px);
+    }
+
+    /* Section Headers */
+    .section-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #1f2a38;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-header p {
+      font-size: 1.25rem;
+      color: #6b7280;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* Products */
+
+    /* Filter Tabs */
+    .filter-section {
+      background: none;
+      padding: 15px 20px;
+      border-radius: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .product-search-input {
+      width: 100%;
+      padding: 12px 45px;
+      background: transparent url("media/search.png") no-repeat 10px center;
+      border: 1.5px solid #c6c8ca;
+      border-radius: 0.65rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-search-input:hover {
+      border-color: #8b919c;
+      background-color: #f8f9fa;
+    }
+
+    .product-search-input:focus {
+      outline: none;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+    }
+
+    .filter-tabs {
+      display: flex;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.65rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 12px 15px;
+      border: none;
+      background: #f8f9fa;
+      border-radius: 0.65rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #6b7280;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #fcd34d, #f59e0b);
+      color: white;
+    }
+
+    .filter-btn:hover:not(.active) {
+      background: #fee996;
+    }
+
+    .products {
+      padding: 50px 0;
+      background: linear-gradient(#fff1bb, #ffffff);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s ease;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
+      transform: translateY(-10px);
+    }
+
+    .product-image {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .product-card:hover .product-image img {
+      transform: scale(1.1);
+    }
+
+    .cart-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: linear-gradient(135deg, #fcd34d, #d97706);
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      border-radius: 25px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .cart-button:hover {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .product-content {
+      padding: 10px 20px 20px;
+    }
+
+    .product-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .product-header h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1f2a38;
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #f59e0b;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .product-content p {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .section-header h2 {
+        font-size: 2rem;
+      }
+
+      .section-header p {
+        font-size: 1rem;
+      }
+
+      .products-grid {
+        gap: 20px;
+      }
+
+      .product-card {
+        border-radius: 14px;
+      }
+
+      .product-image img {
+        height: 120px;
+      }
+
+      .product-content {
+        padding: 24px;
+      }
+    }
+  </style>
 </head>
 
 <!-- Sticky Navigation Bar -->
