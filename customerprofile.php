@@ -16,10 +16,9 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, district, state, bio, address, profile_image
+  "SELECT full_name, email, phone, district, state, bio, address, profile_image, created_at
   FROM users 
-  WHERE user_id = ?
-"
+  WHERE user_id = ?"
 );
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -77,7 +76,7 @@ $user = $result->fetch_assoc();
                   $stmt->bind_param("si", $filename, $user_id);
                   $stmt->execute();
                   $stmt->close();
-                echo "<script>alert('✅ Profile image uploaded successfully!');</script>";
+                echo "<script>alert('✅ Profile image uploaded successfully!');window.location.href = 'customerprofile.php';</script>";
                 exit;
               } else {
                 echo "<script>alert('❌ Failed to upload image.');</script>";
@@ -98,7 +97,7 @@ $user = $result->fetch_assoc();
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
             $stmt->close();
-            echo "<script>alert('✅ Profile image removed.'); window.location.href = 'bakerprofile.php';</script>";
+            echo "<script>alert('✅ Profile image removed.'); window.location.href = 'customerprofile.php';</script>";
             exit;
           }
         }
@@ -567,7 +566,7 @@ $user = $result->fetch_assoc();
     if ($stmt->execute()) {
       // Update session name so it's reflected immediately
       $_SESSION['name'] = $updated_name;
-      echo "<script>showAlert('Success!', '✅ Profile updated successfully!', 'success'); </script>";
+      echo "<script>showAlert('Success!', '✅ Profile updated successfully!', 'success'); window.location.href = 'customerprofile.php';</script>";
     } else {
       echo "<script>showAlert('Error', '❌ Failed to update profile. Please try again.', 'error');</script>";
     }

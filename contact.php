@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+if (!isset($_SESSION['email'])) {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
 }
@@ -194,7 +194,13 @@ header("Pragma: no-cache");
 </head>
 
 <!-- Sticky Navigation Bar -->
-<?php include 'custnavbar.php'; ?>
+<?php
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
+    include 'custnavbar.php';
+} else {
+    include 'bakernavbar.php';
+}
+?>
 
 <body>
     <!-- Contact Section -->
