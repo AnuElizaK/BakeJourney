@@ -4,7 +4,7 @@ include 'db.php';
 
 // Fetch baker details
 $stmt = $conn->prepare("
-  SELECT u.user_id, u.full_name, u.profile_image, b.brand_name, b.specialty, b.rating, b.no_of_reviews
+  SELECT u.user_id, u.full_name, u.profile_image, b.brand_name, b.specialty, b.rating, b.no_of_reviews, b.experience
   FROM users u
   JOIN bakers b ON u.user_id = b.user_id
   Limit 3
@@ -14,8 +14,8 @@ $result = $stmt->get_result();
 
 // Fetch products details
 $productStmt = $conn->prepare("
-  SELECT p.product_id, p.name AS product_name, p.price, p.image AS product_image,
-         b.brand_name 
+  SELECT p.product_id, p.name AS product_name,  p.price, p.image AS product_image,
+         b.brand_name, p.description 
   FROM products p
   JOIN bakers b ON p.baker_id = b.baker_id
   ORDER BY RAND() 
@@ -40,9 +40,6 @@ $productResult = $productStmt->get_result();
   <meta property="og:description"
     content="Experience the warmth of homemade goodness in every bite. Fresh breads, pastries, and custom cakes." />
   <meta property="og:type" content="website" />
-
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@bakejourney" />
 
   <link rel="stylesheet" href="indexstyles.css">
 </head>
@@ -138,7 +135,7 @@ $productResult = $productStmt->get_result();
               </div>
               <p class="baker-specialty">Specialty: <?php echo htmlspecialchars($baker['specialty']); ?></p>
               <div class="baker-stats">
-                <span class="stat">5+ Years Experience</span>
+                <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?> Experience</span>
                 <span class="stat">200+ Orders</span>
               </div>
             </div>
@@ -209,14 +206,15 @@ $productResult = $productStmt->get_result();
           <div class="product-image">
              <img src="<?= !empty($product['product_image']) ? 'uploads/' . htmlspecialchars($product['product_image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>" 
                 alt="<?= htmlspecialchars($product['product_name']) ?>">
-            <span class="product-badge">Bestseller</span>
+            <span class="product-badge">Order Now</span>
           </div>
           <div class="product-content">
             <div class="product-header">
               <h3><?= htmlspecialchars($product['product_name']) ?></h3>
               <span class="product-price">₹<?= htmlspecialchars($product['price']) ?></span>
             </div>
-           <p>By <?= htmlspecialchars($product['brand_name']) ?></p>
+           <p class="description"><?= htmlspecialchars($product['description']) ?></p>
+           <p class="creator">By <?= htmlspecialchars($product['brand_name'] ?: $product['name']) ?></p>
 
           </div>
         </div>

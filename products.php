@@ -8,8 +8,6 @@
   <title>All Products | BakeJourney</title>
   <meta name="description" content="BakeJourney - The Home Baker's Marketplace" />
   <meta name="author" content="BakeJourney" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@bakejourney" />
   <style>
     * {
       margin: 0;

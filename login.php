@@ -122,7 +122,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
       $_SESSION['created_at'] = date('F Y');
       $_SESSION['role'] = $user['role'];
       $_SESSION['brand_name'] = $user['brand_name'];
+      $_SESSION['description'] = $user['description'];
+      $_SESSION['order_lead_time'] = $user['order_lead_time'];
+      $_SESSION['availability'] = $user['availability'];
+      $_SESSION['custom_orders'] = $user['custom_orders'];
       $_SESSION['specialty'] = $user['specialty'];
+      $_SESSION['experience'] = $user['experience'];
       $_SESSION['address'] = $user['address'];
       $_SESSION['profile_image'] = $user['profile_image'];
       $_SESSION['rating'] = $user['rating'];

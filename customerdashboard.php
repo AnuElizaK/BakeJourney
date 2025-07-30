@@ -19,8 +19,6 @@ header("Pragma: no-cache");
   <title>Home | BakeJourney</title>
   <meta name="description" content="BakeJourney - The Home Baker's Marketplace" />
   <meta name="author" content="BakeJourney" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@bakejourney" />
   <link rel="stylesheet" href="customerdashboard.css">
 </head>
 

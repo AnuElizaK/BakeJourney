@@ -967,9 +967,15 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   color: #f59e0b;
 }
 
-.product-content p {
+.description {
   color: #6b7280;
   line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.creator {
+  color: #f59e0b;
+  font-size: 0.8rem;
 }
 
 /* About Section */
