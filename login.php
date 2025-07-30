@@ -113,29 +113,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin'])) {
 
     if (password_verify($password, $user['password'])) {
       // Set session variables for already existing users
-      $_SESSION['user_id'] = $user['user_id'];
-      $_SESSION['name'] = $user['full_name'];
-      $_SESSION['email'] = $user['email'];
-      $_SESSION['phone'] = $user['phone'];
-      $_SESSION['state'] = $user['state'];
-      $_SESSION['district'] = $user['district'];
-      $_SESSION['created_at'] = date('F Y');
-      $_SESSION['role'] = $user['role'];
-      $_SESSION['brand_name'] = $user['brand_name'];
-      $_SESSION['description'] = $user['description'];
-      $_SESSION['order_lead_time'] = $user['order_lead_time'];
-      $_SESSION['availability'] = $user['availability'];
-      $_SESSION['custom_orders'] = $user['custom_orders'];
-      $_SESSION['specialty'] = $user['specialty'];
-      $_SESSION['experience'] = $user['experience'];
-      $_SESSION['address'] = $user['address'];
-      $_SESSION['profile_image'] = $user['profile_image'];
-      $_SESSION['rating'] = $user['rating'];
-      $_SESSION['no_of_reviews'] = $user['no_of_reviews'];
+  $_SESSION['user_id'] = $user['user_id'];
+  $_SESSION['name'] = $user['full_name'];
+  $_SESSION['email'] = $user['email'];
+  $_SESSION['phone'] = $user['phone'];
+  $_SESSION['state'] = $user['state'];
+  $_SESSION['district'] = $user['district'];
+  $_SESSION['created_at'] = date('F Y');
+  $_SESSION['role'] = $user['role'];
+  $_SESSION['profile_image'] = $user['profile_image'];
+  $_SESSION['address'] = $user['address'];
+
       // Redirect based on role
-      if ($user['role'] === 'baker') {
-        header("Location: bakerdashboard.php");
-      } else {
+     if ($user['role'] === 'baker') {
+    $baker_stmt = $conn->prepare("SELECT * FROM bakers WHERE user_id = ?");
+    $baker_stmt->bind_param("i", $user['user_id']);
+    $baker_stmt->execute();
+    $baker_result = $baker_stmt->get_result();
+
+    if ($baker_result->num_rows == 1) {
+      $baker = $baker_result->fetch_assoc();
+      $_SESSION['brand_name'] = $baker['brand_name'];
+      $_SESSION['description'] = $baker['description'];
+      $_SESSION['order_lead_time'] = $baker['order_lead_time'];
+      $_SESSION['availability'] = $baker['availability'];
+      $_SESSION['custom_orders'] = $baker['custom_orders'];
+      $_SESSION['specialty'] = $baker['specialty'];
+      $_SESSION['experience'] = $baker['experience'];
+      $_SESSION['rating'] = $baker['rating'];
+      $_SESSION['no_of_reviews'] = $baker['no_of_reviews'];
+    }
+
+    header("Location: bakerdashboard.php");
+      } 
+      else {
         header("Location: customerdashboard.php");
       }
       exit();

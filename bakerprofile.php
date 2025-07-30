@@ -16,8 +16,9 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, district, state, bio, brand_name, specialty, rating, no_of_reviews, address, profile_image
-  FROM users, bakers 
+  "SELECT full_name, email, phone, district, state, bio, brand_name, specialty, rating, no_of_reviews, address, profile_image,
+  experience, order_lead_time, availability, custom_orders
+  FROM users, bakers
   WHERE users.user_id = bakers.user_id AND users.user_id = ?"
 );
 $stmt->bind_param("i", $user_id);
@@ -310,17 +311,17 @@ $user = $result->fetch_assoc();
             <div class="form-group">
               <label for="specialty">Baking Specialty</label>
               <select id="specialty" name="specialty">
-                <option value="breads" <?php echo ($user['specialty'] == 'Artisan Breads & Sourdoughs') ? 'selected' : ''; ?>>
+                <option value="Artisan Breads & Sourdoughs" <?php echo ($user['specialty'] == 'Artisan Breads & Sourdoughs') ? 'selected' : ''; ?>>
                   Artisan Breads & Sourdoughs</option>
-                <option value="cakes" <?php echo ($user['specialty'] == 'Custom Cakes & Pastries') ? 'selected' : ''; ?>>
+                <option value="Custom Cakes & Pastries" <?php echo ($user['specialty'] == 'Custom Cakes & Pastries') ? 'selected' : ''; ?>>
                   Custom Cakes & Pastries</option>
-                <option value="gluten-free" <?php echo ($user['specialty'] == 'Gluten-Free Treats') ? 'selected' : ''; ?>>
+                <option value="Gluten-Free Treats" <?php echo ($user['specialty'] == 'Gluten-Free Treats') ? 'selected' : ''; ?>>
                   Gluten-Free Treats</option>
-                <option value="desserts" <?php echo ($user['specialty'] == 'Desserts & Sweets') ? 'selected' : ''; ?>>
+                <option value="Desserts & Sweets" <?php echo ($user['specialty'] == 'Desserts & Sweets') ? 'selected' : ''; ?>>
                   Desserts & Sweets</option>
-                <option value="cookies" <?php echo ($user['specialty'] == 'Cookies & Biscuits') ? 'selected' : ''; ?>>
+                <option value="Cookies & Biscuits" <?php echo ($user['specialty'] == 'Cookies & Biscuits') ? 'selected' : ''; ?>>
                   Cookies & Biscuits</option>
-                <option value="pies" <?php echo ($user['specialty'] == 'Pies & Tarts') ? 'selected' : ''; ?>>
+                <option value="Pies & Tarts" <?php echo ($user['specialty'] == 'Pies & Tarts') ? 'selected' : ''; ?>>
                   Pies & Tarts
                 </option>
               </select>
@@ -337,41 +338,59 @@ $user = $result->fetch_assoc();
     </div>
 
     <!-- Business Settings -->
+ 
     <div class="profile-section">
       <h2 class="section-title">Business Settings</h2>
-      <form>
+      <form method="POST">
         <div class="form-grid">
+           <div class="form-group">
+            <label for="experience">Experience</label>
+            <select id="experience" name="experience">
+              <option value="">Select experience level</option>
+              <option value="Less than 1 year" <?php echo ($user['experience'] == 'Less than 1 year') ? 'selected' : ''; ?>>Less than 1 year</option>
+              <option value="1 year" <?php echo ($user['experience'] == '1 year') ? 'selected' : ''; ?>>1 year</option>
+              <option value="2-3 years" <?php echo ($user['experience'] == '2-3 years') ? 'selected' : ''; ?>>2-3 years</option>
+              <option value="4-5 years" <?php echo ($user['experience'] == '4-5 years') ? 'selected' : ''; ?>>4-5 years</option>
+              <option value="6-7 years" <?php echo ($user['experience'] == '6-7 years') ? 'selected' : ''; ?>>6-7 years</option>
+              <option value="7+ years" <?php echo ($user['experience'] == '7+ years') ? 'selected' : ''; ?>>More than 7 years</option>
+            </select>
+          </div>
           <div class="form-group">
-            <label for="leadTime">Order Lead Time (days)</label>
-            <select id="leadTime" name="leadTime">
-              <option value="1">1 day</option>
-              <option value="2" selected>2-3 days</option>
-              <option value="4">4-5 days</option>
-              <option value="7">1 week</option>
-              <option value="14">2 weeks</option>
-              <option value="30">1 month</option>
-              <option value="-">More than 1 month</option>
+            <label for="orderLeadTime">Order Lead Time (days)</label>
+            <select id="orderLeadTime" name="order_lead_time">
+              <option value="">Select order lead time</option>
+              <option value="1 day" <?php echo ($user['order_lead_time'] == '1 day') ? 'selected' : ''; ?>>1 day</option>
+              <option value="2-3 days" <?php echo ($user['order_lead_time'] == '2-3 days') ? 'selected' : ''; ?>>2-3 days</option>
+              <option value="4-5 days" <?php echo ($user['order_lead_time'] == '4-5 days') ? 'selected' : ''; ?>>4-5 days</option>
+              <option value="1 week" <?php echo ($user['order_lead_time'] == '1 week') ? 'selected' : ''; ?>>1 week</option>
+              <option value="2 weeks" <?php echo ($user['order_lead_time'] == '2 weeks') ? 'selected' : ''; ?>>2 weeks</option>
+              <option value="1 month" <?php echo ($user['order_lead_time'] == '1 month') ? 'selected' : ''; ?>>1 month</option>
+              <option value="2 months" <?php echo ($user['order_lead_time'] == '2 months') ? 'selected' : ''; ?>>2 months</option>
+              <option value="3 months" <?php echo ($user['order_lead_time'] == '3 months') ? 'selected' : ''; ?>>3 months</option>
+              <option value="More than 3 months" <?php echo ($user['order_lead_time'] == 'More than 3 months') ? 'selected' : ''; ?>>More than 3 months</option>
             </select>
           </div>
           <div class="form-group">
             <label for="availability">Availability Status</label>
             <select id="availability" name="availability">
-              <option value="available" selected>Available for orders</option>
-              <option value="busy">Busy - limited availability</option>
-              <option value="unavailable">Temporarily unavailable</option>
+              <option value="">Select availability status</option>
+              <option value="Available for orders" <?php echo ($user['availability'] == 'Available for orders') ? 'selected' : ''; ?>>Available for orders</option>
+              <option value="Busy - limited availability" <?php echo ($user['availability'] == 'Busy - limited availability') ? 'selected' : ''; ?>>Busy - limited availability</option>
+              <option value="Temporarily unavailable" <?php echo ($user['availability'] == 'Temporarily unavailable') ? 'selected' : ''; ?>>Temporarily unavailable</option>
             </select>
           </div>
           <div class="form-group">
             <label for="custom">Custom orders</label>
-            <select id="custom" name="custom">
-              <option value="available" selected>Takes custom orders</option>
-              <option value="busy">Takes limited custom orders</option>
-              <option value="unavailable">Temporarily unavailable</option>
-              <option value="unavailable">Does not take custom orders</option>
+            <select id="custom" name="custom_orders">
+              <option value="">Select custom order status</option>
+              <option value="Takes custom orders" <?php echo ($user['custom_orders'] == 'Takes custom orders') ? 'selected' : ''; ?>>Takes custom orders</option>
+              <option value="Takes limited custom orders" <?php echo ($user['custom_orders'] == 'Takes limited custom orders') ? 'selected' : ''; ?>>Takes limited custom orders</option>
+              <option value="Temporarily unavailable" <?php echo ($user['custom_orders'] == 'Temporarily unavailable') ? 'selected' : ''; ?>>Temporarily unavailable</option>
+              <option value="Does not take custom orders" <?php echo ($user['custom_orders'] == 'Does not take custom orders') ? 'selected' : ''; ?>>Does not take custom orders</option>
             </select>
           </div>
         </div>
-        <button type="submit" class="btn">Save Settings</button>
+        <button type="submit" class="btn" name="businessSettings">Save Settings</button>
       </form>
     </div>
 
@@ -532,6 +551,24 @@ $user = $result->fetch_assoc();
       echo "<script>alert('✅ Profile updated successfully!'); window.location.href = 'bakerprofile.php';</script>";
     } else {
       echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
+    }
+    $stmt->close();
+  }
+
+  if( $_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['businessSettings'])) {
+    $updated_experience = $_POST['experience'];
+    $updated_order_lead_time = $_POST['order_lead_time'];
+    $updated_availability = $_POST['availability'];
+    $updated_custom_orders = $_POST['custom_orders'];
+
+    // Update query
+    $stmt = $conn->prepare("UPDATE bakers SET experience = ?, order_lead_time = ?, availability = ?, custom_orders = ? WHERE user_id = ?");
+    $stmt->bind_param("ssssi", $updated_experience, $updated_order_lead_time, $updated_availability, $updated_custom_orders, $user_id);
+
+    if ($stmt->execute()) {
+      echo "<script>alert('✅ Business settings updated successfully!'); window.location.href = 'bakerprofile.php';</script>";
+    } else {
+      echo "<script>alert('❌ Failed to update business settings. Please try again.');</script>";
     }
     $stmt->close();
   }
