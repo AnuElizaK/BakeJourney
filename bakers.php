@@ -155,7 +155,7 @@
       outline: none;
       transition: border-color 0.3s ease;
       margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 3.5rem;
     }
 
     .baker-search-input:hover {

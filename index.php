@@ -15,9 +15,10 @@ $result = $stmt->get_result();
 // Fetch products details
 $productStmt = $conn->prepare("
   SELECT p.product_id, p.name AS product_name,  p.price, p.image AS product_image,
-         b.brand_name, p.description 
+         b.brand_name, u.full_name, p.description 
   FROM products p
   JOIN bakers b ON p.baker_id = b.baker_id
+  JOIN users u ON b.user_id = u.user_id
   ORDER BY RAND() 
   LIMIT 4
 ");
@@ -56,10 +57,10 @@ $productResult = $productStmt->get_result();
         </div>
 
         <div class="nav-links">
-          <a href="index.php" class="nav-link">Home</a>
+          <a href="#home" class="nav-link">Home</a>
           <a href="#featured" class="nav-link">Menu</a>
-          <a href="#services" class="nav-link">Services</a>
           <a href="#about" class="nav-link">About</a>
+          <a href="#services" class="nav-link">Services</a>
           <a href="#contact" class="nav-link">Contact Us</a>
           <a href="bakersignup.php?role=baker" class="nav-link nav-cta">Join as Baker</a>
           <a href="login.php" class="nav-link nav-cta">Login or Sign Up</a>
@@ -112,7 +113,9 @@ $productResult = $productStmt->get_result();
         <?php while ($baker = $result->fetch_assoc()): ?>
           <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
-              <img src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>" alt="Profile Image">
+              <img
+                src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                alt="Profile Image">
 
               <div class="ranking-badge">Top</div>
             </div>
@@ -201,24 +204,27 @@ $productResult = $productStmt->get_result();
       </div>
 
       <div class="products-grid">
-      <?php while ($product = $productResult->fetch_assoc()): ?> 
-        <div class="product-card">
-          <div class="product-image">
-             <img src="<?= !empty($product['product_image']) ? 'uploads/' . htmlspecialchars($product['product_image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>" 
+        <?php while ($product = $productResult->fetch_assoc()): ?>
+          <div class="product-card" onclick="window.location.href='login.php'">
+            <div class="product-image">
+              <img
+                src="<?= !empty($product['product_image']) ? 'uploads/' . htmlspecialchars($product['product_image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
                 alt="<?= htmlspecialchars($product['product_name']) ?>">
-            <span class="product-badge">Order Now</span>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3><?= htmlspecialchars($product['product_name']) ?></h3>
-              <span class="product-price">₹<?= htmlspecialchars($product['price']) ?></span>
+              <span class="product-badge" onclick="window.location.href='login.php'">Order Now</span>
             </div>
-           <p class="description"><?= htmlspecialchars($product['description']) ?></p>
-           <p class="creator">By <?= htmlspecialchars($product['brand_name'] ?: $product['name']) ?></p>
+            <div class="product-content">
+              <div class="product-header">
+                <h3><?= htmlspecialchars($product['product_name']) ?></h3>
+                <span class="product-price">₹<?= htmlspecialchars($product['price']) ?></span>
+              </div>
+              <p class="description"><?= htmlspecialchars($product['description']) ?></p>
+              <p class="creator" onclick="window.location.href='login.php'">By
+                <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?>
+              </p>
 
+            </div>
           </div>
-        </div>
-      <?php endwhile; ?>
+        <?php endwhile; ?>
       </div>
     </div>
   </section>
@@ -385,7 +391,7 @@ $productResult = $productStmt->get_result();
         <div class="contact-form">
           <div class="form-card">
             <h3 class="contact-form-title">Send us a Message</h3>
-              <form onsubmit="showSubmittedAlert(event)">
+            <form onsubmit="showSubmittedAlert(event)">
               <div class="form-row">
                 <input type="text" placeholder="Your Name" required>
                 <input type="email" placeholder="Email Address" required>
@@ -464,6 +470,7 @@ $productResult = $productStmt->get_result();
   </footer>
 
   <script>
+
     // Navbar scroll behavior
     window.addEventListener('scroll', function () {
       const navbar = document.getElementById('navbar');
@@ -494,16 +501,39 @@ $productResult = $productStmt->get_result();
             block: 'start'
           });
         }
+        // Remove highlight from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('opened'));
+        // Add highlight to the clicked link
+        this.classList.add('opened');
       });
     });
 
-   
+    // Highlight nav link for section in view on scroll
+    const sectionIds = ['home', 'featured', 'about', 'services', 'contact'];
+    const navLinks = sectionIds.map(id => document.querySelector(`.nav-link[href="#${id}"]`));
+    const sections = sectionIds.map(id => document.getElementById(id));
+
+    function highlightCurrentSection() {
+      let currentIndex = -1;
+      const scrollPos = window.scrollY + 120; // Offset for navbar height
+      sections.forEach((section, i) => {
+        if (section && section.offsetTop <= scrollPos) {
+          currentIndex = i;
+        }
+      });
+      navLinks.forEach((link, i) => {
+        if (link) link.classList.toggle('opened', i === currentIndex);
+      });
+    }
+    window.addEventListener('scroll', highlightCurrentSection);
+    window.addEventListener('DOMContentLoaded', highlightCurrentSection);
+
     // Alert on form submission
-     function showSubmittedAlert(event) {
-    event.preventDefault(); 
-    alert("Thank you for your message! We'll get back to you soon.");
-    event.target.reset();
-  }
+    function showSubmittedAlert(event) {
+      event.preventDefault();
+      alert("Thank you for your message! We'll get back to you soon.");
+      event.target.reset();
+    }
 
   </script>
 </body>

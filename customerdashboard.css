@@ -735,27 +735,11 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
   flex-shrink: 0;
 }
 
-/* Contact Section */
-.contact {
-  padding: 100px 0;
-  background: linear-gradient(#fee996, #b8c1ce);
-}
+
 
 .linked-page-contact {
   padding: 100px 0;
   background: linear-gradient(#ffffff 40%, #d4dbe7 100%);
-}
-
-.contact-content {
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (min-width: 1024px) {
-  .contact-content {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 .contact-info h3 {

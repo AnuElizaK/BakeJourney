@@ -10,7 +10,16 @@ body {
   color: #1f2a38;
 }
 
-h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-form-title, .quick-links, .follow-us, .attributions {
+h1,
+h2,
+.baker-cta-title,
+.nav-title,
+.footer-title,
+.footer-subtitle,
+.contact-form-title,
+.quick-links,
+.follow-us,
+.attributions {
   font-family: 'Puanto', Roboto, sans-serif;
 }
 
@@ -55,7 +64,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   text-decoration: none;
 }
 
-.nav-title{
+.nav-title {
   text-decoration: none;
   color: #1f2a38;
 }
@@ -75,10 +84,6 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   transition: all 0.3s ease;
 }
 
-.nav-link:hover {
-  color: #f59e0b;
-}
-
 .nav-link::after {
   content: '';
   position: absolute;
@@ -91,6 +96,14 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 }
 
 .nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link.opened {
+  color: #f59e0b;
+}
+
+.nav-link.opened::after {
   width: 100%;
 }
 
@@ -148,7 +161,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   .nav-mobile-toggle {
     display: flex;
   }
-  
+
   .nav-links {
     position: absolute;
     top: 100%;
@@ -166,30 +179,30 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
     transition: all 0.3s ease;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   }
-  
+
   .nav-links.nav-links-active {
     transform: translateY(0);
     opacity: 1;
     visibility: visible;
   }
-  
+
   .nav-link {
     padding: 16px 0;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     width: 100%;
     text-align: center;
   }
-  
+
   .nav-link:last-child {
     border-bottom: none;
   }
-  
+
   .nav-cta {
     margin-top: 16px;
     text-align: center;
     border-radius: 25px;
   }
-  
+
   .nav-brand span {
     display: none;
   }
@@ -396,7 +409,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   left: 0;
   right: 0;
   bottom: 0;
-  background: #fef7cd ;
+  background: #fef7cd;
   opacity: 0;
   transition: opacity 0.4s ease;
   border-radius: 24px;
@@ -477,7 +490,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 }
 
 .star {
-  color: #d1d5db;
+  color: #6b7280;
   font-size: 1.25rem;
 }
 
@@ -563,17 +576,17 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 }
 
 .more {
-  font-weight: 600; 
-  margin: 32px 0; 
+  font-weight: 600;
+  margin: 32px 0;
   transition: all 0.3s ease;
-  border-radius: 15px; 
-  padding: 10px 20px; 
-  width: fit-content; 
-  margin-left: auto; 
+  border-radius: 15px;
+  padding: 10px 20px;
+  width: fit-content;
+  margin-left: auto;
   margin-right: auto;
 }
 
-.more:hover{
+.more:hover {
   background: linear-gradient(135deg, #f59e0b, #d97706);
   transition: all 0.3s ease;
 }
@@ -803,7 +816,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   text-align: center;
 }
 
-.login-form-card > p {
+.login-form-card>p {
   text-align: center;
   color: #6b7280;
   margin-bottom: 32px;
@@ -903,6 +916,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .product-card {
   background: white;
   border-radius: 20px;
+  cursor: pointer;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.4s ease;
@@ -940,6 +954,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
   border-radius: 25px;
   font-size: 0.875rem;
   font-weight: 600;
+  cursor: pointer;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
@@ -976,6 +991,7 @@ h1, h2, .baker-cta-title, .nav-title, .footer-title, .footer-subtitle, .contact-
 .creator {
   color: #f59e0b;
   font-size: 0.8rem;
+  cursor: pointer;
 }
 
 /* About Section */
@@ -1357,7 +1373,7 @@ form textarea {
   font-size: 0.9rem;
   list-style: none;
 }
-  
+
 .footer-links li,
 .footer-social li,
 .footer-attributions li {
@@ -1620,7 +1636,7 @@ form textarea {
   .hero-description {
     font-size: 1rem;
   }
-  
+
   .section-header h2 {
     font-size: 2rem;
   }
@@ -1628,7 +1644,7 @@ form textarea {
   .section-header p {
     font-size: 1rem;
   }
-  
+
   .about-text h2 {
     font-size: 2rem;
   }
@@ -1636,46 +1652,46 @@ form textarea {
   .about-text p {
     font-size: 1rem;
   }
-  
+
   .profile-info h1 {
     font-size: 2rem;
   }
-  
+
   .baker-story h2,
   .baker-products h2,
   .baker-reviews h2 {
     font-size: 2rem;
   }
-  
+
   .contact-card {
     padding: 40px 32px;
   }
-  
+
   .contact-card h3 {
     font-size: 2rem;
   }
-  
+
   .profile-image img {
     width: 220px;
     height: 220px;
   }
-  
+
   .baker-content {
     padding: 24px;
   }
-  
+
   .baker-stats.large {
     flex-direction: column;
   }
-  
+
   .baker-stats.large .stat {
     min-width: auto;
   }
-  
+
   .cta-card {
     padding: 40px 24px;
   }
-  
+
   .cta-card h3 {
     font-size: 2rem;
   }
@@ -1683,30 +1699,30 @@ form textarea {
   .cta-card p {
     font-size: 1rem;
   }
-  
+
   .cta-features {
     grid-template-columns: 1fr;
   }
-  
+
   .login-info h1 {
     font-size: 2rem;
   }
-  
+
   .login-form-card {
     padding: 32px 24px;
   }
-  
+
   .benefits-list {
     gap: 24px;
   }
-  
+
   .benefit {
     flex-direction: column;
     text-align: center;
     align-items: center;
   }
 
-  .contact-form h3{
+  .contact-form h3 {
     font-size: 1.5rem;
   }
 
@@ -1715,40 +1731,52 @@ form textarea {
     gap: 24px;
     align-items: flex-start;
   }
+
   .footer-main,
   .footer-links,
   .footer-social,
   .footer-attributions {
     min-width: 0;
     width: 100%;
-    margin-bottom: 8px;}
+    margin-bottom: 8px;
+  }
+
   .footer-main {
     order: 1;
   }
+
   .footer-links {
     order: 2;
   }
+
   .footer-social {
     order: 3;
   }
+
   .footer-attributions {
     order: 4;
   }
+
   .footer-brand {
     flex-direction: row;
     align-items: center;
     gap: 10px;
-  }.footer-title {
+  }
+
+  .footer-title {
     font-size: 1.3em;
   }
+
   .footer-subtitle {
     font-size: 1em;
   }
+
   .footer-links ul,
   .footer-social ul,
   .footer-attributions ul {
     padding-left: 0;
   }
+
   .footer-links li,
   .footer-social li,
   .footer-attributions li {

@@ -36,11 +36,12 @@ header("Pragma: no-cache");
         }
 
         h1,
-        h2 {
+        h2,
+        .contact-form-title {
             font-family: 'Puanto', Roboto, sans-serif;
         }
 
-        .container {
+        .contact-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 24px;
@@ -127,6 +128,18 @@ header("Pragma: no-cache");
             background: linear-gradient(#fee996, #b8c1ce);
         }
 
+        .contact-content {
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (min-width: 1024px) {
+            .contact-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         .form-card {
             background: linear-gradient(135deg, #fef3c7 0%, #fee996 100%);
             border-radius: 20px;
@@ -182,6 +195,9 @@ header("Pragma: no-cache");
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .body {
+                padding-top: 70px;
+            }
             .section-header h2 {
                 font-size: 2rem;
             }
@@ -205,7 +221,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
 <body>
     <!-- Contact Section -->
     <section class="contact" id="contact">
-        <div class="container">
+        <div class="contact-container">
             <div class="section-header">
                 <h2>Get In Touch</h2>
                 <p>Got any questions or complaints? We'd love to hear from you!</p>

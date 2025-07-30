@@ -10,7 +10,7 @@ body {
     background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
     min-height: 100vh;
     color: #1f2a38;
-    padding-top: 100px;
+    padding-top: 80px;
 }
 
 .container {
@@ -667,6 +667,7 @@ h1, h2, h3 {
 @media (max-width: 480px) {
     .main-content {
         padding: 1rem;
+        padding-top: 2rem;
     }
 
     .filter-tabs {
