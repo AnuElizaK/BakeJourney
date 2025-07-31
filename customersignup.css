@@ -1,69 +1,69 @@
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-font-family: 'Segoe UI', Roboto, sans-serif;
-line-height: 1.6;
-background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
-background-image: url('https://images.unsplash.com/photo-1672081211046-f494525f9a1b?q=80&w=1968&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-backdrop-filter: blur(1px);
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
-min-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 20px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
+  background-image: url('https://images.unsplash.com/photo-1672081211046-f494525f9a1b?q=80&w=1968&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+  backdrop-filter: blur(1px);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 
 .overlay {
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: rgba(0, 0, 0, 0.5);
-backdrop-filter: blur(4px);
-z-index: 50;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 50;
 }
 
 .dialog {
-position: relative;
-background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
-border: 2px solid #f59e0b;
-border-radius: 15px;
-box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-max-width: 600px;
-width: 100%;
-z-index: 100;
-backdrop-filter: blur(10px);
+  position: relative;
+  background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 15px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  max-width: 600px;
+  width: 100%;
+  z-index: 100;
+  backdrop-filter: blur(10px);
 }
 
 .dialog-header {
-text-align: center;
-padding: 30px 40px 20px;
-border-bottom: 1px solid rgba(217, 119, 6, 0.2);
+  text-align: center;
+  padding: 30px 40px 20px;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.2);
 }
 
 .logo-icon {
-background: linear-gradient(135deg, #fcd34d, #f59e0b, #d97706);
-width: 60px;
-height: 60px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-margin: 0 auto 20px;
+  background: linear-gradient(135deg, #fcd34d, #f59e0b, #d97706);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
 }
 
 .error {
-color: red;
-font-size: 0.85em;
-margin-top: 4px;
+  color: red;
+  font-size: 0.85em;
+  margin-top: 4px;
 }
 
 .custom-alert {
@@ -136,193 +136,202 @@ margin-top: 4px;
 }
 
 .logo-icon svg {
-color: white;
+  color: white;
 }
-.brand-name{
-font-family: 'Puanto', Roboto, sans-serif;
+
+.brand-name {
+  font-family: 'Puanto', Roboto, sans-serif;
 }
+
 .dialog-header h1 {
-color: #1f2a38;
-    font-size: 24px;
-font-weight: bold;
-margin-bottom: 8px;
+  color: #1f2a38;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
+
 .dialog-header p {
-color: #3f434b;
-font-size: 16px;
+  color: #3f434b;
+  font-size: 16px;
 }
+
 .dialog-content {
-padding: 20px 40px 40px;
+  padding: 20px 40px 40px;
 }
 
 .form-row {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 16px;
-margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+#details {
+  border-bottom: 1px solid rgba(217, 119, 6, 0.2);
 }
 
 .form-group {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
-display: block;
-margin-bottom: 8px;
-color: #374151;
-font-weight: 500;
-font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-width: 100%;
-padding: 12px;
-border: 1px solid #d1d5db;
-border-radius: 8px;
-font-size: 16px;
-font-family: inherit;
-transition: border-color 0.3s ease, box-shadow 0.3s ease;
-background: white;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: white;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-outline: none;
-border-color: #f59e0b;
-box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
 }
 
 .form-group textarea {
-resize: vertical;
-min-height: 80px;
+  resize: vertical;
+  min-height: 80px;
 }
 
 .password-group {
-position: relative;
+  position: relative;
 }
 
 .password-toggle {
-position: absolute;
-right: 12px;
-top: 50%;
-transform: translateY(-50%);
-background: none;
-border: none;
-color: #9ca3af;
-cursor: pointer;
-padding: 4px;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
 }
 
 .checkbox-group {
-display: flex;
-align-items: flex-start;
-    gap: 8px;
-margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .checkbox-group input[type="checkbox"] {
-width: auto;
-margin: 0;
-margin-top: 2px;
+  width: auto;
+  margin: 0;
+  margin-top: 2px;
 }
 
 .checkbox-group label {
-margin: 0;
-color: #6b7280;
-font-size: 14px;
-line-height: 1.4;
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .checkbox-group a {
-color: #d97706;
-text-decoration: none;
+  color: #d97706;
+  text-decoration: none;
 }
 
 .checkbox-group a:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
 
 .btn {
-width: 100%;
-padding: 12px;
-background: linear-gradient(135deg, #fcd34d, #f59e0b);
-color: white;
-border: none;
-border-radius: 8px;
-font-size: 16px;
-font-weight: 600;
-cursor: pointer;
-transition: background-color 0.3s ease;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #fcd34d, #f59e0b);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn:hover {
-background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .login-link {
-text-align: center;
-margin-top: 16px;
-font-size: 14px;
-color: #6b7280;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #6b7280;
 }
 
 .login-link a {
-color: #d97706;
-text-decoration: none;
-font-weight: 600;
+  color: #d97706;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .login-link a:hover {
-text-decoration: underline;
+  text-decoration: underline;
 }
+
 .close-button {
-position: absolute;
-top: 15px;
-right: 15px;
-background: none;
-border: none;
-color: #6b7280;
-cursor: pointer;
-font-size: 20px;
-width: 32px;
-height: 32px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: background-color 0.3s ease;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
 .close-button:hover {
-background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 768px) {
 
-.custom-alert {
+  .custom-alert {
     min-width: 280px;
     margin: 10px;
     padding: 20px;
   }
-  
-.dialog {
+
+  .dialog {
     max-width: 95%;
     margin: 10px;
-}
+  }
 
-.dialog-content {
+  .dialog-content {
     padding: 20px 20px 30px;
-}
+  }
 
-.dialog-header {
+  .dialog-header {
     padding: 20px 20px 15px;
-}
+  }
 
-.form-row {
+  .form-row {
     grid-template-columns: 1fr;
     gap: 12px;
-}
+  }
 }

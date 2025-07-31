@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <div class="form-row">
+        <div class="form-row" id="details">
           <div class="form-group">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="Enter your email address" required>

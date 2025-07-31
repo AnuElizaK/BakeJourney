@@ -13,6 +13,7 @@ body {
 h1,
 h2,
 .baker-cta-title,
+.customer-cta-title,
 .nav-title,
 .footer-title,
 .footer-subtitle,
@@ -304,6 +305,7 @@ h2,
   align-items: center;
   justify-content: center;
   padding: 14px 36px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
   font-size: 1.125rem;
   font-weight: 600;
   border-radius: 50px;
@@ -330,8 +332,8 @@ h2,
 }
 
 .btn-large {
-  padding: 18px 48px;
-  font-size: 1.25rem;
+  padding: 15px 45px;
+  font-size: 1.2rem;
 }
 
 .btn-full {
@@ -591,35 +593,47 @@ h2,
   transition: all 0.3s ease;
 }
 
-/* Become a Baker CTA Section */
-.become-baker-cta {
-  padding: 100px 0;
+/* Sign Up CTA Section */
+.sign-up-cta {
+  padding: 60px 0;
   background: linear-gradient(135deg, #fef3c7, #fee996);
 }
 
+.cta-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+@media (min-width: 1024px) {
+  .cta-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .cta-card {
-  background: white;
+  background: rgb(255, 255, 255);
   border-radius: 32px;
+  border-top: 6px solid #fcd34d;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   padding: 60px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
-  max-width: 800px;
-  margin: 0 auto;
-  position: relative;
-  overflow: hidden;
 }
 
-.cta-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #fcd34d, #f59e0b, #d97706);
+.cta-icon-baker {
+  background: linear-gradient(135deg, #fef3c7, #fee996);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  margin: 0 auto 32px;
+  color: #f59e0b;
+  box-shadow: 0 15px 35px rgba(217, 119, 6, 0.2);
 }
 
-.cta-icon {
+.cta-icon-binocular {
   background: linear-gradient(135deg, #fef3c7, #fee996);
   border-radius: 50%;
   width: 120px;
@@ -633,7 +647,7 @@ h2,
 }
 
 .cta-card h3 {
-  font-size: 2.75rem;
+  font-size: 2.0rem;
   font-weight: bold;
   color: #1f2a38;
   margin-bottom: 24px;
@@ -641,7 +655,7 @@ h2,
 }
 
 .cta-card p {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: #6b7280;
   margin-bottom: 40px;
   line-height: 1.7;
@@ -657,9 +671,13 @@ h2,
   margin-bottom: 48px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .cta-features {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .feature-icon {
+    font-size: 1.5rem;
   }
 }
 
@@ -667,6 +685,7 @@ h2,
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-size: 0.9rem;
   gap: 12px;
   padding: 24px;
   background: linear-gradient(135deg, #fbfdff, #e0f0ff);
@@ -680,7 +699,7 @@ h2,
 }
 
 .feature-icon {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 8px;
 }
 
@@ -1645,6 +1664,11 @@ form textarea {
     font-size: 1rem;
   }
 
+  .btn-large {
+    padding: 15px 45px;
+    font-size: 0.9rem;
+  }
+
   .about-text h2 {
     font-size: 2rem;
   }
@@ -1693,7 +1717,7 @@ form textarea {
   }
 
   .cta-card h3 {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
   .cta-card p {

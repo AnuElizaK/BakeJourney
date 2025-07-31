@@ -96,7 +96,8 @@ $productResult = $productStmt->get_result();
       <div class="hero-buttons">
         <button class="btn btn-primary"
           onclick="document.getElementById('tpbakers').scrollIntoView({behavior: 'smooth'})">Explore</button>
-        <a href="customerdashboard.php"><button class="btn btn-outline">Order Now</button></a>
+        <button class="btn btn-outline"
+          onclick="document.getElementById('featured').scrollIntoView({behavior: 'smooth'})">Order Now</button>
       </div>
     </div>
   </section>
@@ -154,43 +155,64 @@ $productResult = $productStmt->get_result();
 
   </section>
 
-  <!-- Become a Baker CTA Section -->
-  <section class="become-baker-cta">
+  <!-- Sign Up CTA Section -->
+  <section class="sign-up-cta">
     <div class="container">
-      <div class="cta-card">
-        <div class="cta-icon">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="m19 8 2 2-2 2" />
-            <path d="m17 10 2 2-2 2" />
-          </svg>
+      <div class="cta-grid">
+        <div class="cta-card">
+          <div class="cta-icon-baker">
+            <img src="media/baker.svg" alt="Baker Icon" width="124" height="124">
+          </div>
+          <h3 class="baker-cta-title">Want to be Featured in the Spotlight?</h3>
+          <p>Join our community of talented home bakers and showcase your delicious creations to food lovers everywhere!
+          </p>
+          <div class="cta-features">
+            <div class="feature">
+              <span class="feature-icon">✨</span>
+              <span>Get featured on our homepage</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🏆</span>
+              <span>Earn ratings, reviews, and rankings</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">💰</span>
+              <span>Grow your baking business</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-large" onclick="window.location.href='bakersignup.php'">
+            Join as a Baker →
+            </svg>
+          </button>
         </div>
-        <h3 class="baker-cta-title">Want to be Featured as a Baker?</h3>
-        <p>Join our community of talented homebakers and showcase your delicious creations to food lovers everywhere!
-        </p>
-        <div class="cta-features">
-          <div class="feature">
-            <span class="feature-icon">✨</span>
-            <span>Get featured on our homepage</span>
+
+        <div class="cta-card">
+          <div class="cta-icon-binocular">
+            <img src="media/binocular.svg" alt="Looking for Bakers" width="68" height="68">
           </div>
-          <div class="feature">
-            <span class="feature-icon">🏆</span>
-            <span>Earn ratings and reviews</span>
+          <h3 class="baker-cta-title">Or Looking for that Perfect Baker?</h3>
+          <p>Connect with skilled home bakers who craft treats tailored to your taste, wherever and whenever you need
+            them!
+          </p>
+          <div class="cta-features">
+            <div class="feature">
+              <span class="feature-icon">👩🏻‍🍳</span>
+              <span>Find the right baker for your needs</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🍩</span>
+              <span>Discover delicious creations</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🫱🏻‍🫲🏼</span>
+              <span>Support small businesses</span>
+            </div>
           </div>
-          <div class="feature">
-            <span class="feature-icon">💰</span>
-            <span>Grow your baking business</span>
-          </div>
+          <button class="btn btn-primary btn-large" onclick="window.location.href='customersignup.php'">
+            Sign Up Now →
+            </svg>
+          </button>
         </div>
-        <button class="btn btn-primary btn-large" onclick="window.location.href='bakersignup.html'">
-          Join as a Baker
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
       </div>
     </div>
   </section>
