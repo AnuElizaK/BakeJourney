@@ -1,38 +1,45 @@
-CREATE TABLE users (
-  user_id int(11) NOT NULL,
-  full_name varchar(100) NOT NULL,
-  phone varchar(15) NOT NULL,
-  email varchar(100) NOT NULL,
-  password text NOT NULL,
-  state varchar(100) NOT NULL,
-  district varchar(100) DEFAULT NULL,
-  address text NOT NULL,
-  bio text DEFAULT NULL,
-  profile_image longblob DEFAULT NULL,
-  role enum('customer','baker') NOT NULL,
-  created_at timestamp NOT NULL DEFAULT current_timestamp()
-)
-
-CREATE TABLE bakers (
-  baker_id int(11) NOT NULL,
-  user_id int(11) NOT NULL,
-  brand_name varchar(255) DEFAULT NULL,
-  brand_proof varchar(255) DEFAULT NULL,
-  identity_proof varchar(255) NOT NULL DEFAULT 'NOT NULL',
-  specialty varchar(100) DEFAULT NULL,
-  order_lead_time varchar(100) DEFAULT NULL,
-  availability varchar(100) DEFAULT NULL,
-  custom_orders varchar(100) NOT NULL,
-  rating decimal(10,0) DEFAULT NULL,
-  no_of_reviews int(11) DEFAULT NULL
-)
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    address TEXT,
+    bio text,
+    state varchar(100) ,
+    district varchar(100),
+    role ENUM('customer', 'baker') NOT NULL,
+    profile_image LONGBLOB DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  
+CREATE TABLE IF NOT EXISTS bakers (
+  baker_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  brand_name VARCHAR(255),
+  brand_proof VARCHAR(255),
+  identity_proof VARCHAR(255) NOT NULL, 
+  specialty VARCHAR(100),
+  order_lead_time VARCHAR(100) NULL,
+  availability VARCHAR(100) NULL,
+  custom_orders VARCHAR(100) NOT NULL,  
+  rating decimal, 
+  no_of_reviews int 
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
 CREATE TABLE products (
-  product_id int(11) NOT NULL,
-  baker_id int(11) NOT NULL,
-  name varchar(100) NOT NULL,
-  description text DEFAULT NULL,
-  price decimal(10,2) NOT NULL,
-  image varchar(255) DEFAULT NULL,
-  created_at timestamp NOT NULL DEFAULT current_timestamp()
-) 
+  product_id INT AUTO_INCREMENT PRIMARY KEY,
+  baker_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  category VARCHAR(100),
+  price DECIMAL(10,2) NOT NULL,
+  image VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (baker_id) REFERENCES bakers(baker_id) on DELETE CASCADE
+);
+
+
+
+
