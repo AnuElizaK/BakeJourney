@@ -326,24 +326,7 @@ if ($result->num_rows > 0) {
             modal.classList.remove('active');
         }
 
-        function deleteProduct(productId) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                // Find and remove the product card
-                const productCards = document.querySelectorAll('.product-card');
-                productCards.forEach(card => {
-                    const img = card.querySelector('img');
-                    if ((productId === 1 && img.alt.includes('Sourdough')) ||
-                        (productId === 2 && img.alt.includes('Chocolate')) ||
-                        (productId === 3 && img.alt.includes('Croissants'))) {
-                        card.classList.add('fade-out');
-                        setTimeout(() => {
-                            card.remove();
-                        }, 300);
-                    }
-                });
-                alert('Product deleted successfully!');
-            }
-        }
+      
 
         // Filter Functions
         function filterProducts(category) {
