@@ -44,7 +44,8 @@ $result = $stmt->get_result();
     <div class="container">
       <div class="section-header">
         <h2>Find Your Perfect Baker</h2>
-        <p>Looking for the right baker but don't know where to start? Discover homebakers that get you like no one else.</p>
+        <p>Looking for the right baker but don't know where to start? Discover homebakers that get you like no one else.
+        </p>
       </div>
 
       <!-- Baker Search -->
@@ -56,31 +57,32 @@ $result = $stmt->get_result();
 
       <div class="bakers-grid">
         <?php if ($result->num_rows > 0): ?>
-        <?php while ($baker = $result->fetch_assoc()): ?>
+          <?php while ($baker = $result->fetch_assoc()): ?>
             <div class="baker-card" onclick="window.location.href='bakerinfopage.php?baker_id=<?= $baker['baker_id']; ?>'">
-                <div class="baker-image">
-                    <img 
-                     src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>" alt="<?= htmlspecialchars($baker['full_name']); ?>">
-                    <div class="ranking-badge">#<?= $baker['baker_id']; ?></div>
+              <div class="baker-image">
+                <img
+                  src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                  alt="<?= htmlspecialchars($baker['full_name']); ?>">
+                <div class="ranking-badge">#<?= $baker['baker_id']; ?></div>
+              </div>
+              <div class="baker-content">
+                <h3><?= htmlspecialchars($baker['full_name']); ?></h3>
+                <p class="baker-specialty">Specialty: <?= htmlspecialchars($baker['specialty']); ?></p>
+                <div class="baker-stats">
+                  <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?>+ Years exp.</span>
+                  <span class="stat"><?php echo number_format($baker['rating'], 1); ?> Rating</span>
                 </div>
-                <div class="baker-content">
-                    <h3><?= htmlspecialchars($baker['full_name']); ?></h3>
-                    <p class="baker-specialty">Specialty: <?= htmlspecialchars($baker['specialty']); ?></p>
-                    <div class="baker-stats">
-                        <span class="stat"><?= htmlspecialchars($baker['experience']); ?>.</span>
-                        <span class="stat"><?= htmlspecialchars($baker['rating']); ?>+ Orders</span>
-                    </div>
-                </div>
+              </div>
             </div>
-        <?php endwhile; ?>
-    <?php else: ?>
-        <div id="no-bakers-message" style="text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+          <?php endwhile; ?>
+        <?php else: ?>
+          <div id="no-bakers-message" style="text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
             No bakers found.
-        </div>
-    <?php endif; ?>
+          </div>
+        <?php endif; ?>
 
 
-        
+
       </div>
       <div id="no-bakers-message"
         style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">

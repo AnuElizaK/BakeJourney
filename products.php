@@ -1,4 +1,27 @@
-<?php session_start(); ?>
+<?php session_start();
+include 'db.php';
+
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+  header("Location: index.php"); // Redirect to login if not authorized
+  exit();
+}
+
+// Prevent back after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
+header("Pragma: no-cache");
+
+$stmt = $conn->prepare("
+  SELECT *
+  FROM products p
+  JOIN bakers b ON p.baker_id = b.baker_id
+  ORDER BY RAND()
+");
+$stmt->execute();
+$result = $stmt->get_result();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -334,149 +357,25 @@
       </div>
 
       <div class="products-grid">
-        <div class="product-card" data-category="breads">
+        <?php while ($product = $result->fetch_assoc()): ?>
+        <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
           <div class="product-image">
             <img
-              src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              alt="Artisan Sourdough">
+              src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+              alt="<?= htmlspecialchars($product['name']) ?>">
             <button class="cart-button">
               <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
             </button>
           </div>
           <div class="product-content">
             <div class="product-header">
-              <h3>Artisan Sourdough</h3>
-              <span class="product-price">$8.50</span>
+              <h3><?= htmlspecialchars($product['name']) ?></h3>
+              <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
             </div>
-            <p>Traditional 48-hour fermented sourdough with a perfect crust.</p>
+            <p><?= htmlspecialchars($product['description']) ?></p>
           </div>
         </div>
-
-        <div class="product-card" data-category="pastries">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1722085609594-1bc764876867?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Chocolate Croissants">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Chocolate Croissants</h3>
-              <span class="product-price">$4.25</span>
-            </div>
-            <p>Buttery, flaky pastry filled with premium Belgian chocolate.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
+        <?php endwhile; ?>
       </div>
       <div id="no-products-message"
         style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
