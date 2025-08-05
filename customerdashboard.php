@@ -1,5 +1,6 @@
 <?php 
 session_start();
+include 'db.php';
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
@@ -9,7 +10,28 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
- ?>
+// Fetch 8 products from the database
+$prdStmt = $conn->prepare("
+  SELECT *
+  FROM products p
+  JOIN bakers b ON p.baker_id = b.baker_id
+  ORDER BY RAND()
+  LIMIT 8
+");
+$prdStmt->execute();
+$pResult = $prdStmt->get_result();
+
+// Fetch 8 bakers from the database
+$bkrStmt = $conn->prepare("
+  SELECT *
+  FROM users u
+  JOIN bakers b ON u.user_id = b.user_id
+  LIMIT 8
+");
+$bkrStmt->execute();
+$bResult = $bkrStmt->get_result();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,149 +77,25 @@ header("Pragma: no-cache");
       </div>
 
       <div class="products-grid">
-        <div class="product-card" data-category="breads">
+        <?php while ($product = $pResult->fetch_assoc()): ?>
+        <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
           <div class="product-image">
             <img
-              src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              alt="Artisan Sourdough">
+              src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+              alt="<?= htmlspecialchars($product['name']) ?>">
             <button class="cart-button">
               <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
             </button>
           </div>
           <div class="product-content">
             <div class="product-header">
-              <h3>Artisan Sourdough</h3>
-              <span class="product-price">$8.50</span>
+              <h3><?= htmlspecialchars($product['name']) ?></h3>
+              <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
             </div>
-            <p>Traditional 48-hour fermented sourdough with a perfect crust.</p>
+            <p><?= htmlspecialchars($product['description']) ?></p>
           </div>
         </div>
-
-        <div class="product-card" data-category="pastries">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1722085609594-1bc764876867?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Chocolate Croissants">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Chocolate Croissants</h3>
-              <span class="product-price">$4.25</span>
-            </div>
-            <p>Buttery, flaky pastry filled with premium Belgian chocolate.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
-
-        <div class="product-card" data-category="pies tarts">
-          <div class="product-image">
-            <img
-              src="https://images.unsplash.com/photo-1666812663733-7a4e23369f6a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Key Lime Pie">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3>Key Lime Pie</h3>
-              <span class="product-price">$15.00</span>
-            </div>
-            <p>Classic key lime pie with a graham cracker crust.</p>
-          </div>
-        </div>
+        <?php endwhile; ?>
       </div>
       <div id="no-products-message"
         style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
@@ -224,74 +122,24 @@ header("Pragma: no-cache");
       </div>
 
       <div class="bakers-grid">
+        <?php while ($baker = $bResult->fetch_assoc()): ?>
         <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
           <div class="baker-image">
             <img
-              src="https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Sarah Johnson">
-            <div class="ranking-badge">#1</div>
+              src="<?= !empty($baker['image']) ? 'uploads/' . htmlspecialchars($baker['image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+              alt="<?php echo htmlspecialchars($baker['full_name']); ?>">
+            <div class="ranking-badge"><?php echo htmlspecialchars($baker['baker_id']); ?></div>
           </div>
           <div class="baker-content">
-            <h3>Sarah Johnson</h3>
+            <h3><?php echo htmlspecialchars($baker['full_name']); ?></h3>
             <p class="baker-specialty">Specialty: Artisan Breads & Sourdoughs</p>
             <div class="baker-stats">
-              <span class="stat">5+ Years exp.</span>
-              <span class="stat">200+ Orders</span>
+              <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?> Years exp.</span>
+              <span class="stat"><?php echo htmlspecialchars($baker['rating']); ?> Rating</span>
             </div>
           </div>
         </div>
-
-        <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
-          <div class="baker-image">
-            <img
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-              alt="Mike Chen">
-            <div class="ranking-badge">#2</div>
-          </div>
-          <div class="baker-content">
-            <h3>Mike Chen</h3>
-
-            <p class="baker-specialty">Specialty: Custom Cakes & Pastries</p>
-            <div class="baker-stats">
-              <span class="stat">3+ Years exp.</span>
-              <span class="stat">150+ Orders</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
-          <div class="baker-image">
-            <img
-              src="https://images.unsplash.com/photo-1611432579402-7037e3e2c1e4?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="Emma Williams">
-            <div class="ranking-badge">#3</div>
-          </div>
-          <div class="baker-content">
-            <h3>Emma Williams</h3>
-            <p class="baker-specialty">Specialty: Gluten-Free Treats</p>
-            <div class="baker-stats">
-              <span class="stat">4+ Years exp.</span>
-              <span class="stat">120+ Orders</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
-          <div class="baker-image">
-            <img
-              src="https://images.pexels.com/photos/7966423/pexels-photo-7966423.jpeg?_gl=1*jma4f6*_ga*MTY3NDQ3MzE4NC4xNzM5NTAyMzg1*_ga_8JE65Q40S6*czE3NTExMDg2OTEkbzgkZzEkdDE3NTExMDg5MDckajEyJGwwJGgw"
-              alt="Emma Williams">
-            <div class="ranking-badge">#4</div>
-          </div>
-          <div class="baker-content">
-            <h3>Clara Mei</h3>
-            <p class="baker-specialty">Specialty: French Pastries</p>
-            <div class="baker-stats">
-              <span class="stat">3+ Years exp.</span>
-              <span class="stat">100+ Orders</span>
-            </div>
-          </div>
-        </div>
+        <?php endwhile; ?>
       </div>
       <div id="no-bakers-message"
         style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
