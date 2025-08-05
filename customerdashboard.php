@@ -134,15 +134,15 @@ $bResult = $bkrStmt->get_result();
             <h3><?php echo htmlspecialchars($baker['full_name']); ?></h3>
             <p class="baker-specialty">Specialty: Artisan Breads & Sourdoughs</p>
             <div class="baker-stats">
-              <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?> Years exp.</span>
-              <span class="stat"><?php echo htmlspecialchars($baker['rating']); ?> Rating</span>
+              <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?>+ Years exp.</span>
+              <span class="stat"><?php echo number_format($baker['rating'], 1); ?> Rating</span>
             </div>
           </div>
         </div>
         <?php endwhile; ?>
       </div>
       <div id="no-bakers-message"
-        style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+        style="display: none; text-align: center; color: #f59e0b; font-weight: 600; margin: 32px 0;">
         No bakers found.
       </div>
 

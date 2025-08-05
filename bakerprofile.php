@@ -52,7 +52,7 @@ $user = $result->fetch_assoc();
           $parts = explode(' ', $name);
           $initials = strtoupper($parts[0][0] . ($parts[1][0] ?? ''));
           if (!empty($user['profile_image']) && file_exists('uploads/' . $user['profile_image'])) {
-            echo '<img src="uploads/' . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+            echo '<img src="uploads/' . htmlspecialchars($user['profile_image']) . '" alt="Profile Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
           } else {
             echo $initials;
           }

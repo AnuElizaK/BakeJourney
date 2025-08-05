@@ -139,7 +139,7 @@ $productResult = $productStmt->get_result();
               </div>
               <p class="baker-specialty">Specialty: <?php echo htmlspecialchars($baker['specialty']); ?></p>
               <div class="baker-stats">
-                <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?> Experience</span>
+                <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?>+ Years Experience</span>
                 <span class="stat">200+ Orders</span>
               </div>
             </div>
