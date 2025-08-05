@@ -28,6 +28,18 @@ if ($result->num_rows > 0) {
     echo "Baker not found.";
 }
 
+// --- Product Image Remove (AJAX, for cancel/remove only) ---
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image'])) {
+    if (isset($_FILES['product_image_cropped'])) {
+        $imgPath = $_FILES['product_image_cropped']['tmp_name'];
+        if (file_exists($imgPath)) {
+            unlink($imgPath);
+        }
+    }
+    echo '<script>alert("✅ Product image removed."); window.location.href = "bakerproductmngmt.php";</script>';
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -38,6 +50,11 @@ if ($result->num_rows > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Management | BakeJourney</title>
     <link rel="stylesheet" href="bakerproductmngmt.css">
+    <!-- Cropper.js CSS for product image upload -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="image-cropper.css">
+    <link rel="stylesheet" href="edit-cropper.css">
 </head>
 
 <?php include 'bakernavbar.php'; ?>
@@ -79,7 +96,7 @@ if ($result->num_rows > 0) {
             <?php foreach ($products as $product): ?>
                 <div class="product-card" data-category="<?php echo htmlspecialchars($product['category']); ?>">
                     <div class="product-image-container">
-                        <img src="<?php echo htmlspecialchars($product['image'] ?: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=400&h=300&fit=crop'); ?>"
+                        <img src="<?php echo htmlspecialchars($product['image'] ? 'uploads/' . $product['image'] : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=400&h=300&fit=crop'); ?>"
                             alt="<?php echo htmlspecialchars($product['name']); ?>" class="product-image">
                         <div class="product-actions">
 
@@ -163,9 +180,6 @@ if ($result->num_rows > 0) {
                 </div>
             <?php endforeach; ?>
 
-
-
-
         </div>
         <div id="no-results-message"
             style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
@@ -181,7 +195,7 @@ if ($result->num_rows > 0) {
                 <button onclick="toggleUploadModal()" class="close-btn">&times;</button>
             </div>
 
-            <form class="modal-form" method="POST">
+            <form class="modal-form" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label class="form-label">Product Name</label>
                     <input type="text" class="form-input" name="name" placeholder="Enter product name" required>
@@ -218,18 +232,11 @@ if ($result->num_rows > 0) {
                         placeholder="Describe your product..."></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Media Upload</label>
-                    <div class="file-upload">
-                        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        <p class="upload-text">Drag and drop images or videos, or</p>
-                        <button type="button" class="browse-btn">Browse Files</button>
-                        <p class="upload-note">Supports: JPG, PNG, MP4, MOV (Max 10MB)</p>
-                    </div>
-                </div>
+                <!-- Image upload field handled by image-cropper.js -->
+                <?php if (isset($_SESSION['uploaded_product_image'])): ?>
+                    <div style="margin:10px 0; color:green;">Image uploaded:
+                        <?php echo htmlspecialchars($_SESSION['uploaded_product_image']); ?></div>
+                <?php endif; ?>
 
                 <div class="form-actions">
                     <button type="button" onclick="toggleUploadModal()" class="btn-secondary">Cancel</button>
@@ -247,11 +254,10 @@ if ($result->num_rows > 0) {
                 <button onclick="closeEditModal()" class="close-btn">&times;</button>
             </div>
 
-            <form class="modal-form" method="POST">
+            <form class="modal-form" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="editProductId" name="product_id">
 
                 <div class="form-group">
-
                     <label class="form-label">Product Name</label>
                     <input type="text" id="editProductName" name="name" class="form-input" required>
                 </div>
@@ -285,12 +291,13 @@ if ($result->num_rows > 0) {
                         require></textarea>
                 </div>
 
+                <!-- Image edit field handled by edit-cropper.js -->
+                <input type="hidden" id="removeProductImage" name="remove_product_image" value="0">
 
                 <div class="form-actions">
                     <button type="button" onclick="closeEditModal()" class="btn-secondary">Cancel</button>
                     <button type="submit" name="save_changes" class="btn-primary">Save Changes</button>
                 </div>
-
             </form>
         </div>
     </div>
@@ -320,13 +327,21 @@ if ($result->num_rows > 0) {
             document.getElementById('editProductCategory').value = category;
             document.getElementById('editProductPrice').value = price;
             document.getElementById('editProductDescription').value = description;
+
+            // Remove any previous image edit group to avoid duplicates
+            const prevEditGroup = modal.querySelector('.image-edit-group');
+            if (prevEditGroup) prevEditGroup.remove();
+            // Dynamically insert the image edit field (handled by edit-cropper.js)
+            // Pass the current image URL to the cropper initializer
+            let imageUrl = button.closest('.product-card').querySelector('.product-image').getAttribute('src');
+            if (typeof window.initEditCropper === 'function') {
+                window.initEditCropper(imageUrl);
+            }
         }
         function closeEditModal() {
             const modal = document.getElementById('editModal');
             modal.classList.remove('active');
         }
-
-      
 
         // Filter Functions
         function filterProducts(category) {
@@ -420,8 +435,6 @@ if ($result->num_rows > 0) {
             }
         }
 
-
-
         // Close modals when clicking outside
         window.onclick = function (event) {
             const modals = document.querySelectorAll('.modal');
@@ -434,18 +447,30 @@ if ($result->num_rows > 0) {
     </script>
 
     <?php
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_product'])) {
         $name = $_POST['name'];
         $category = $_POST['category'];
         $price = $_POST['price'];
         $description = $_POST['description'];
-
+        $image = null;
+        if (isset($_FILES['product_image_cropped']) && $_FILES['product_image_cropped']['error'] == 0) {
+            $fileTmp = $_FILES['product_image_cropped']['tmp_name'];
+            $fileType = mime_content_type($fileTmp);
+            if ($fileType === 'image/jpeg') {
+                $filename = 'product_' . $baker_id . '_' . time() . '.jpg';
+                $dest = __DIR__ . '/uploads/' . $filename;
+                if (move_uploaded_file($fileTmp, $dest)) {
+                    $image = $filename;
+                }
+            }
+        }
         // Proceed with insert
-        $stmt = $conn->prepare("INSERT INTO products (name, category, price, description, baker_id) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdsi", $name, $category, $price, $description, $baker_id);
+        $stmt = $conn->prepare("INSERT INTO products (name, category, price, description, baker_id, image) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssdsis", $name, $category, $price, $description, $baker_id, $image);
 
         if ($stmt->execute()) {
-            echo "<script>alert('Product added successfully');window.location.href = 'bakerproductmngmt.php';</script>";
+            echo "<script>alert('Product added successfully!');window.location.href = 'bakerproductmngmt.php';</script>";
         } else {
             echo "<script>alert('Error adding product');</script>";
         }
@@ -457,9 +482,52 @@ if ($result->num_rows > 0) {
         $updated_category = $_POST['category'];
         $updated_price = $_POST['price'];
         $updated_description = $_POST['description'];
-        $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=? WHERE product_id=? ");
-        $stmt->bind_param("ssdsi", $updated_name, $updated_category, $updated_price, $updated_description, $id);
+        $new_image = null;
+        $remove_image = isset($_POST['remove_product_image']) && $_POST['remove_product_image'] === '1';
 
+        // Handle new image upload
+        if (isset($_FILES['product_image_cropped']) && $_FILES['product_image_cropped']['error'] == 0) {
+            $fileTmp = $_FILES['product_image_cropped']['tmp_name'];
+            $fileType = mime_content_type($fileTmp);
+            if ($fileType === 'image/jpeg') {
+                $filename = 'product_' . $baker_id . '_' . time() . '.jpg';
+                $dest = __DIR__ . '/uploads/' . $filename;
+                if (move_uploaded_file($fileTmp, $dest)) {
+                    $new_image = $filename;
+                }
+            }
+        }
+
+        // If remove image or new image, delete old image file
+        if ($remove_image || $new_image) {
+            $imgStmt = $conn->prepare("SELECT image FROM products WHERE product_id = ?");
+            $imgStmt->bind_param("i", $id);
+            $imgStmt->execute();
+            $imgResult = $imgStmt->get_result();
+            if ($imgResult->num_rows > 0) {
+                $row = $imgResult->fetch_assoc();
+                if (!empty($row['image'])) {
+                    $imgPath = __DIR__ . '/uploads/' . $row['image'];
+                    if (file_exists($imgPath)) {
+                        unlink($imgPath);
+                    }
+                }
+            }
+        }
+
+        if ($remove_image) {
+            // Remove image from DB
+            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?, image=NULL WHERE product_id=? ");
+            $stmt->bind_param("ssdsi", $updated_name, $updated_category, $updated_price, $updated_description, $id);
+        } else if ($new_image) {
+            // Update with new image
+            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?, image=? WHERE product_id=? ");
+            $stmt->bind_param("ssds si", $updated_name, $updated_category, $updated_price, $updated_description, $new_image, $id);
+        } else {
+            // No image change
+            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=? WHERE product_id=? ");
+            $stmt->bind_param("ssdsi", $updated_name, $updated_category, $updated_price, $updated_description, $id);
+        }
         if ($stmt->execute()) {
             echo "<script>alert('Product updated successfully'); window.location.href = 'bakerproductmngmt.php';</script>";
         } else {
@@ -468,21 +536,36 @@ if ($result->num_rows > 0) {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
-    $productId = $_POST['delete_product_id'];
-    
-    $stmt = $conn->prepare("DELETE FROM products WHERE product_id = ?");
-    $stmt->bind_param("i", $productId);
-    
-    if ($stmt->execute()) {
-        echo "<script>alert('Product deleted successfully!'); window.location.href = window.location.href;</script>";
-    } else {
-        echo "<script>alert('Error deleting product');</script>";
+        $productId = $_POST['delete_product_id'];
+        // Remove product image from uploads if exists
+        $imgStmt = $conn->prepare("SELECT image FROM products WHERE product_id = ?");
+        $imgStmt->bind_param("i", $productId);
+        $imgStmt->execute();
+        $imgResult = $imgStmt->get_result();
+        if ($imgResult->num_rows > 0) {
+            $row = $imgResult->fetch_assoc();
+            if (!empty($row['image'])) {
+                $imgPath = __DIR__ . '/uploads/' . $row['image'];
+                if (file_exists($imgPath)) {
+                    unlink($imgPath);
+                }
+            }
+        }
+        $stmt = $conn->prepare("DELETE FROM products WHERE product_id = ?");
+        $stmt->bind_param("i", $productId);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Product deleted successfully!'); window.location.href = window.location.href;</script>";
+        } else {
+            echo "<script>alert('Error deleting product');</script>";
+        }
     }
-}
-    
-
     ?>
-
+    <!-- Cropper.js JS for product image upload -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="image-cropper.js"></script>
+    <script src="edit-cropper.js"></script>
 </body>
 
 </html>
