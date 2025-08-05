@@ -1,21 +1,4 @@
-<?php
-session_start();
-include 'db.php';
-
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
-  header("Location: index.php"); // Redirect to login if not authorized
-  exit();
-}
-
-// Prevent back after logout
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
-header("Pragma: no-cache");
-
-
-include 'custnavbar.php';
-?>
-
+<?php include 'custnavbar.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +13,7 @@ include 'custnavbar.php';
         }
 
         body {
-           
+            font-family: 'Arial', sans-serif;
             line-height: 1.6;
             color: #333;
             background: linear-gradient(135deg, #fef7e0 0%, #fdf2e9 100%);
@@ -483,7 +466,13 @@ include 'custnavbar.php';
     </style>
 </head>
 <body>
-    
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">BakeJourney</div>
+            <a href="customer-profile.html" class="back-btn">← Back to Dashboard</a>
+        </nav>
+    </header>
 
     <!-- Main Content -->
     <main class="container">
