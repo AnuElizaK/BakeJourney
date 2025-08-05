@@ -109,7 +109,7 @@
     }
 
     .nav-cta.opened {
-      color:rgb(255, 255, 255);
+      color: rgb(255, 255, 255);
       background: linear-gradient(135deg, #f59e0b, #d97706);
       box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
     }
@@ -202,6 +202,64 @@
         display: none;
       }
     }
+
+    @media (min-width: 769px) and (max-width: 1030px) {
+      body {
+        padding-top: 76px;
+      }
+
+      .nav-content {
+        padding: 19px 0;
+      }
+
+      .custnav-container {
+        margin-top: 0;
+      }
+
+      .nav-mobile-toggle {
+        display: none;
+      }
+
+      .nav-logo {
+        width: 30px;
+        height: 30px;
+      }
+
+      .nav-brand {
+        gap: 10px;
+        font-size: 1rem;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .nav-link {
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 8px 0;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .nav-cta {
+        background: linear-gradient(135deg, #fcd34d, #f59e0b);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+      }
+
+      .nav-brand span {
+        display: inline;
+      }
+    }
   </style>
 </head>
 
@@ -210,19 +268,19 @@
     <div class="bakernav-container">
       <div class="nav-content">
         <div class="nav-brand">
-          <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
+          <img class="nav-logo" src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
           <span class="nav-title">BakeJourney</span>
         </div>
 
         <div class="nav-links">
-            <a href="bakerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
-            <a href="bakerproductmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Products</a>
-            <a href="bakercustomermngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
-            <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
-            <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
-            <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
-            <a href="bakerprofile.php" class="nav-link nav-cta">Your Profile</a>
-            <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
+          <a href="bakerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
+          <a href="bakerproductmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Products</a>
+          <a href="bakercustomermngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
+          <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
+          <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
+          <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
+          <a href="bakerprofile.php" class="nav-link nav-cta">Your Profile</a>
+          <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 
         <div class="nav-mobile-toggle" id="mobileToggle">
@@ -283,4 +341,5 @@
     });
   </script>
 </body>
+
 </html>

@@ -472,6 +472,13 @@ h2 {
 
 /* ==================================================================== */
 
+
+@media (min-width: 769px) and (max-width: 1030px) {
+  .container {
+    padding: 30px 54px;
+  }
+}
+
 @media (max-width: 768px) {
   .custom-alert {
     min-width: 280px;
