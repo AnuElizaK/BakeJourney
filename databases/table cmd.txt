@@ -49,6 +49,7 @@ CREATE TABLE orders (
     quantity INT NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
     delivery_address TEXT NOT NULL,
+    delivery_date DATETIME NOT NULL,
     order_status ENUM('pending', 'confirmed', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     payment_method ENUM('Card','UPI') NOT NULL,
@@ -68,6 +69,18 @@ CREATE TABLE cart (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
+
+CREATE TABLE messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,         
+    receiver_id INT NOT NULL,       
+    message TEXT NOT NULL,          
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
 
 
 

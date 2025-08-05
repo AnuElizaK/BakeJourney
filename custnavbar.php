@@ -283,7 +283,7 @@
           <a href="bakers.php" class="nav-link">Find Your Baker</a>
           <a href="services.php" class="nav-link">Services</a>
           <a href="contact.php" class="nav-link">Contact Us</a>
-          <a href="orders.php" class="nav-link">Orders</a>
+          <a href="customerorders.php" class="nav-link">Orders</a>
           <a href="cart.php" class="nav-link"><img class="cart-icon" src="media/cart.png" title="Cart" alt="Cart"
               width="30" height="30"></a>
           <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>

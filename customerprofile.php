@@ -16,7 +16,7 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, district, state, bio, address, profile_image, created_at
+  "SELECT *
   FROM users 
   WHERE user_id = ?"
 );
@@ -24,6 +24,17 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
+
+//fetch order details
+$stmt = $conn->prepare(
+  "SELECT *
+  FROM orders
+  WHERE customer_id = ?"
+);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$orders = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -306,35 +317,28 @@ $user = $result->fetch_assoc();
     </div>
 
     <!-- Recent Orders -->
+
     <div class="profile-section">
       <h2 class="section-title">Recent Orders</h2>
 
-      <div class="order-card">
-        <div class="order-info">
-          <h4>Custom Birthday Cake from Sarah Johnson</h4>
-          <p>Order #1234 • December 1, 2024 • $45.00</p>
-        </div>
-        <span class="order-status completed">Completed</span>
-      </div>
+      <?php if (!empty($orders)): ?>
+        <?php foreach ($orders as $order): ?>
+          <div class="order-card">
+            <div class="order-info">
+              <h4><?= htmlspecialchars($order['product_name']); ?> from <?= htmlspecialchars($order['baker_name']); ?></h4>
+              <p>Order #<?= htmlspecialchars($order['order_id']); ?> • <?= htmlspecialchars($order['order_date']); ?> • $<?= htmlspecialchars($order['total_price']); ?></p>
+            </div>
+            <span class="order-status <?= htmlspecialchars($order['status']); ?>"><?= htmlspecialchars($order['status']); ?></span>
+          </div>
+        <?php endforeach; ?>
+        <button class="btn secondary">View All Orders</button>
+      <?php else: ?>
+        <p>No recent orders found.</p>
+      <?php endif; ?>
 
-      <div class="order-card">
-        <div class="order-info">
-          <h4>French Pastries from Mike Chen</h4>
-          <p>Order #1235 • December 3, 2024 • $18.00</p>
-        </div>
-        <span class="order-status in-progress">In Progress</span>
-      </div>
-
-      <div class="order-card">
-        <div class="order-info">
-          <h4>Gluten-Free Cookies from Emma Williams</h4>
-          <p>Order #1236 • December 5, 2024 • $15.00</p>
-        </div>
-        <span class="order-status pending">Pending</span>
-      </div>
-
-      <button class="btn secondary">View All Orders</button>
     </div>
+
+          
 
     <!-- Preferences -->
     <div class="profile-section">
