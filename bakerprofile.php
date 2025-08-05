@@ -57,7 +57,7 @@ $user = $result->fetch_assoc();
             echo $initials;
           }
           ?>
-          <div class="ranking-badge">#1 Baker</div>
+          <div class="ranking-badge">Top Baker</div>
         </div>
 
         <!-- Edit button and modal handled by JS -->
@@ -140,6 +140,10 @@ $user = $result->fetch_assoc();
           <div class="stat-card">
             <span class="stat-number"><?php echo htmlspecialchars($user['no_of_reviews']); ?>+</span>
             <span class="stat-label">Customer Reviews</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number"><?php echo htmlspecialchars($user['no_of_reviews']); ?>+</span>
+            <span class="stat-label">Followers</span>
           </div>
         </div>
       </div>
@@ -338,21 +342,25 @@ $user = $result->fetch_assoc();
     </div>
 
     <!-- Business Settings -->
- 
+
     <div class="profile-section">
       <h2 class="section-title">Business Settings</h2>
       <form method="POST">
         <div class="form-grid">
-           <div class="form-group">
+          <div class="form-group">
             <label for="experience">Experience</label>
             <select id="experience" name="experience">
               <option value="">Select experience level</option>
               <option value="Less than 1 year" <?php echo ($user['experience'] == 'Less than 1 year') ? 'selected' : ''; ?>>Less than 1 year</option>
               <option value="1 year" <?php echo ($user['experience'] == '1 year') ? 'selected' : ''; ?>>1 year</option>
-              <option value="2-3 years" <?php echo ($user['experience'] == '2-3 years') ? 'selected' : ''; ?>>2-3 years</option>
-              <option value="4-5 years" <?php echo ($user['experience'] == '4-5 years') ? 'selected' : ''; ?>>4-5 years</option>
-              <option value="6-7 years" <?php echo ($user['experience'] == '6-7 years') ? 'selected' : ''; ?>>6-7 years</option>
-              <option value="7+ years" <?php echo ($user['experience'] == '7+ years') ? 'selected' : ''; ?>>More than 7 years</option>
+              <option value="2-3 years" <?php echo ($user['experience'] == '2-3 years') ? 'selected' : ''; ?>>2-3 years
+              </option>
+              <option value="4-5 years" <?php echo ($user['experience'] == '4-5 years') ? 'selected' : ''; ?>>4-5 years
+              </option>
+              <option value="6-7 years" <?php echo ($user['experience'] == '6-7 years') ? 'selected' : ''; ?>>6-7 years
+              </option>
+              <option value="7+ years" <?php echo ($user['experience'] == '7+ years') ? 'selected' : ''; ?>>More than 7
+                years</option>
             </select>
           </div>
           <div class="form-group">
@@ -360,13 +368,20 @@ $user = $result->fetch_assoc();
             <select id="orderLeadTime" name="order_lead_time">
               <option value="">Select order lead time</option>
               <option value="1 day" <?php echo ($user['order_lead_time'] == '1 day') ? 'selected' : ''; ?>>1 day</option>
-              <option value="2-3 days" <?php echo ($user['order_lead_time'] == '2-3 days') ? 'selected' : ''; ?>>2-3 days</option>
-              <option value="4-5 days" <?php echo ($user['order_lead_time'] == '4-5 days') ? 'selected' : ''; ?>>4-5 days</option>
-              <option value="1 week" <?php echo ($user['order_lead_time'] == '1 week') ? 'selected' : ''; ?>>1 week</option>
-              <option value="2 weeks" <?php echo ($user['order_lead_time'] == '2 weeks') ? 'selected' : ''; ?>>2 weeks</option>
-              <option value="1 month" <?php echo ($user['order_lead_time'] == '1 month') ? 'selected' : ''; ?>>1 month</option>
-              <option value="2 months" <?php echo ($user['order_lead_time'] == '2 months') ? 'selected' : ''; ?>>2 months</option>
-              <option value="3 months" <?php echo ($user['order_lead_time'] == '3 months') ? 'selected' : ''; ?>>3 months</option>
+              <option value="2-3 days" <?php echo ($user['order_lead_time'] == '2-3 days') ? 'selected' : ''; ?>>2-3 days
+              </option>
+              <option value="4-5 days" <?php echo ($user['order_lead_time'] == '4-5 days') ? 'selected' : ''; ?>>4-5 days
+              </option>
+              <option value="1 week" <?php echo ($user['order_lead_time'] == '1 week') ? 'selected' : ''; ?>>1 week
+              </option>
+              <option value="2 weeks" <?php echo ($user['order_lead_time'] == '2 weeks') ? 'selected' : ''; ?>>2 weeks
+              </option>
+              <option value="1 month" <?php echo ($user['order_lead_time'] == '1 month') ? 'selected' : ''; ?>>1 month
+              </option>
+              <option value="2 months" <?php echo ($user['order_lead_time'] == '2 months') ? 'selected' : ''; ?>>2 months
+              </option>
+              <option value="3 months" <?php echo ($user['order_lead_time'] == '3 months') ? 'selected' : ''; ?>>3 months
+              </option>
               <option value="More than 3 months" <?php echo ($user['order_lead_time'] == 'More than 3 months') ? 'selected' : ''; ?>>More than 3 months</option>
             </select>
           </div>
@@ -555,7 +570,7 @@ $user = $result->fetch_assoc();
     $stmt->close();
   }
 
-  if( $_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['businessSettings'])) {
+  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['businessSettings'])) {
     $updated_experience = $_POST['experience'];
     $updated_order_lead_time = $_POST['order_lead_time'];
     $updated_availability = $_POST['availability'];
