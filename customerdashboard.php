@@ -126,13 +126,13 @@ $bResult = $bkrStmt->get_result();
         <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
           <div class="baker-image">
             <img
-              src="<?= !empty($baker['image']) ? 'uploads/' . htmlspecialchars($baker['image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+              src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
               alt="<?php echo htmlspecialchars($baker['full_name']); ?>">
             <div class="ranking-badge">#<?php echo htmlspecialchars($baker['baker_id']); ?></div>
           </div>
           <div class="baker-content">
             <h3><?php echo htmlspecialchars($baker['full_name']); ?></h3>
-            <p class="baker-specialty">Specialty: Artisan Breads & Sourdoughs</p>
+            <p class="baker-specialty"><?php echo htmlspecialchars($baker['specialty']); ?></p>
             <div class="baker-stats">
               <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?>+ Years exp.</span>
               <span class="stat"><?php echo number_format($baker['rating'], 1); ?> Rating</span>

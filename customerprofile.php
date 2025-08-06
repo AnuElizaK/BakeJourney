@@ -331,9 +331,9 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
             <span class="order-status <?= htmlspecialchars($order['status']); ?>"><?= htmlspecialchars($order['status']); ?></span>
           </div>
         <?php endforeach; ?>
-        <button class="btn secondary">View All Orders</button>
+        <button class="btn secondary" onclick="window.location.href='customerorders.php'">View All Orders</button>
       <?php else: ?>
-        <p>No recent orders found.</p>
+        <p style="color: #374151">No recent orders found.</p>
       <?php endif; ?>
 
     </div>

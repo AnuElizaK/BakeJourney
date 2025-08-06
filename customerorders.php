@@ -1,6 +1,32 @@
-<?php include 'custnavbar.php'; ?>
+<?php
+/*
+session_start();
+include 'db.php';
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+    header("Location: index.php"); // Redirect to login if not authorized
+    exit();
+}
+// Prevent back after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
+header("Pragma: no-cache");
+
+$ordStmt = $conn->prepare("
+  SELECT *
+  FROM orders ord
+  JOIN bakers b ON ord.baker_id = b.baker_id
+  JOIN users u ON ord.user_id = u.user_id
+  JOIN order_items o ON ord.order_id = o.order_id
+  JOIN products p ON o.product_id = p.product_id
+");
+$ordStmt->execute();
+$pResult = $ordStmt->get_result();
+*/
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,83 +36,52 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            position: relative;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #fef7e0 0%, #fdf2e9 100%);
+            padding-top: 80px;
+            color: #1f2a38;
+            background: linear-gradient(#fff1bb, #ffffff);
             min-height: 100vh;
+            padding-top: 120px;
+        }
+
+        h1,
+        h2 {
+            font-family: 'Puanto', Roboto, sans-serif;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #e67e22;
-        }
-
-        .back-btn {
-            color: #e67e22;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .back-btn:hover {
-            color: #d35400;
+            padding-bottom: 40px;
         }
 
         /* Page Header */
-        .page-header {
-            background: white;
-            margin: 2rem 0;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
         .page-title {
-            font-size: 2rem;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
+            color: #1f2a38;
         }
 
         .page-subtitle {
-            color: #7f8c8d;
+            color: #6b7280;
             font-size: 1rem;
+            margin-bottom: 30px;
         }
 
         /* Orders Overview */
         .orders-overview {
-            background: white;
             margin: 2rem 0;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+            border: 2px solid #fee996;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .overview-stats {
@@ -96,39 +91,42 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #fef7e0, #fdf2e9);
-            border-radius: 15px;
-            padding: 1.5rem;
+            background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
+            border-radius: 10px;
+            padding: 1rem;
             text-align: center;
-            border: 2px solid transparent;
+            border: 2px solid #fee996;
             transition: all 0.3s ease;
         }
 
         .stat-card:hover {
-            border-color: #e67e22;
+            border-color: #f59e0b;
             transform: translateY(-2px);
         }
 
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
-            color: #e67e22;
+            color: #f59e0b;
             display: block;
             margin-bottom: 0.5rem;
         }
 
         .stat-label {
-            color: #7f8c8d;
+            color: #6b7280;
             font-size: 0.9rem;
         }
 
         /* Orders Section */
         .orders-section {
-            background: white;
             margin: 2rem 0;
-            border-radius: 20px;
+            border-radius: 15px;
             padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+            border: 2px solid #fee996;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
         }
 
         .section-header {
@@ -140,7 +138,7 @@
 
         .section-title {
             font-size: 1.5rem;
-            color: #2c3e50;
+            color: #1f2a38;
             font-weight: bold;
         }
 
@@ -151,28 +149,33 @@
 
         .filter-tab {
             padding: 0.5rem 1rem;
-            border: 2px solid #e67e22;
+            border: 1.5px solid #f59e0b;
             background: transparent;
-            color: #e67e22;
+            color: #f59e0b;
             border-radius: 25px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .filter-tab.active,
         .filter-tab:hover {
-            background: #e67e22;
+            background: #fee996;
+            color: #d97706;
+        }
+
+        .filter-tab.active {
+            background: #f59e0b;
             color: white;
         }
 
         /* Order Card */
         .order-card {
-            background: #f8f9fa;
+            background: #fef7cd;
             border-radius: 15px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border-left: 4px solid #e67e22;
+            border-left: 4px solid #fcd34d;
             transition: all 0.3s ease;
         }
 
@@ -195,12 +198,12 @@
         .order-number {
             font-size: 1.1rem;
             font-weight: bold;
-            color: #2c3e50;
+            color: #1f2a38;
             margin-bottom: 0.25rem;
         }
 
         .order-date {
-            color: #7f8c8d;
+            color: #6b7280;
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
         }
@@ -215,13 +218,13 @@
         }
 
         .status-confirmed {
-            background: #d4edda;
-            color: #155724;
+            background: #99f9b7ff;
+            color: #016a30ff;
         }
 
         .status-preparing {
-            background: #fff3cd;
-            color: #856404;
+            background: #fee996;
+            color: #d97706;
         }
 
         .status-ready {
@@ -230,8 +233,8 @@
         }
 
         .status-delivered {
-            background: #d1ecf1;
-            color: #0c5460;
+            background: #e3d3efff;
+            color: #3a0c60ff;
         }
 
         .status-cancelled {
@@ -259,7 +262,7 @@
 
         .baker-name {
             font-weight: 600;
-            color: #2c3e50;
+            color: #1f2a38;
         }
 
         .items-list {
@@ -273,8 +276,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #eee;
+            padding: 0.5rem 0.5rem;
+            border-bottom: 1px solid #d1d5db;
         }
 
         .order-item:last-child {
@@ -287,17 +290,17 @@
 
         .item-name {
             font-weight: 600;
-            color: #2c3e50;
+            color: #1f2a38;
         }
 
         .item-details {
             font-size: 0.9rem;
-            color: #7f8c8d;
+            color: #6b7280;
         }
 
         .item-price {
             font-weight: bold;
-            color: #e67e22;
+            color: #f59e0b;
         }
 
         .order-total {
@@ -306,19 +309,19 @@
             align-items: center;
             margin-top: 1rem;
             padding-top: 1rem;
-            border-top: 2px solid #e67e22;
+            border-top: 2px solid #fcd34d;
         }
 
         .total-label {
             font-size: 1.1rem;
             font-weight: bold;
-            color: #2c3e50;
+            color: #1f2a38;
         }
 
         .total-amount {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #e67e22;
+            color: #f59e0b;
         }
 
         .order-actions {
@@ -341,34 +344,35 @@
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #e67e22, #f39c12);
+            background: linear-gradient(135deg, #fcd34d, #f59e0b);
             color: white;
         }
 
         .btn-primary:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
         }
 
         .btn-secondary {
-            background: transparent;
-            color: #e67e22;
-            border: 2px solid #e67e22;
+            background: linear-gradient(135deg, #fcd34d, #f59e0b);
+            color: white;
+
         }
 
         .btn-secondary:hover {
-            background: #e67e22;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
         }
 
         .btn-danger {
             background: transparent;
-            color: #e74c3c;
-            border: 2px solid #e74c3c;
+            color: #dc2626;
+            border: 1.5px solid #dc2626;
         }
 
         .btn-danger:hover {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #f87171, #dc2626);
             color: white;
         }
 
@@ -376,7 +380,7 @@
         .empty-state {
             text-align: center;
             padding: 3rem;
-            color: #7f8c8d;
+            color: #6b7280;
         }
 
         .empty-icon {
@@ -387,7 +391,7 @@
         .empty-title {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
-            color: #2c3e50;
+            color: #1f2a38;
         }
 
         .empty-text {
@@ -444,6 +448,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -465,22 +470,17 @@
         }
     </style>
 </head>
+
+<!-- Sticky Navigation Bar -->
+<?php include 'custnavbar.php'; ?>
+
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav container">
-            <div class="logo">BakeJourney</div>
-            <a href="customer-profile.html" class="back-btn">← Back to Dashboard</a>
-        </nav>
-    </header>
 
     <!-- Main Content -->
     <main class="container">
         <!-- Page Header -->
-        <section class="page-header">
-            <h1 class="page-title">My Orders</h1>
-            <p class="page-subtitle">Track your baking orders and manage your purchases</p>
-        </section>
+        <h1 class="page-title">My Orders</h1>
+        <p class="page-subtitle">Track your baking orders and manage your purchases</p>
 
         <!-- Orders Overview -->
         <section class="orders-overview">
@@ -525,13 +525,14 @@
                         <span class="order-status status-preparing">Preparing</span>
                     </div>
                 </div>
-                
+
                 <div class="order-details">
                     <div class="baker-info">
-                        <img src="https://images.unsplash.com/photo-1594736797933-d0401ba0ad65?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Sarah Johnson" class="baker-avatar">
+                        <img src="https://images.unsplash.com/photo-1594736797933-d0401ba0ad65?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                            alt="Sarah Johnson" class="baker-avatar">
                         <div>
                             <div class="baker-name">Sarah Johnson</div>
-                            <div style="font-size: 0.8rem; color: #7f8c8d;">Artisan Breads & Sourdoughs</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">Artisan Breads & Sourdoughs</div>
                         </div>
                     </div>
 
@@ -574,13 +575,14 @@
                         <span class="order-status status-ready">Ready for Pickup</span>
                     </div>
                 </div>
-                
+
                 <div class="order-details">
                     <div class="baker-info">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Mike Chen" class="baker-avatar">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                            alt="Mike Chen" class="baker-avatar">
                         <div>
                             <div class="baker-name">Mike Chen</div>
-                            <div style="font-size: 0.8rem; color: #7f8c8d;">Pastry Specialist</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">Pastry Specialist</div>
                         </div>
                     </div>
 
@@ -622,13 +624,14 @@
                         <span class="order-status status-delivered">Delivered</span>
                     </div>
                 </div>
-                
+
                 <div class="order-details">
                     <div class="baker-info">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Emma Wilson" class="baker-avatar">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                            alt="Emma Wilson" class="baker-avatar">
                         <div>
                             <div class="baker-name">Emma Wilson</div>
-                            <div style="font-size: 0.8rem; color: #7f8c8d;">Cake Designer</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">Cake Designer</div>
                         </div>
                     </div>
 
@@ -655,5 +658,9 @@
             </div>
         </section>
     </main>
+
+    <?php include 'globalfooter.php'; ?>
+
 </body>
+
 </html>
