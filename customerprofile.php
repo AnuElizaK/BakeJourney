@@ -128,9 +128,9 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
             <span class="stat-number">12</span>
             <span class="stat-label">Total Orders</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-card" onlclick="window.location.href='customerfollowinglist.php'">
             <span class="stat-number">3</span>
-            <span class="stat-label">Favorite Bakers</span>
+            <span class="stat-label">Bakers You Follow</span>
           </div>
           <div class="stat-card">
             <span class="stat-number">$245</span>
