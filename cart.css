@@ -273,6 +273,31 @@ h1, h2 {
   font-weight: 500;
 }
 
+.delete-btn-modern {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn-modern:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.delete-btn-modern:active {
+  transform: translateY(0);
+}
+
 /* Customer Information Form */
 .form-section {
   margin-bottom: 32px;

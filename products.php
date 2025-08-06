@@ -11,6 +11,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
+
 $stmt = $conn->prepare("
   SELECT *
   FROM products p
@@ -19,6 +20,8 @@ $stmt = $conn->prepare("
 ");
 $stmt->execute();
 $result = $stmt->get_result();
+
+
 
 ?>
 
@@ -358,23 +361,30 @@ $result = $stmt->get_result();
 
       <div class="products-grid">
         <?php while ($product = $result->fetch_assoc()): ?>
-        <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
-          <div class="product-image">
-            <img
-              src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
-              alt="<?= htmlspecialchars($product['name']) ?>">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3><?= htmlspecialchars($product['name']) ?></h3>
-              <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
+
+
+          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
+            <div class="product-image">
+              <img
+                src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+                alt="<?= htmlspecialchars($product['name']) ?>">
+              <form method="POST" action="cart.php">
+                <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" name="add_to_cart" class="cart-button">
+                  <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px;"> Add to Cart
+                </button>
+              </form>
+              </form>
             </div>
-            <p><?= htmlspecialchars($product['description']) ?></p>
+            <div class="product-content">
+              <div class="product-header">
+                <h3><?= htmlspecialchars($product['name']) ?></h3>
+                <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
+              </div>
+              <p><?= htmlspecialchars($product['description']) ?></p>
+            </div>
           </div>
-        </div>
         <?php endwhile; ?>
       </div>
       <div id="no-products-message"

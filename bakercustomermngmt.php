@@ -229,25 +229,107 @@
             font-size: 0.9rem;
         }
 
-        .customers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .customer-card {
+        .customers-table {
             background: white;
             border-radius: 12px;
-            padding: 1.5rem;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            overflow: hidden;
         }
 
-        .customer-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            border-color: rgba(255, 107, 53, 0.2);
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #ff6b35, #ffa726);
+            color: white;
+        }
+
+        .table-header th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .table-row {
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .table-row:hover {
+            background-color: #fafafa;
+        }
+
+        .table-row.expanded {
+            background-color: #fff8f5;
+        }
+
+        .table-cell {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .customer-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b35, #ffa726);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .accordion-content {
+            background: #fff8f5;
+            border-top: 1px solid #f0f0f0;
+            display: none;
+        }
+
+        .accordion-content.show {
+            display: table-row;
+        }
+
+        .accordion-details {
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .detail-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-section h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ff6b35;
+            margin-bottom: 0.5rem;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .table-row.expanded .expand-icon {
+            transform: rotate(90deg);
         }
 
         .customer-header {
@@ -406,7 +488,22 @@
     </style>
 </head>
 <body>
-    <!-- main content -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">🧁</div>
+                <div>
+                    <div class="header-title">Customer Management</div>
+                    <div class="header-subtitle">Manage your followers and customers</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="baker-home.html" class="btn btn-secondary">← Back to Dashboard</a>
+                <a href="#" class="btn btn-primary">Export List</a>
+            </div>
+        </div>
+    </header>
+
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">Customer Management</h1>
@@ -445,219 +542,425 @@
             </div>
         </div>
 
-        <div class="customers-grid">
-            <div class="customer-card">
-                <div class="customer-header">
-                    <div class="customer-avatar">EM</div>
-                    <div class="customer-info">
-                        <h3>Emma Wilson</h3>
-                        <div class="customer-email">emma.wilson@email.com</div>
-                    </div>
-                </div>
-                <div class="customer-status">
-                    <span class="status-badge status-customer">Customer</span>
-                    <span style="color: #ffa726;">⭐ VIP</span>
-                </div>
-                <div class="customer-details">
-                    <div class="detail-item">
-                        <span>Orders:</span>
-                        <span class="detail-value">12</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Spent:</span>
-                        <span class="detail-value">$245</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Last Order:</span>
-                        <span class="detail-value">2 days ago</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Member Since:</span>
-                        <span class="detail-value">Jan 2024</span>
-                    </div>
-                </div>
-                <div class="customer-actions">
-                    <button class="btn-small btn-message">Message</button>
-                    <button class="btn-small btn-view">View Profile</button>
-                </div>
-            </div>
+        <div class="customers-table">
+            <table class="table">
+                <thead class="table-header">
+                    <tr>
+                        <th>Profile</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-row" onclick="toggleAccordion(this)">
+                        <td class="table-cell">
+                            <div class="customer-avatar-small">EM</div>
+                        </td>
+                        <td class="table-cell">
+                            <h3 class="customer-name">Emma Wilson</h3>
+                        </td>
+                        <td class="table-cell">
+                            <span class="status-badge status-customer">Customer</span>
+                            <span style="color: #ffa726;">⭐ VIP</span>
+                        </td>
+                        <td class="table-cell">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr class="accordion-content">
+                        <td colspan="4">
+                            <div class="accordion-details">
+                                <div class="detail-section">
+                                    <h4>Contact Information</h4>
+                                    <div class="detail-item">
+                                        <span>Email:</span>
+                                        <span class="detail-value">emma.wilson@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Phone:</span>
+                                        <span class="detail-value">+1 (555) 123-4567</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Order History</h4>
+                                    <div class="detail-item">
+                                        <span>Total Orders:</span>
+                                        <span class="detail-value">12</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Total Spent:</span>
+                                        <span class="detail-value">$245</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Last Order:</span>
+                                        <span class="detail-value">2 days ago</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Membership</h4>
+                                    <div class="detail-item">
+                                        <span>Member Since:</span>
+                                        <span class="detail-value">Jan 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Status:</span>
+                                        <span class="detail-value">VIP Customer</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Actions</h4>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-small btn-message">Message</button>
+                                        <button class="btn-small btn-view" onclick="location.href='bakerinfopage.php?user_id=2'">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 
-            <div class="customer-card">
-                <div class="customer-header">
-                    <div class="customer-avatar">MJ</div>
-                    <div class="customer-info">
-                        <h3>Mike Johnson</h3>
-                        <div class="customer-email">mike.j@email.com</div>
-                    </div>
-                </div>
-                <div class="customer-status">
-                    <span class="status-badge status-customer">Customer</span>
-                </div>
-                <div class="customer-details">
-                    <div class="detail-item">
-                        <span>Orders:</span>
-                        <span class="detail-value">8</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Spent:</span>
-                        <span class="detail-value">$156</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Last Order:</span>
-                        <span class="detail-value">1 week ago</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Member Since:</span>
-                        <span class="detail-value">Mar 2024</span>
-                    </div>
-                </div>
-                <div class="customer-actions">
-                    <button class="btn-small btn-message">Message</button>
-                    <button class="btn-small btn-view">View Profile</button>
-                </div>
-            </div>
+                    <tr class="table-row" onclick="toggleAccordion(this)">
+                        <td class="table-cell">
+                            <div class="customer-avatar-small">MJ</div>
+                        </td>
+                        <td class="table-cell">
+                            <h3 class="customer-name">Mike Johnson</h3>
+                        </td>
+                        <td class="table-cell">
+                            <span class="status-badge status-customer">Customer</span>
+                        </td>
+                        <td class="table-cell">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr class="accordion-content">
+                        <td colspan="4">
+                            <div class="accordion-details">
+                                <div class="detail-section">
+                                    <h4>Contact Information</h4>
+                                    <div class="detail-item">
+                                        <span>Email:</span>
+                                        <span class="detail-value">mike.j@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Phone:</span>
+                                        <span class="detail-value">+1 (555) 987-6543</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Order History</h4>
+                                    <div class="detail-item">
+                                        <span>Total Orders:</span>
+                                        <span class="detail-value">8</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Total Spent:</span>
+                                        <span class="detail-value">$156</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Last Order:</span>
+                                        <span class="detail-value">1 week ago</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Membership</h4>
+                                    <div class="detail-item">
+                                        <span>Member Since:</span>
+                                        <span class="detail-value">Mar 2024</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Status:</span>
+                                        <span class="detail-value">Regular Customer</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Actions</h4>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-small btn-message">Message</button>
+                                        <button class="btn-small btn-view">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 
-            <div class="customer-card">
-                <div class="customer-header">
-                    <div class="customer-avatar">LP</div>
-                    <div class="customer-info">
-                        <h3>Lisa Park</h3>
-                        <div class="customer-email">lisa.park@email.com</div>
-                    </div>
-                </div>
-                <div class="customer-status">
-                    <span class="status-badge status-follower">Follower</span>
-                </div>
-                <div class="customer-details">
-                    <div class="detail-item">
-                        <span>Orders:</span>
-                        <span class="detail-value">0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Spent:</span>
-                        <span class="detail-value">$0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Following Since:</span>
-                        <span class="detail-value">1 month ago</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Engagement:</span>
-                        <span class="detail-value">High</span>
-                    </div>
-                </div>
-                <div class="customer-actions">
-                    <button class="btn-small btn-message">Message</button>
-                    <button class="btn-small btn-view">View Profile</button>
-                </div>
-            </div>
+                    <tr class="table-row" onclick="toggleAccordion(this)">
+                        <td class="table-cell">
+                            <div class="customer-avatar-small">LP</div>
+                        </td>
+                        <td class="table-cell">
+                            <h3 class="customer-name">Lisa Park</h3>
+                        </td>
+                        <td class="table-cell">
+                            <span class="status-badge status-follower">Follower</span>
+                        </td>
+                        <td class="table-cell">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr class="accordion-content">
+                        <td colspan="4">
+                            <div class="accordion-details">
+                                <div class="detail-section">
+                                    <h4>Contact Information</h4>
+                                    <div class="detail-item">
+                                        <span>Email:</span>
+                                        <span class="detail-value">lisa.park@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Social:</span>
+                                        <span class="detail-value">@lisapark_foodie</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Engagement</h4>
+                                    <div class="detail-item">
+                                        <span>Following Since:</span>
+                                        <span class="detail-value">1 month ago</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Engagement Level:</span>
+                                        <span class="detail-value">High</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Interests:</span>
+                                        <span class="detail-value">Pastries, Cakes</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Potential</h4>
+                                    <div class="detail-item">
+                                        <span>Conversion Score:</span>
+                                        <span class="detail-value">8.5/10</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Recommended Action:</span>
+                                        <span class="detail-value">Send Discount Code</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Actions</h4>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-small btn-message">Message</button>
+                                        <button class="btn-small btn-view">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 
-            <div class="customer-card">
-                <div class="customer-header">
-                    <div class="customer-avatar">JD</div>
-                    <div class="customer-info">
-                        <h3>John Davis</h3>
-                        <div class="customer-email">john.davis@email.com</div>
-                    </div>
-                </div>
-                <div class="customer-status">
-                    <span class="status-badge status-new">New</span>
-                    <span class="status-badge status-follower">Follower</span>
-                </div>
-                <div class="customer-details">
-                    <div class="detail-item">
-                        <span>Orders:</span>
-                        <span class="detail-value">0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Spent:</span>
-                        <span class="detail-value">$0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Joined:</span>
-                        <span class="detail-value">3 days ago</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Source:</span>
-                        <span class="detail-value">Instagram</span>
-                    </div>
-                </div>
-                <div class="customer-actions">
-                    <button class="btn-small btn-message">Message</button>
-                    <button class="btn-small btn-view">View Profile</button>
-                </div>
-            </div>
+                    <tr class="table-row" onclick="toggleAccordion(this)">
+                        <td class="table-cell">
+                            <div class="customer-avatar-small">JD</div>
+                        </td>
+                        <td class="table-cell">
+                            <h3 class="customer-name">John Davis</h3>
+                        </td>
+                        <td class="table-cell">
+                            <span class="status-badge status-new">New</span>
+                            <span class="status-badge status-follower">Follower</span>
+                        </td>
+                        <td class="table-cell">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr class="accordion-content">
+                        <td colspan="4">
+                            <div class="accordion-details">
+                                <div class="detail-section">
+                                    <h4>Contact Information</h4>
+                                    <div class="detail-item">
+                                        <span>Email:</span>
+                                        <span class="detail-value">john.davis@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Source:</span>
+                                        <span class="detail-value">Instagram</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>New Member Info</h4>
+                                    <div class="detail-item">
+                                        <span>Joined:</span>
+                                        <span class="detail-value">3 days ago</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>First Interaction:</span>
+                                        <span class="detail-value">Liked 5 posts</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Welcome Actions</h4>
+                                    <div class="detail-item">
+                                        <span>Welcome Message:</span>
+                                        <span class="detail-value">Sent ✓</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Welcome Discount:</span>
+                                        <span class="detail-value">Pending</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Actions</h4>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-small btn-message">Send Welcome</button>
+                                        <button class="btn-small btn-view">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 
-            <div class="customer-card">
-                <div class="customer-header">
-                    <div class="customer-avatar">ST</div>
-                    <div class="customer-info">
-                        <h3>Sarah Thompson</h3>
-                        <div class="customer-email">sarah.t@email.com</div>
-                    </div>
-                </div>
-                <div class="customer-status">
-                    <span class="status-badge status-customer">Customer</span>
-                </div>
-                <div class="customer-details">
-                    <div class="detail-item">
-                        <span>Orders:</span>
-                        <span class="detail-value">15</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Spent:</span>
-                        <span class="detail-value">$389</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Last Order:</span>
-                        <span class="detail-value">5 days ago</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Member Since:</span>
-                        <span class="detail-value">Dec 2023</span>
-                    </div>
-                </div>
-                <div class="customer-actions">
-                    <button class="btn-small btn-message">Message</button>
-                    <button class="btn-small btn-view">View Profile</button>
-                </div>
-            </div>
+                    <tr class="table-row" onclick="toggleAccordion(this)">
+                        <td class="table-cell">
+                            <div class="customer-avatar-small">ST</div>
+                        </td>
+                        <td class="table-cell">
+                            <h3 class="customer-name">Sarah Thompson</h3>
+                        </td>
+                        <td class="table-cell">
+                            <span class="status-badge status-customer">Customer</span>
+                        </td>
+                        <td class="table-cell">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr class="accordion-content">
+                        <td colspan="4">
+                            <div class="accordion-details">
+                                <div class="detail-section">
+                                    <h4>Contact Information</h4>
+                                    <div class="detail-item">
+                                        <span>Email:</span>
+                                        <span class="detail-value">sarah.t@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Phone:</span>
+                                        <span class="detail-value">+1 (555) 456-7890</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Order History</h4>
+                                    <div class="detail-item">
+                                        <span>Total Orders:</span>
+                                        <span class="detail-value">15</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Total Spent:</span>
+                                        <span class="detail-value">$389</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Last Order:</span>
+                                        <span class="detail-value">5 days ago</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Membership</h4>
+                                    <div class="detail-item">
+                                        <span>Member Since:</span>
+                                        <span class="detail-value">Dec 2023</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Loyalty Points:</span>
+                                        <span class="detail-value">1,250 pts</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Actions</h4>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-small btn-message">Message</button>
+                                        <button class="btn-small btn-view">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
 
-            <div class="customer-card">
-                <div class="customer-header">
-                    <div class="customer-avatar">AM</div>
-                    <div class="customer-info">
-                        <h3>Alex Martinez</h3>
-                        <div class="customer-email">alex.m@email.com</div>
-                    </div>
-                </div>
-                <div class="customer-status">
-                    <span class="status-badge status-follower">Follower</span>
-                </div>
-                <div class="customer-details">
-                    <div class="detail-item">
-                        <span>Orders:</span>
-                        <span class="detail-value">0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Spent:</span>
-                        <span class="detail-value">$0</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Following Since:</span>
-                        <span class="detail-value">2 weeks ago</span>
-                    </div>
-                    <div class="detail-item">
-                        <span>Engagement:</span>
-                        <span class="detail-value">Medium</span>
-                    </div>
-                </div>
-                <div class="customer-actions">
-                    <button class="btn-small btn-message">Message</button>
-                    <button class="btn-small btn-view">View Profile</button>
-                </div>
-            </div>
+                    <tr class="table-row" onclick="toggleAccordion(this)">
+                        <td class="table-cell">
+                            <div class="customer-avatar-small">AM</div>
+                        </td>
+                        <td class="table-cell">
+                            <h3 class="customer-name">Alex Martinez</h3>
+                        </td>
+                        <td class="table-cell">
+                            <span class="status-badge status-follower">Follower</span>
+                        </td>
+                        <td class="table-cell">
+                            <span class="expand-icon">▶</span>
+                        </td>
+                    </tr>
+                    <tr class="accordion-content">
+                        <td colspan="4">
+                            <div class="accordion-details">
+                                <div class="detail-section">
+                                    <h4>Contact Information</h4>
+                                    <div class="detail-item">
+                                        <span>Email:</span>
+                                        <span class="detail-value">alex.m@email.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Social:</span>
+                                        <span class="detail-value">@alexm_bakingfan</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Engagement</h4>
+                                    <div class="detail-item">
+                                        <span>Following Since:</span>
+                                        <span class="detail-value">2 weeks ago</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Engagement Level:</span>
+                                        <span class="detail-value">Medium</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Interests:</span>
+                                        <span class="detail-value">Bread, Cookies</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Potential</h4>
+                                    <div class="detail-item">
+                                        <span>Conversion Score:</span>
+                                        <span class="detail-value">6.5/10</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span>Recommended Action:</span>
+                                        <span class="detail-value">Share Recipe</span>
+                                    </div>
+                                </div>
+                                <div class="detail-section">
+                                    <h4>Actions</h4>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="btn-small btn-message">Message</button>
+                                        <button class="btn-small btn-view">View Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+
+        <script>
+            function toggleAccordion(row) {
+                const accordionContent = row.nextElementSibling;
+                const isExpanded = row.classList.contains('expanded');
+                
+                // Close all other accordions
+                document.querySelectorAll('.table-row.expanded').forEach(expandedRow => {
+                    expandedRow.classList.remove('expanded');
+                    expandedRow.nextElementSibling.classList.remove('show');
+                });
+                
+                if (!isExpanded) {
+                    row.classList.add('expanded');
+                    accordionContent.classList.add('show');
+                }
+            }
+        </script>
     </main>
 </body>
 </html>
