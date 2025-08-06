@@ -42,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
     exit;
 }
 
-
 //fetch cart items from database
 $sql = "SELECT *
         FROM cart c 

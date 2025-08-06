@@ -235,7 +235,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                 <!-- Image upload field handled by image-cropper.js -->
                 <?php if (isset($_SESSION['uploaded_product_image'])): ?>
                     <div style="margin:10px 0; color:green;">Image uploaded:
-                        <?php echo htmlspecialchars($_SESSION['uploaded_product_image']); ?></div>
+                        <?php echo htmlspecialchars($_SESSION['uploaded_product_image']); ?>
+                    </div>
                 <?php endif; ?>
 
                 <div class="form-actions">
@@ -342,6 +343,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             const modal = document.getElementById('editModal');
             modal.classList.remove('active');
         }
+
+
+
+
+
 
         // Filter Functions
         function filterProducts(category) {
@@ -522,7 +528,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
         } else if ($new_image) {
             // Update with new image
             $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?, image=? WHERE product_id=? ");
-            $stmt->bind_param("ssds si", $updated_name, $updated_category, $updated_price, $updated_description, $new_image, $id);
+            $stmt->bind_param("ssdssi", $updated_name, $updated_category, $updated_price, $updated_description, $new_image, $id);
         } else {
             // No image change
             $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=? WHERE product_id=? ");
