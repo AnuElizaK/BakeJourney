@@ -11,7 +11,7 @@
    <body>
     <div class="overlay"></div>
     <div class="dialog">
-      <button class="close-button" onclick="window.location.href='index.php'">×</button>
+      <button class="close-button" onclick="window.location.href='index.php'">&times;</button>
       
       <div class="dialog-header">
         <div class="logo-icon">

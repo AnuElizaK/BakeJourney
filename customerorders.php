@@ -474,6 +474,12 @@ $pResult = $ordStmt->get_result();
 <!-- Sticky Navigation Bar -->
 <?php include 'custnavbar.php'; ?>
 
+<!-- Include the sidebar -->
+<?php include 'tracking-sidebar.php'; ?>
+
+<!-- Render the sidebar with order data -->
+<?php renderTrackingSidebar($orderData); ?>
+
 <body>
 
     <!-- Main Content -->
@@ -560,7 +566,7 @@ $pResult = $ordStmt->get_result();
                 </div>
 
                 <div class="order-actions">
-                    <a href="#" class="btn btn-primary">Track Order</a>
+                    <a href="#" class="btn btn-primary" onclick="openTrackingSidebar()">Track Order</a>
                     <a href="#" class="btn btn-secondary">Contact Baker</a>
                     <a href="#" class="btn btn-danger">Cancel Order</a>
                 </div>
