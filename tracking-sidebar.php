@@ -269,12 +269,82 @@
     /* Responsive design */
     @media (max-width: 768px) {
         .sidebar {
-            width: 100%;
+            width: 85%;
             right: -100%;
         }
 
-        .contact-buttons {
-            flex-direction: column;
+        .sidebar-title {
+            font-size: 1.1rem;
+        }
+
+        .close-btn {
+            font-size: 20px;
+        }
+
+        .sidebar-subtitle {
+            color: #484c54;
+            font-size: 12px;
+        }
+
+        .step-icon {
+            font-size: 14px;
+        }
+
+        .step-content {
+            flex: 1;
+            padding-top: 8px;
+        }
+
+        .step-title {
+            font-size: 14px;
+        }
+
+        .step-description {
+            font-size: 12px;
+        }
+
+        .step-time {
+            font-size: 10px;
+        }
+
+        /* Order details in sidebar */
+        .sidebar-order-details {
+            padding: 10px;
+        }
+
+        .detail-row {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+        }
+
+        .detail-value {
+            font-size: 12px;
+        }
+
+        /* Contact baker section */
+        .contact-baker {
+            background: #fef7cd;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .contact-baker h3 {
+            font-size: 16px;
+        }
+
+        .contact-baker p {
+            font-size: 12px;
+        }
+
+        .btn-contact-sidebar {
+            padding: 5px 15px;
+            font-weight: 500;
+            font-size: 12px;
         }
     }
 
@@ -290,9 +360,6 @@
 </style>
 
 <?php
-// ==============================================
-// FILE: includes/sidebar.php
-// ==============================================
 
 // Sample order data - in real implementation, fetch from database
 $orderData = [

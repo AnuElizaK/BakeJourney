@@ -372,7 +372,7 @@ $result = $stmt->get_result();
                 <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
                 <input type="hidden" name="quantity" value="1">
                 <button type="submit" name="add_to_cart" class="cart-button">
-                  <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px;"> Add to Cart
+                  <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to Cart
                 </button>
               </form>
               </form>

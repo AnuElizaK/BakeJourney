@@ -69,6 +69,7 @@ $sql = "SELECT *
         FROM cart c 
         JOIN products p ON c.product_id = p.product_id 
         JOIN bakers b ON p.baker_id = b.baker_id
+        JOIN users u ON b.user_id = u.user_id
         WHERE c.user_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
@@ -82,12 +83,12 @@ while ($row = $cart_items_result->fetch_assoc()) {
 // Handle order placement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
 
-  $delivery_address = $_POST['delivery_address']?? '';
+  $delivery_address = $_POST['delivery_address'] ?? '';
   $delivery_date = $_POST['delivery_date'] ?? date('Y-m-d H:i:s', strtotime('+2 days'));
-  // if (empty($delivery_address) || empty($delivery_date)) {
-  //   echo "<script>alert('Please fill in all delivery details.'); window.location.href='cart.php';</script>";
-  //   exit;
-  // }
+  if (empty($delivery_address) || empty($delivery_date)) {
+    echo "<script>alert('Please fill in all delivery details.'); window.location.href='cart.php';</script>";
+    exit;
+  }
   $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, delivery_address, delivery_date, order_status, payment_method, payment_status) VALUES (?, ?, ?, 'pending', 'UPI', 'success')");
   $item_stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)");
   $delete_cart_stmt = $conn->prepare("DELETE FROM cart WHERE cart_id = ?");
@@ -147,10 +148,13 @@ include 'custnavbar.php';
         <div class="content-card">
           <div class="card-header">
             <h2>Your Cart</h2>
+            <p class="card-description">View your items and change quantity</p>
           </div>
           <div class="card-content">
             <?php if ($result->num_rows == 0) {
-              echo "Cart is empty.";
+              echo "<h2 class=\"cart-empty\">Oops! Your cart’s feeling a little lonely.🥺</h2>";
+              echo "<p class=\"cart-empty\">It’s currently as empty as a cookie jar after midnight. Why not sprinkle in some sweetness and start shopping?</p>";
+              echo "<p class=\"cart-empty\"><button class=\"shortcut\" onclick=\"window.location.href='products.php'\">Browse Treats</button> or <button class=\"shortcut\" onclick=\"window.location.href='customerdashboard.php'\">Return to Home</button></p>";
               exit;
             } ?>
 
@@ -163,15 +167,16 @@ include 'custnavbar.php';
                 $total += $subtotal;
                 ?>
                 <div class="product-card" onclick="toggleSelect(this)">
-                  <!-- <div class="product-image">
+                  <div class="product-image">
                     <img src="<?php echo $item['image'] ? 'uploads/' . $item['image'] : 'no preview available'; ?>"
                       alt="<?php echo $item['name']; ?>">
-                  </div> -->
+                  </div>
                   <div class="product-info">
                     <div class="product-name" onclick="window.location.href='productpage.php'" title="View More Details">
                       <?php echo $item['name']; ?>
                     </div>
-                    <div class="product-description"><?php echo $item['brand_name']; ?></div>
+                    <div class="product-description"><?= htmlspecialchars($item['brand_name'] ?: $item['full_name']) ?>
+                    </div>
                     <div class="product-price">₹<?php echo number_format($item['price'], 2); ?></div>
 
                     <!-- Quantity Controls -->
@@ -187,7 +192,7 @@ include 'custnavbar.php';
 
                     <!-- delete item -->
                     <div>
-                      <form action="cart.php" method="post" style="margin-top: 8px;">
+                      <form action="cart.php" method="post" style="margin-top: 12px;">
                         <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
                         <button type="submit" name="action" value="delete" class="delete-btn-modern"
                           onclick="return confirm('Remove this item from cart?')">
@@ -199,7 +204,7 @@ include 'custnavbar.php';
                             <line x1="10" y1="11" x2="10" y2="17"></line>
                             <line x1="14" y1="11" x2="14" y2="17"></line>
                           </svg>
-
+                          Remove
                         </button>
                       </form>
                     </div>
@@ -242,63 +247,59 @@ include 'custnavbar.php';
                 </div>
               </div>
             </div>
-
-            <!-- Delivery Information -->
-            <div class="form-section">
-              <h3>Delivery Details</h3>
-              <div class="form-grid">
-                <div class="form-group">
-                  <label class="form-label">Delivery Date </label>
-                  <input type="datetime-local" name='delivery_date' class="form-input" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Delivery Address </label>
-                  <textarea name='delivery_address' class="form-input" required></textarea>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
- <!-- Order Summary -->
-<div class="content-card order-summary">
-  <div class="card-header">
-    <h2>Order Summary</h2>
-    <p class="card-description">Review your items</p>
-  </div>
-  <div class="card-content">
-    <div class="summary-item">
-      <span class="summary-name">No of items</span>
-      <span class="summary-price"><?= count($cart_items) ?></span>
-    </div>
-    <?php foreach ($cart_items as $item): ?>
-      <div class="summary-item">
-        <span class="summary-name"><?= $item['name'] ?> × <?= $item['quantity'] ?></span>
-        <span class="summary-price">₹<?= number_format($item['price'] * $item['quantity'], 2) ?></span>
-      </div>
-    <?php endforeach; ?>
-    <div class="summary-item">
-      <span class="summary-name"><b>Grand total</b></span>
-      <span class="summary-price"><b>₹<?= number_format($total, 2) ?></b></span>
-    </div>
+        <!-- Order Summary -->
+        <div class="content-card order-summary">
+          <div class="card-header">
+            <h2>Order Summary</h2>
+            <p class="card-description">Review your items</p>
+          </div>
+          <div class="card-content">
+            <div class="summary-item">
+              <span class="summary-name"><b>No of items</b></span>
+              <bspan class="summary-quantity"><?= count($cart_items) ?><span>
+            </div>
+            <?php foreach ($cart_items as $item): ?>
+              <div class="summary-item">
+                <span class="summary-name"><?= $item['name'] ?> × <?= $item['quantity'] ?></span>
+                <span class="summary-price">₹<?= number_format($item['price'] * $item['quantity'], 2) ?></span>
+              </div>
+            <?php endforeach; ?>
+            <div class="summary-item">
+              <span class="summary-name"><b>Grand total</b></span>
+              <span class="summary-price"><b>₹<?= number_format($total, 2) ?></b></span>
+            </div>
 
-    <!-- Form for placing order -->
-    <form method="post" action="cart.php">
-      <input type="hidden" name="place_order" value="1">
-      <!-- Directly include delivery_address and delivery_date -->
-      <input type="text" name="delivery_address" id="delivery_address_input" value="<?php echo htmlspecialchars($_POST['delivery_address'] ?? ''); ?>" style="display: none;">
-      <input type="datetime-local" name="delivery_date" id="delivery_date_input" value="<?php echo htmlspecialchars($_POST['delivery_date'] ?? ''); ?>" style="display: none;">
-      <button type="submit" class="btn-primary" style="margin-top: 24px;">
-        <img src="media/cart2.png" alt="Cart" width="25" height="25" style="vertical-align:middle;">
-        Place Order
-      </button>
-    </form>
+            <!-- Form for placing order -->
+            <form method="post" action="cart.php">
+              <input type="hidden" name="place_order" value="1">
+              <div class="form-section">
+                <h3>Delivery Details</h3>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label">Delivery Date & Time </label>
+                    <input type="datetime-local" name='delivery_date' class="form-input" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Delivery Address </label>
+                    <textarea name='delivery_address' class="form-textarea" placeholder="Enter delivery address"
+                      rows="1" required></textarea>
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn-primary" style="margin-top: 24px;">
+                <img src="media/cart2.png" alt="Cart" width="25" height="25" style="vertical-align: top;">
+                Place Order
+              </button>
+            </form>
 
-    <p style="font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 16px;">
-      You will receive a confirmation email with pickup details
-    </p>
-  </div>
-</div>
+            <p style="font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 16px;">
+              You will receive a confirmation email with pickup details
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -309,13 +310,6 @@ include 'custnavbar.php';
     function toggleSelect(card) {
       card.classList.toggle('selected');
     }
-
-    // document.querySelector("form[action='cart.php']").addEventListener("submit", function (e) {
-    //   const address = document.querySelector("textarea[name='delivery_address']").value;
-    //   const date = document.querySelector("input[name='delivery_date']").value;
-    //   document.getElementById("delivery_address_input").value = address;
-    //   document.getElementById("delivery_date_input").value = date;
-    // });
   </script>
 
   <?php
