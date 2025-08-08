@@ -1,5 +1,4 @@
 <?php
-/*
 session_start();
 include 'db.php';
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
@@ -11,17 +10,28 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
-$ordStmt = $conn->prepare("
-  SELECT *
-  FROM orders ord
-  JOIN bakers b ON ord.baker_id = b.baker_id
-  JOIN users u ON ord.user_id = u.user_id
-  JOIN order_items o ON ord.order_id = o.order_id
-  JOIN products p ON o.product_id = p.product_id
+$customer_id = $_SESSION['user_id'];
+
+// Fetch customer orders
+$stmt = $conn->prepare(" SELECT *
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    JOIN bakers b ON p.baker_id = b.baker_id
+    WHERE o.customer_id = ?
+    ORDER BY o.order_date DESC
 ");
-$ordStmt->execute();
-$pResult = $ordStmt->get_result();
-*/
+$stmt->bind_param("i", $customer_id);
+$stmt->execute();
+$orders_result = $stmt->get_result();
+
+// Group results by order_id
+$orders = [];
+while ($row = $orders_result->fetch_assoc()) {
+    $orders[$row['order_id']]['details'] = $row;
+    $orders[$row['order_id']]['items'][] = $row;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -31,444 +41,7 @@ $pResult = $ordStmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders | BakeJourney</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            padding-top: 80px;
-            color: #1f2a38;
-            background: linear-gradient(#fff1bb, #ffffff);
-            min-height: 100vh;
-            padding-top: 120px;
-        }
-
-        h1,
-        h2 {
-            font-family: 'Puanto', Roboto, sans-serif;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding-bottom: 40px;
-        }
-
-        /* Page Header */
-        .page-title {
-            color: #1f2a38;
-        }
-
-        .page-subtitle {
-            color: #6b7280;
-            font-size: 1rem;
-            margin-bottom: 30px;
-        }
-
-        /* Orders Overview */
-        .orders-overview {
-            margin: 2rem 0;
-            border-radius: 15px;
-            padding: 2rem;
-            background: white;
-            border: 2px solid #fee996;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(10px);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .overview-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
-            border-radius: 10px;
-            padding: 1rem;
-            text-align: center;
-            border: 2px solid #fee996;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            border-color: #f59e0b;
-            transform: translateY(-2px);
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #f59e0b;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #6b7280;
-            font-size: 0.9rem;
-        }
-
-        /* Orders Section */
-        .orders-section {
-            margin: 2rem 0;
-            border-radius: 15px;
-            padding: 2rem;
-            background: white;
-            border: 2px solid #fee996;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(10px);
-            margin-bottom: 30px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            color: #1f2a38;
-            font-weight: bold;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .filter-tab {
-            padding: 0.5rem 1rem;
-            border: 1.5px solid #f59e0b;
-            background: transparent;
-            color: #f59e0b;
-            border-radius: 25px;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .filter-tab:hover {
-            background: #fee996;
-            color: #d97706;
-        }
-
-        .filter-tab.active {
-            background: #f59e0b;
-            color: white;
-        }
-
-        /* Order Card */
-        .order-card {
-            background: #fef7cd;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #fcd34d;
-            transition: all 0.3s ease;
-        }
-
-        .order-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-        }
-
-        .order-info {
-            flex: 1;
-        }
-
-        .order-number {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #1f2a38;
-            margin-bottom: 0.25rem;
-        }
-
-        .order-date {
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .order-status {
-            display: inline-block;
-            padding: 0.25rem 1rem;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-confirmed {
-            background: #99f9b7ff;
-            color: #016a30ff;
-        }
-
-        .status-preparing {
-            background: #fee996;
-            color: #d97706;
-        }
-
-        .status-ready {
-            background: #cce5ff;
-            color: #004085;
-        }
-
-        .status-delivered {
-            background: #e3d3efff;
-            color: #3a0c60ff;
-        }
-
-        .status-cancelled {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .order-details {
-            margin: 1rem 0;
-        }
-
-        .baker-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .baker-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .baker-name {
-            font-weight: 600;
-            color: #1f2a38;
-        }
-
-        .items-list {
-            background: white;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0.5rem;
-            border-bottom: 1px solid #d1d5db;
-        }
-
-        .order-item:last-child {
-            border-bottom: none;
-        }
-
-        .item-info {
-            flex: 1;
-        }
-
-        .item-name {
-            font-weight: 600;
-            color: #1f2a38;
-        }
-
-        .item-details {
-            font-size: 0.9rem;
-            color: #6b7280;
-        }
-
-        .item-price {
-            font-weight: bold;
-            color: #f59e0b;
-        }
-
-        .order-total {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid #fcd34d;
-        }
-
-        .total-label {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #1f2a38;
-        }
-
-        .total-amount {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #f59e0b;
-        }
-
-        .order-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1.5rem;
-            border: none;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #fcd34d, #f59e0b);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #fcd34d, #f59e0b);
-            color: white;
-
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-        }
-
-        .btn-danger {
-            background: transparent;
-            color: #dc2626;
-            border: 1.5px solid #dc2626;
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #f87171, #dc2626);
-            color: white;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #6b7280;
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .empty-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #1f2a38;
-        }
-
-        .empty-text {
-            margin-bottom: 2rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .overview-stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .section-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-
-            .filter-tabs {
-                justify-content: center;
-            }
-
-            .order-header {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .order-actions {
-                flex-direction: column;
-            }
-
-            .order-total {
-                flex-direction: column;
-                gap: 0.5rem;
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .overview-stats {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-tabs {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-        }
-
-        /* Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .page-header,
-        .orders-overview,
-        .orders-section {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .orders-overview {
-            animation-delay: 0.1s;
-        }
-
-        .orders-section {
-            animation-delay: 0.2s;
-        }
-    </style>
+    <link rel="stylesheet" href="customerorders.css">
 </head>
 
 <!-- Sticky Navigation Bar -->
@@ -516,156 +89,227 @@ $pResult = $ordStmt->get_result();
                 <h2 class="section-title">Recent Orders</h2>
                 <div class="filter-tabs">
                     <button class="filter-tab active">All</button>
-                    <button class="filter-tab">Active</button>
-                    <button class="filter-tab">Completed</button>
-                    <button class="filter-tab">Cancelled</button>
+                    <button class="filter-tab" onclick="showTab('active')">Active</button>
+                    <button class="filter-tab" onclick="showTab('completed')">Completed</button>
+                    <button class="filter-tab" onclick="showTab('cancelled')">Cancelled</button>
                 </div>
             </div>
 
             <!-- Order Card 1 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-info">
-                        <div class="order-number">Order #BJ-2024-001</div>
-                        <div class="order-date">Placed on January 15, 2024</div>
-                        <span class="order-status status-preparing">Preparing</span>
-                    </div>
+            <?php if (empty($orders)): ?>
+                <div class="no-orders">
+                    <p>You have no orders yet. Start shopping now!</p>
+                    <a href="products.php" class="btn btn-primary">Shop Now</a>
                 </div>
 
-                <div class="order-details">
-                    <div class="baker-info">
-                        <img src="https://images.unsplash.com/photo-1594736797933-d0401ba0ad65?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                            alt="Sarah Johnson" class="baker-avatar">
-                        <div>
-                            <div class="baker-name">Sarah Johnson</div>
-                            <div style="font-size: 0.8rem; color: #6b7280;">Artisan Breads & Sourdoughs</div>
-                        </div>
-                    </div>
+            <?php else: ?>
+                <?php foreach ($orders as $order_id => $order):
+                    $order_info = $order['details'];
+                    $items = $order['items'];
 
-                    <div class="items-list">
-                        <div class="order-item">
-                            <div class="item-info">
-                                <div class="item-name">Classic Sourdough Loaf</div>
-                                <div class="item-details">Quantity: 2 × $12.00</div>
+                    $can_pay = true;
+                    foreach ($items as $item) {
+                        if ($item['baker_status'] !== 'accepted') {
+                            $can_pay = false;
+                            break;
+                        }
+                    }
+
+                    $order_datetime = new DateTime($order_info['order_date']);
+                    $now = new DateTime();
+                    $interval = $order_datetime->diff($now);
+                    $within_24hrs = $interval->days == 0 && $interval->h < 24;
+
+                    $total_amount = array_sum(array_column($items, 'total_price'));
+                    ?>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <div class="order-number">Order ORBKET<?= $order_id ?></div>
+                                <div class="order-date">Placed on <?= date('F j, Y', strtotime($order_info['order_date'])) ?>
+                                </div>
+                                <span
+                                    class="order-status status-<?= $order_info['order_status'] ?>"><?= ucfirst($order_info['order_status']) ?></span>
                             </div>
-                            <div class="item-price">$24.00</div>
                         </div>
-                        <div class="order-item">
-                            <div class="item-info">
-                                <div class="item-name">Whole Wheat Bread</div>
-                                <div class="item-details">Quantity: 1 × $15.00</div>
+
+                        <?php foreach ($items as $item): ?>
+                            <div class="order-details">
+                                <div class="baker-info">
+                                    <img src="https://images.unsplash.com/photo-1594736797933-d0401ba0ad65?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                                        alt="<?php echo $item['brand_name']; ?>" class="baker-avatar">
+                                    <div>
+                                        <div class="baker-name"><?php echo $item['brand_name']; ?></div>
+                                        
+                                    </div>
+                                </div>
+                                <div class="items-list">
+                                    <div class="order-item">
+                                        <div class="item-info">
+                                            <div class="item-name"><?php echo $item['name']; ?></div>
+                                            <div class="item-details">Quantity: <?php echo $item['quantity']; ?> × $<?php echo $item['price']; ?></div>
+                                        </div>
+                                        <div class="item-price">$<?php echo $item['total_price']; ?></div>
+                                    </div>
+
+                                    <div class="order-total">
+                                        <span class="total-label">Total Amount:</span>
+                                        <span class="total-amount">$<?php echo $total_amount; ?></span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+
+                            <div class="order-actions">
+                                        <?php if ($order_info['order_status'] === 'pending' && $can_pay): ?>
+                    <form action="payment.php" method="POST" style="display:inline;">
+                        <input type="hidden" name="order_id" value="<?= $order_id ?>">
+                        <input type="hidden" name="amount" value="<?= $total_amount ?>">
+                        <button type="submit" name="action" value="pay" class="btn btn-primary">Pay ₹<?= $total_amount ?></button>
+                        <button type="submit" name="action" value="cancel" class="btn btn-secondary">Cancel</button>
+                    </form>
+                <?php endif; ?>
+
+                <?php if ($order_info['order_status'] !== 'cancelled' && $order_info['order_status'] !== 'delivered'): ?>
+                    <form name="cancel_order" method="POST" style="display:inline;">
+                        <input type="hidden" name="order_id" value="<?= $order_id ?>">
+                        <?php if ($within_24hrs): ?>
+                            <button type="submit" name="cancel_confirm" class="btn btn-danger">Cancel Order</button>
+                        <?php else: ?>
+                            <button type="submit" disabled title="Can't cancel after 24 hours">Cancel (Expired)</button>
+                        <?php endif; ?>
+                    </form>
+                <?php endif; ?>
+
+                <?php if ($order_info['payment_status'] === 'success' && $order_info['order_status'] !== 'cancelled'): ?>
+                    <form  method="GET" style="display:inline;">
+                        <input type="hidden" name="order_id" value="<?= $order_id ?>">
+                        <button onclick="openTrackingSidebar()" type="submit" class="btn btn-primary">Track Order</button>
+                    </form>
+                <?php endif; ?>
+
+
                             </div>
-                            <div class="item-price">$15.00</div>
                         </div>
                     </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
 
-                    <div class="order-total">
-                        <span class="total-label">Total Amount:</span>
-                        <span class="total-amount">$39.00</span>
-                    </div>
-                </div>
 
-                <div class="order-actions">
-                    <a href="#" class="btn btn-primary" onclick="openTrackingSidebar()">Track Order</a>
-                    <a href="#" class="btn btn-secondary">Contact Baker</a>
-                    <a href="#" class="btn btn-danger">Cancel Order</a>
-                </div>
-            </div>
-
-            <!-- Order Card 2 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-info">
-                        <div class="order-number">Order #BJ-2024-002</div>
-                        <div class="order-date">Placed on January 12, 2024</div>
-                        <span class="order-status status-ready">Ready for Pickup</span>
-                    </div>
-                </div>
-
-                <div class="order-details">
-                    <div class="baker-info">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                            alt="Mike Chen" class="baker-avatar">
-                        <div>
-                            <div class="baker-name">Mike Chen</div>
-                            <div style="font-size: 0.8rem; color: #6b7280;">Pastry Specialist</div>
-                        </div>
-                    </div>
-
-                    <div class="items-list">
-                        <div class="order-item">
-                            <div class="item-info">
-                                <div class="item-name">Chocolate Croissants</div>
-                                <div class="item-details">Quantity: 6 × $3.50</div>
-                            </div>
-                            <div class="item-price">$21.00</div>
-                        </div>
-                        <div class="order-item">
-                            <div class="item-info">
-                                <div class="item-name">Blueberry Muffins</div>
-                                <div class="item-details">Quantity: 4 × $2.75</div>
-                            </div>
-                            <div class="item-price">$11.00</div>
-                        </div>
-                    </div>
-
-                    <div class="order-total">
-                        <span class="total-label">Total Amount:</span>
-                        <span class="total-amount">$32.00</span>
-                    </div>
-                </div>
-
-                <div class="order-actions">
-                    <a href="#" class="btn btn-primary">Get Directions</a>
-                    <a href="#" class="btn btn-secondary">Contact Baker</a>
-                </div>
-            </div>
-
-            <!-- Order Card 3 -->
-            <div class="order-card">
-                <div class="order-header">
-                    <div class="order-info">
-                        <div class="order-number">Order #BJ-2024-003</div>
-                        <div class="order-date">Completed on January 8, 2024</div>
-                        <span class="order-status status-delivered">Delivered</span>
-                    </div>
-                </div>
-
-                <div class="order-details">
-                    <div class="baker-info">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                            alt="Emma Wilson" class="baker-avatar">
-                        <div>
-                            <div class="baker-name">Emma Wilson</div>
-                            <div style="font-size: 0.8rem; color: #6b7280;">Cake Designer</div>
-                        </div>
-                    </div>
-
-                    <div class="items-list">
-                        <div class="order-item">
-                            <div class="item-info">
-                                <div class="item-name">Custom Birthday Cake</div>
-                                <div class="item-details">8-inch vanilla cake with buttercream</div>
-                            </div>
-                            <div class="item-price">$45.00</div>
-                        </div>
-                    </div>
-
-                    <div class="order-total">
-                        <span class="total-label">Total Amount:</span>
-                        <span class="total-amount">$45.00</span>
-                    </div>
-                </div>
-
-                <div class="order-actions">
-                    <a href="#" class="btn btn-primary">Rate & Review</a>
-                    <a href="#" class="btn btn-secondary">Reorder</a>
-                </div>
-            </div>
         </section>
     </main>
+    <script>
+        function showTab(tabName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.orders-section');
+            sections.forEach(section => section.classList.remove('active'));
 
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
     <?php include 'globalfooter.php'; ?>
+
+    <?php
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_confirm'])) {
+    $order_id = $_POST['order_id'];
+
+    // Check time limit (24 hours)
+    $stmt = $conn->prepare("SELECT order_date FROM orders WHERE order_id = ? AND customer_id = ?");
+    $stmt->bind_param("ii", $order_id, $customer_id);
+    $stmt->execute();
+    $stmt->bind_result($order_date);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($order_date) {
+        $order_time = strtotime($order_date);
+        $now = time();
+
+        if (($now - $order_time) <= 86400) {
+            // ✅ Update order status to 'cancelled'
+            $stmt = $conn->prepare("UPDATE orders SET order_status = 'cancelled' WHERE order_id = ? AND customer_id = ?");
+            $stmt->bind_param("ii", $order_id, $customer_id);
+            $stmt->execute();
+
+            // ✅ Delete order items
+            $stmt = $conn->prepare("DELETE FROM order_items WHERE order_id = ?");
+            $stmt->bind_param("i", $order_id);
+            $stmt->execute();
+        }
+    }
+}
+
+// PAYMENT FORM HANDLER
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array($_POST['action'], ['pay', 'cancel'])) {
+    $order_id = $_POST['order_id'];
+    $action = $_POST['action'];
+
+    // Make sure all baker_status = 'accepted'
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM order_items WHERE order_id = ? AND baker_status != 'accepted'");
+    $stmt->bind_param("i", $order_id);
+    $stmt->execute();
+    $stmt->bind_result($unaccepted_count);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($unaccepted_count == 0) {
+        $status = $action === 'pay' ? 'success' : 'failed';
+        $order_status = $status === 'success' ? 'confirmed' : 'pending';
+        // Update payment_status
+        $stmt = $conn->prepare("UPDATE orders SET payment_status = ?, order_status = ? WHERE order_id = ? AND customer_id = ?");
+        $stmt->bind_param("ssii", $status, $order_status, $order_id, $customer_id);
+        $stmt->execute();
+
+        if ($status === 'success') {
+            // Redirect to track page or reload
+            header("Location: customerorders.php?paid=1");
+            exit;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+    //  Handle cancellation
+    // if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order'])) {
+    //     $order_id = $_POST['order_id'];
+
+    //      Check if cancel is within 24 hrs
+    //     $stmt = $conn->prepare("SELECT order_date, order_status FROM orders WHERE order_id = ? AND customer_id = ?");
+    //     $stmt->bind_param("ii", $order_id, $customer_id);
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
+    //     $order = $result->fetch_assoc();
+
+    //     if ($order && in_array($order['order_status'], ['pending', 'confirmed'])) {
+    //         $order_date = new DateTime($order['order_date']);
+    //         $now = new DateTime();
+    //         $interval = $now->diff($order_date);
+
+    //         if ($interval->days < 1) {
+    //              Delete order (cascade deletes items)
+    //             $stmt = $conn->prepare("UPDATE orders SET order_status = 'cancelled' WHERE order_id = ?");
+    //             $stmt->bind_param("i", $order_id);
+    //             $stmt->execute();
+    //         }
+    //     }
+    // }
+    ?>
 
 </body>
 
