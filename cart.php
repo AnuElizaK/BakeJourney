@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
   }
 
 
-  header("Location: cart.php");
+  header("Location: products.php");
   exit;
 }
 
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     echo "<script>alert('Please fill in all delivery details.'); window.location.href='cart.php';</script>";
     exit;
   }
-  $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, delivery_address, delivery_date, order_status, payment_method, payment_status) VALUES (?, ?, ?, 'pending', 'UPI', 'success')");
+  $order_stmt = $conn->prepare("INSERT INTO orders (customer_id, delivery_address, delivery_date, order_status, payment_method, payment_status) VALUES (?, ?, ?, 'pending', 'Pending', 'pending')");
   $item_stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)");
   $delete_cart_stmt = $conn->prepare("DELETE FROM cart WHERE cart_id = ?");
 
@@ -194,8 +194,7 @@ include 'custnavbar.php';
                     <div>
                       <form action="cart.php" method="post" style="margin-top: 12px;">
                         <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
-                        <button type="submit" name="action" value="delete" class="delete-btn-modern"
-                          onclick="return confirm('Remove this item from cart?')">
+                        <button type="submit" name="action" value="delete" class="delete-btn-modern">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <polyline points="3,6 5,6 21,6"></polyline>

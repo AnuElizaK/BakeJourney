@@ -28,7 +28,7 @@ $stmt = $conn->prepare("
   SELECT *
   FROM products p
   JOIN bakers b ON p.baker_id = b.baker_id
-  ORDER BY RAND()
+  ORDER BY created_at DESC
 ");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -408,6 +408,8 @@ $result = $stmt->get_result();
                 <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
               </div>
               <p><?= htmlspecialchars($product['description']) ?></p>
+              <br />
+             <p>Posted on: <?= date('d M Y', strtotime($product['created_at'])) ?></p>           
             </div>
           </div>
         <?php endwhile; ?>

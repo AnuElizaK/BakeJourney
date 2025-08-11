@@ -384,7 +384,7 @@ while ($order = $orders_result->fetch_assoc()) {
                 <?php
                 $found_completed = false;
                 foreach ($orders_array as $order):
-                    if ($order['baker_category'] != 'completed')
+                    if ($order['baker_category'] != 'delivered')
                         continue;
                     $found_completed = true;
                 ?>

@@ -114,6 +114,36 @@
       box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
     }
 
+    /* Cart Icon Container with Notification Dot */
+    .cart-container {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .cart-notification-dot {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 12px;
+      height: 12px;
+      background-color: #ff4444;
+      border-radius: 50%;
+      border: 2px solid white;
+      display: none; /* Hidden by default */
+      animation: pulse 2s infinite;
+    }
+    
+    /* Show dot when cart has items */
+    .cart-container.has-items .cart-notification-dot {
+      display: block;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
     /* Mobile Menu Toggle */
     .nav-mobile-toggle {
       display: none;
@@ -201,6 +231,14 @@
       .nav-brand span {
         display: none;
       }
+
+      /* Mobile cart notification adjustments */
+      .cart-notification-dot {
+        top: -3px;
+        right: -3px;
+        width: 10px;
+        height: 10px;
+      }
     }
 
     @media (min-width: 769px) and (max-width: 1030px) {
@@ -264,11 +302,41 @@
       .nav-brand span {
         display: inline;
       }
+
+      /* Tablet cart notification adjustments */
+      .cart-notification-dot {
+        top: -4px;
+        right: -4px;
+        width: 10px;
+        height: 10px;
+      }
     }
   </style>
 </head>
 
 <body>
+  <?php 
+  include 'db.php';
+
+  if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+    header("Location: index.php"); // Redirect to login if not authorized
+    exit();
+  }
+
+$user_id = $_SESSION['user_id'];
+
+// Get cart count for this customer
+$cart_count_stmt = $conn->prepare("SELECT COUNT(*) as cart_count FROM cart WHERE user_id = ?");
+$cart_count_stmt->bind_param("i", $user_id);
+$cart_count_stmt->execute();
+  $cart_count_result = $cart_count_stmt->get_result();
+  $cart_data = $cart_count_result->fetch_assoc();
+  $cart_count = $cart_data['cart_count'];
+  
+  // Determine if cart has items
+  $has_cart_items = $cart_count > 0;
+  ?>
+
   <nav class="navbar" id="navbar">
     <div class="custnav-container">
       <div class="nav-content">
@@ -284,8 +352,15 @@
           <a href="services.php" class="nav-link">Services</a>
           <a href="contact.php" class="nav-link">Contact Us</a>
           <a href="customerorders.php" class="nav-link">Orders</a>
-          <a href="cart.php" class="nav-link"><img class="cart-icon" src="media/cart.png" title="Cart" alt="Cart"
-              width="30" height="30"></a>
+          
+          <!-- Cart link with notification dot -->
+          <div class="cart-container <?php echo $has_cart_items ? 'has-items' : ''; ?>">
+            <a href="cart.php" class="nav-link">
+              <img class="cart-icon" src="media/cart.png" title="Cart" alt="Cart" width="30" height="30">
+              <div class="cart-notification-dot"></div>
+            </a>
+          </div>
+          
           <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
@@ -348,5 +423,4 @@
     });
   </script>
 </body>
-
 </html>

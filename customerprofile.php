@@ -316,7 +316,7 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
       </div>
     </div>
 
-    <!-- Recent Orders -->
+    <!-- Recent Orders
 
     <div class="profile-section">
       <h2 class="section-title">Recent Orders</h2>
@@ -336,12 +336,12 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
         <p style="color: #374151">No recent orders found.</p>
       <?php endif; ?>
 
-    </div>
+    </div> -->
 
           
 
     <!-- Preferences -->
-    <div class="profile-section">
+    <!-- <div class="profile-section">
       <h2 class="section-title">Preferences</h2>
       <form>
         <div class="form-grid">
@@ -366,7 +366,7 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
         </div>
         <button type="submit" class="btn">Save Preferences</button>
       </form>
-    </div>
+    </div> -->
 
     <!-- Change Password -->
     <div class="profile-section">
