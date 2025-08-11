@@ -1,3 +1,28 @@
+<?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+include 'db.php';
+
+$user_id = $_SESSION['user_id'] ?? null; // Avoids warning
+
+if ($user_id) {
+    // Get cart count for this customer
+    $cart_count_stmt = $conn->prepare("SELECT COUNT(*) as cart_count FROM cart WHERE user_id = ?");
+    $cart_count_stmt->bind_param("i", $user_id);
+    $cart_count_stmt->execute();
+    $cart_count_result = $cart_count_stmt->get_result();
+    $cart_data = $cart_count_result->fetch_assoc();
+    $cart_count = $cart_data['cart_count'];
+} else {
+    $cart_count = 0; // No session user
+}
+
+$has_cart_items = $cart_count > 0;
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -30,7 +55,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 0;
+      padding: 18px 0;
     }
 
     .nav-brand {
@@ -315,28 +340,6 @@
 </head>
 
 <body>
-  <?php 
-  include 'db.php';
-
-  if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
-    header("Location: index.php"); // Redirect to login if not authorized
-    exit();
-  }
-
-$user_id = $_SESSION['user_id'];
-
-// Get cart count for this customer
-$cart_count_stmt = $conn->prepare("SELECT COUNT(*) as cart_count FROM cart WHERE user_id = ?");
-$cart_count_stmt->bind_param("i", $user_id);
-$cart_count_stmt->execute();
-  $cart_count_result = $cart_count_stmt->get_result();
-  $cart_data = $cart_count_result->fetch_assoc();
-  $cart_count = $cart_data['cart_count'];
-  
-  // Determine if cart has items
-  $has_cart_items = $cart_count > 0;
-  ?>
-
   <nav class="navbar" id="navbar">
     <div class="custnav-container">
       <div class="nav-content">
@@ -351,9 +354,8 @@ $cart_count_stmt->execute();
           <a href="bakers.php" class="nav-link">Find Your Baker</a>
           <a href="services.php" class="nav-link">Services</a>
           <a href="contact.php" class="nav-link">Contact Us</a>
-          <a href="customerorders.php" class="nav-link">Orders</a>
-          
-          <!-- Cart link with notification dot -->
+          <a href="customerorders.php" class="nav-link">Orders</a>        
+        <!-- Cart link with notification dot -->
           <div class="cart-container <?php echo $has_cart_items ? 'has-items' : ''; ?>">
             <a href="cart.php" class="nav-link">
               <img class="cart-icon" src="media/cart.png" title="Cart" alt="Cart" width="30" height="30">

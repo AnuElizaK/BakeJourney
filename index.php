@@ -20,7 +20,7 @@ $productStmt = $conn->prepare("
   JOIN bakers b ON p.baker_id = b.baker_id
   JOIN users u ON b.user_id = u.user_id
   ORDER BY RAND() 
-  LIMIT 4
+  LIMIT 3
 ");
 $productStmt->execute();
 $productResult = $productStmt->get_result();
