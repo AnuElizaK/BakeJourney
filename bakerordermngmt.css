@@ -221,6 +221,11 @@
             background-color: #d4edda;
             color: #155724;
         }
+
+        .status-cancelled{
+            background-color: #f8d7da;
+            color: #721c24;
+        }
         
         .success {
             background-color: #d4edda;
@@ -323,11 +328,6 @@
         .status-in-progress {
             background: #dbeafe;
             color: #1e40af;
-        }
-
-        .status-completed {
-            background: #f3e8ff;
-            color: #7c3aed;
         }
 
         .status-rejected {

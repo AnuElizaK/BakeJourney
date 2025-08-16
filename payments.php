@@ -2,113 +2,116 @@
 session_start();
 include 'db.php';
 
+// Check if user is logged in as customer
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
     header("Location: index.php");
     exit();
 }
 
-$customer_id = $_SESSION['user_id'];
+// Prevent back after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
+header("Pragma: no-cache");
 
-// Handle form submissions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $order_id = $_POST['order_id'];
-    $action = $_POST['action'];
-    
-    if ($action === 'cancel') {
-        // Cancel the order permanently
-        $update_query = "UPDATE orders SET order_status = 'cancelled', payment_status = 'failed' WHERE order_id = ? AND customer_id = ?";
-        $stmt = $conn->prepare($update_query);
-        $stmt->bind_param("ii", $order_id, $customer_id);
-        
-        if ($stmt->execute()) {
-            echo "<script>
-                alert('Order cancelled successfully!');
-                window.location.href = 'customerorders.php';
-            </script>";
-        } else {
-            echo "<script>
-                alert('Error cancelling order. Please try again.');
-                window.history.back();
-            </script>";
-        }
-        exit();
-    }
-    
-    if ($action === 'pay') {
-        // Redirect to payment form
-        $order_id = $_POST['order_id'];
-        $amount = $_POST['amount'];
-    }
-}
+$customer_id = $_SESSION['user_id'];
+$error_message = '';
+$success_message = '';
 
 // Handle payment processing
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['process_payment'])) {
-    $order_id = $_POST['order_id'];
-    $payment_method = $_POST['payment_method'];
-    $payment_action = $_POST['payment_action'];
-    
-    if ($payment_action === 'pay_now') {
-        // Simulate successful payment
-        $update_query = "UPDATE orders SET payment_status = 'success', payment_method = ? WHERE order_id = ? AND customer_id = ?";
-        $stmt = $conn->prepare($update_query);
-        $stmt->bind_param("sii", $payment_method, $order_id, $customer_id);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['process_payment'])) {
+        $order_id = intval($_POST['order_id']);
+        $payment_method = $_POST['payment_method'];
         
-        if ($stmt->execute()) {
-            echo "<script>
-                alert('Payment successful! Thanks for shopping with BakeJourney!');
-                window.location.href = 'customerorders.php';
-            </script>";
+        // Validate order belongs to customer and is payable
+        $stmt = $conn->prepare("
+            SELECT o.*, b.brand_name, u.full_name as baker_name 
+            FROM orders o 
+            JOIN bakers b ON o.baker_id = b.baker_id 
+            JOIN users u ON b.user_id = u.user_id 
+            WHERE o.order_id = ? AND o.customer_id = ? AND o.order_status = 'accepted' AND o.payment_status = 'pending'
+        ");
+        $stmt->bind_param("ii", $order_id, $customer_id);
+        $stmt->execute();
+        $order = $stmt->get_result()->fetch_assoc();
+        
+        if (!$order) {
+            $error_message = "Invalid order or order not available for payment.";
         } else {
-            echo "<script>
-                alert('Payment failed. Please try again.');
-                window.history.back();
-            </script>";
+            // Simulate payment processing (replace with actual payment gateway integration)
+            $payment_success = true; // In real implementation, this would come from payment gateway response
+            
+            if ($payment_success) {
+                // Update payment status
+                $stmt = $conn->prepare("UPDATE orders SET payment_status = 'success' WHERE order_id = ?");
+                $stmt->bind_param("i", $order_id);
+                
+                if ($stmt->execute()) {
+                    // Optional: Insert payment record for tracking
+                    // $payment_id = 'PAY' . time() . rand(1000, 9999);
+                    // $stmt = $conn->prepare("
+                    //     INSERT INTO payments (order_id, payment_id, amount, payment_method, payment_status, payment_date) 
+                    //     VALUES (?, ?, ?, ?, 'success', NOW())
+                    // ");
+                    // $stmt->bind_param("isds", $order_id, $payment_id, $order['total_amount'], $payment_method);
+                    // $stmt->execute();
+                    
+                    $success_message = "Payment successful! Your order will be processed for delivery.";
+                    
+                    // Redirect to orders page after 3 seconds
+                    echo "<script>
+                        setTimeout(function() {
+                            window.location.href = 'customerorders.php';
+                        }, 3000);
+                    </script>";
+                } else {
+                    $error_message = "Payment processed but failed to update order status. Please contact support.";
+                }
+            } else {
+                // Update payment status to failed
+                $stmt = $conn->prepare("UPDATE orders SET payment_status = 'failed' WHERE order_id = ?");
+                $stmt->bind_param("i", $order_id);
+                $stmt->execute();
+                
+                $error_message = "Payment failed. Please try again or use a different payment method.";
+            }
         }
-    } else {
-        // Payment cancelled
-        echo "<script>
-            alert('Payment cancelled.');
-            window.location.href = 'customerorders.php';
-        </script>";
     }
-    exit();
 }
 
-// Get order details if redirected from customerorders.php
-if (isset($_POST['order_id'])) {
-    $order_id = $_POST['order_id'];
-    $amount = $_POST['amount'];
+// Get order details if order_id is provided
+$order_details = null;
+if (isset($_POST['order_id']) || isset($_GET['order_id'])) {
+    $order_id = intval($_POST['order_id'] ?? $_GET['order_id']);
     
-    // Fetch order details
-    $query = "
-        SELECT o.*, oi.*, p.name as product_name, p.image, b.brand_name
-        FROM orders o
-        JOIN order_items oi ON o.order_id = oi.order_id
-        JOIN products p ON oi.product_id = p.product_id
-        JOIN bakers b ON p.baker_id = b.baker_id
-        WHERE o.order_id = ? AND o.customer_id = ? AND oi.baker_status = 'accepted'
-    ";
-    
-    $stmt = $conn->prepare($query);
+    // Fetch order with items
+    $stmt = $conn->prepare("
+        SELECT o.*, b.brand_name, u.full_name as baker_name, u.email as baker_email
+        FROM orders o 
+        JOIN bakers b ON o.baker_id = b.baker_id 
+        JOIN users u ON b.user_id = u.user_id 
+        WHERE o.order_id = ? AND o.customer_id = ? AND o.order_status = 'accepted' AND o.payment_status = 'pending'
+    ");
     $stmt->bind_param("ii", $order_id, $customer_id);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $order_details = $stmt->get_result()->fetch_assoc();
     
-    $order_items = [];
-    $order_info = null;
-    
-    while ($row = $result->fetch_assoc()) {
-        if (!$order_info) {
-            $order_info = [
-                'order_id' => $row['order_id'],
-                'order_date' => $row['order_date'],
-                'delivery_address' => $row['delivery_address'],
-                'delivery_date' => $row['delivery_date']
-            ];
-        }
-        $order_items[] = $row;
+    if ($order_details) {
+        // Fetch order items
+        $stmt = $conn->prepare("
+            SELECT oi.*, p.name as product_name, p.image 
+            FROM order_items oi 
+            JOIN products p ON oi.product_id = p.product_id 
+            WHERE oi.order_id = ?
+        ");
+        $stmt->bind_param("i", $order_id);
+        $stmt->execute();
+        $order_items = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-} else {
+}
+
+// If no valid order, redirect back
+if (!$order_details && !$success_message) {
     header("Location: customerorders.php");
     exit();
 }
@@ -126,304 +129,424 @@ if (isset($_POST['order_id'])) {
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:  linear-gradient(135deg, #fef3c7, #fee996, #fef3c7);
             min-height: 100vh;
             padding: 20px;
         }
-        
-        .payment-container {
+
+        .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
         }
-        
-        .payment-header {
+
+        .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
-        .payment-header h1 {
+
+        .header h1 {
             font-size: 2rem;
             margin-bottom: 10px;
         }
-        
-        .payment-content {
-            padding: 40px;
+
+        .content {
+            padding: 30px;
         }
-        
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         .order-summary {
             background: #f8f9fa;
-            border-radius: 15px;
+            border-radius: 8px;
             padding: 25px;
             margin-bottom: 30px;
         }
-        
-        .order-summary h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-        
-        .order-item {
+
+        .order-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
         }
-        
-        .order-item:last-child {
+
+        .order-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .baker-info {
+            text-align: right;
+            color: #6c757d;
+        }
+
+        .items-list {
+            margin-bottom: 20px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .item:last-child {
             border-bottom: none;
         }
-        
-        .item-details h4 {
-            color: #333;
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #495057;
             margin-bottom: 5px;
         }
-        
-        .item-details p {
-            color: #666;
+
+        .item-details {
+            color: #6c757d;
             font-size: 0.9rem;
         }
-        
+
         .item-price {
             font-weight: bold;
-            color: #667eea;
-            font-size: 1.1rem;
+            color: #495057;
         }
-        
+
         .total-section {
-            background: #667eea;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
+            border-top: 2px solid #495057;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        .total-section h3 {
-            font-size: 1.5rem;
+
+        .total-label {
+            font-size: 1.1rem;
+            font-weight: bold;
         }
-        
-        .payment-methods {
-            margin-top: 30px;
-        }
-        
-        .payment-methods h3 {
-            color: #333;
-            margin-bottom: 20px;
+
+        .total-amount {
             font-size: 1.3rem;
+            font-weight: bold;
+            color: #28a745;
         }
-        
-        .payment-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .payment-option {
+
+        .payment-section {
+            background: white;
             border: 2px solid #e9ecef;
-            border-radius: 15px;
+            border-radius: 8px;
+            padding: 25px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .payment-method {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
         }
-        
-        .payment-option:hover {
+
+        .payment-method:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+        }
+
+        .payment-method.selected {
             border-color: #667eea;
             background: #f8f9ff;
         }
-        
-        .payment-option.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+
+        .payment-method input[type="radio"] {
+            position: absolute;
+            opacity: 0;
         }
-        
-        .payment-option input[type="radio"] {
-            display: none;
-        }
-        
-        .payment-option i {
+
+        .payment-icon {
             font-size: 2rem;
             margin-bottom: 10px;
-            display: block;
         }
-        
-        .payment-actions {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-        
+
         .btn {
-            padding: 15px 30px;
+            padding: 12px 30px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
-        
+
         .btn-secondary {
             background: #6c757d;
             color: white;
         }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            width: 100%;
         }
-        
-        .order-info {
-            background: #e3f2fd;
-            border-radius: 10px;
-            padding: 20px;
+
+        .back-link {
+            display: inline-block;
             margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
         }
-        
-        .order-info p {
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .delivery-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .delivery-info h4 {
+            color: #1565c0;
             margin-bottom: 10px;
-            color: #333;
         }
-        
-        .order-info strong {
-            color: #1976d2;
-        }
-        
+
         @media (max-width: 768px) {
-            .payment-options {
-                grid-template-columns: 1fr;
+            .container {
+                margin: 10px;
             }
             
-            .payment-actions {
-                flex-direction: column;
-            }
-            
-            .payment-content {
+            .content {
                 padding: 20px;
+            }
+            
+            .order-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .baker-info {
+                text-align: center;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="payment-container">
-        <div class="payment-header">
-            <h1>🛒 Payment Checkout</h1>
-            <p>Complete your order payment</p>
+    <div class="container">
+        <div class="header">
+            <h1>🛒 Secure Payment</h1>
+            <p>Complete your order payment safely</p>
         </div>
-        
-        <div class="payment-content">
-            <div class="order-info">
-                <p><strong>Order ID:</strong> ORBKET<?= $order_info['order_id'] ?></p>
-                <p><strong>Order Date:</strong> <?= date('d M Y', strtotime($order_info['order_date'])) ?></p>
-                <p><strong>Delivery Address:</strong> <?= htmlspecialchars($order_info['delivery_address']) ?></p>
-                <p><strong>Delivery Date:</strong> <?= date('d M Y', strtotime($order_info['delivery_date'])) ?></p>
-            </div>
-            
-            <div class="order-summary">
-                <h2>📋 Order Summary (Accepted Items Only)</h2>
-                
-                <?php foreach ($order_items as $item): ?>
-                    <div class="order-item">
-                        <div class="item-details">
-                            <h4><?= htmlspecialchars($item['product_name']) ?></h4>
-                            <p>by <?= htmlspecialchars($item['brand_name']) ?> • Qty: <?= $item['quantity'] ?></p>
-                        </div>
-                        <div class="item-price">₹<?= number_format($item['total_price'], 2) ?></div>
-                    </div>
-                <?php endforeach; ?>
-                
-                <div class="total-section">
-                    <h3>Total Amount: ₹<?= number_format($amount, 2) ?></h3>
+
+        <div class="content">
+            <a href="customerorders.php" class="back-link">← Back to My Orders</a>
+
+            <?php if ($error_message): ?>
+                <div class="alert alert-error">
+                    ❌ <?= htmlspecialchars($error_message) ?>
                 </div>
-            </div>
-            
-            <form method="POST" id="paymentForm">
-                <input type="hidden" name="order_id" value="<?= $order_id ?>">
-                <input type="hidden" name="process_payment" value="1">
-                
-                <div class="payment-methods">
-                    
-                    <h3>💳 Select Payment Method <span style="color: red;">*</span></h3>
-                    
-                    <div class="payment-options">
-                        <div class="payment-option" onclick="selectPayment('UPI')">
-                            <input type="radio" name="payment_method" value="UPI" id="upi" required>
-                            <i>📱</i>
-                            <h4>UPI Payment</h4>
-                            <p>Pay using UPI apps</p>
+            <?php endif; ?>
+
+            <?php if ($success_message): ?>
+                <div class="alert alert-success">
+                    ✅ <?= htmlspecialchars($success_message) ?>
+                    <br><small>Redirecting to orders page...</small>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($order_details && !$success_message): ?>
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-number">Order #BJ<?= str_pad($order_details['order_id'], 6, '0', STR_PAD_LEFT) ?></div>
+                            <div style="color: #6c757d; font-size: 0.9rem;">
+                                Placed on <?= date('d M Y, h:i A', strtotime($order_details['order_date'])) ?>
+                            </div>
                         </div>
+                        <div class="baker-info">
+                            <div><strong><?= htmlspecialchars($order_details['brand_name']) ?></strong></div>
+                            <div><?= htmlspecialchars($order_details['baker_name']) ?></div>
+                        </div>
+                    </div>
+
+                    <div class="items-list">
+                        <?php foreach ($order_items as $item): ?>
+                            <div class="item">
+                                <div class="item-image">
+                                    <img src="<?= $item['image'] ? 'uploads/' . $item['image'] : 'media/placeholder.jpg' ?>" 
+                                         alt="<?= htmlspecialchars($item['product_name']) ?>">
+                                </div>
+                                <div class="item-info">
+                                    <div class="item-name"><?= htmlspecialchars($item['product_name']) ?></div>
+                                    <div class="item-details">
+                                        Quantity: <?= $item['quantity'] ?> × ₹<?= number_format($item['price'], 2) ?>
+                                    </div>
+                                </div>
+                                <div class="item-price">
+                                    ₹<?= number_format($item['quantity'] * $item['price'], 2) ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="total-section">
+                        <span class="total-label">Total Amount:</span>
+                        <span class="total-amount">₹<?= number_format($order_details['total_amount'], 2) ?></span>
+                    </div>
+
+                    <div class="delivery-info">
+                        <h4>📍 Delivery Details</h4>
+                        <p><strong>Address:</strong> <?= htmlspecialchars($order_details['delivery_address']) ?></p>
+                        <p><strong>Expected Delivery:</strong> <?= date('d M Y, h:i A', strtotime($order_details['delivery_date'])) ?></p>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="payment-section">
+                    <h3 style="margin-bottom: 20px; color: #495057;">💳 Choose Payment Method</h3>
+                    
+                    <form method="POST" action="payments.php">
+                        <input type="hidden" name="order_id" value="<?= $order_details['order_id'] ?>">
                         
-                        <div class="payment-option" onclick="selectPayment('Card')">
-                            <input type="radio" name="payment_method" value="Card" id="card" required>
-                            <i>💳</i>
-                            <h4>Card Payment</h4>
-                            <p>Debit/Credit Card</p>
+                        <div class="payment-methods">
+                            <label class="payment-method" for="upi">
+                                <input type="radio" name="payment_method" value="upi" id="upi" required>
+                                <div class="payment-icon">📱</div>
+                                <div><strong>UPI</strong></div>
+                                <div style="font-size: 0.9rem; color: #6c757d;">PhonePe, GPay, Paytm</div>
+                            </label>
+
+                            <label class="payment-method" for="card">
+                                <input type="radio" name="payment_method" value="card" id="card" required>
+                                <div class="payment-icon">💳</div>
+                                <div><strong>Debit/Credit Card</strong></div>
+                                <div style="font-size: 0.9rem; color: #6c757d;">Visa, Mastercard, Rupay</div>
+                            </label>
+
+                            <label class="payment-method" for="netbanking">
+                                <input type="radio" name="payment_method" value="netbanking" id="netbanking" required>
+                                <div class="payment-icon">🏦</div>
+                                <div><strong>Net Banking</strong></div>
+                                <div style="font-size: 0.9rem; color: #6c757d;">All major banks</div>
+                            </label>
+
+                            <label class="payment-method" for="wallet">
+                                <input type="radio" name="payment_method" value="wallet" id="wallet" required>
+                                <div class="payment-icon">👛</div>
+                                <div><strong>Digital Wallet</strong></div>
+                                <div style="font-size: 0.9rem; color: #6c757d;">Paytm, Amazon Pay</div>
+                            </label>
                         </div>
-                    </div>
+
+                        <button type="submit" name="process_payment" class="btn btn-primary btn-large">
+                            💰 Pay ₹<?= number_format($order_details['total_amount'], 2) ?> Securely
+                        </button>
+                    </form>
                 </div>
-                
-                <div class="payment-actions">
-                    <button type="submit" name="payment_action" value="pay_now" class="btn btn-primary" id="payBtn" disabled>
-                        💰 Pay ₹<?= number_format($amount, 2) ?>
-                    </button>
-                    <button type="submit" name="payment_action" value="cancel" class="btn btn-secondary">
-                        ❌ Cancel Payment
-                    </button>
+
+                <div style="text-align: center; margin-top: 20px; color: #6c757d; font-size: 0.9rem;">
+                    🔒 Your payment information is secure and encrypted
                 </div>
-            </form>
+            <?php endif; ?>
         </div>
     </div>
-    
+
     <script>
-        function selectPayment(method) {
-            // Remove selected class from all options
-            document.querySelectorAll('.payment-option').forEach(option => {
-                option.classList.remove('selected');
+        // Add visual feedback for payment method selection
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove selected class from all methods
+                document.querySelectorAll('.payment-method').forEach(method => {
+                    method.classList.remove('selected');
+                });
+                // Add selected class to current method
+                this.closest('.payment-method').classList.add('selected');
             });
-            
-            // Add selected class to clicked option
-            event.currentTarget.classList.add('selected');
-            
-            // Check the radio button
-            document.getElementById(method.toLowerCase()).checked = true;
-            
-            // Enable pay button
-            document.getElementById('payBtn').disabled = false;
-        }
-        
-        // Form validation
-        document.getElementById('paymentForm').addEventListener('submit', function(e) {
-            const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
-            if (!selectedMethod && e.submitter.value === 'pay_now') {
-                e.preventDefault();
-                alert('Please select a payment method!');
-            }
         });
+
+        // Auto-redirect success message
+        <?php if ($success_message): ?>
+            let countdown = 3;
+            const countdownElement = document.querySelector('.alert-success small');
+            
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = `Redirecting to orders page in ${countdown} seconds...`;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                }
+            }, 1000);
+        <?php endif; ?>
     </script>
 </body>
 </html>

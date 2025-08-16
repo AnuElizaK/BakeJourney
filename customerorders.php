@@ -2,7 +2,7 @@
 session_start();
 include 'db.php';
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
-    header("Location: index.php"); // Redirect to login if not authorized
+    header("Location: index.php");
     exit();
 }
 // Prevent back after logout
@@ -12,13 +12,226 @@ header("Pragma: no-cache");
 
 $customer_id = $_SESSION['user_id'];
 
-// Group orders by order_id and fetch items
+// Handle bill generation
+if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
+    $bill_order_id = intval($_GET['order_id']);
+    
+    // Fetch order details for bill
+    $bill_query = "
+        SELECT o.order_id, o.customer_id, o.baker_id, o.order_date, o.total_amount,
+               o.payment_status, o.order_status, o.delivery_date, o.delivery_address,
+               oi.order_item_id, oi.product_id, oi.quantity, oi.price,
+               p.name as product_name, p.image,
+               b.brand_name, u.full_name as baker_name, u.email as baker_email,
+               c.full_name as customer_name, c.email as customer_email
+        FROM orders o
+        JOIN order_items oi ON o.order_id = oi.order_id
+        JOIN products p ON oi.product_id = p.product_id
+        JOIN bakers b ON o.baker_id = b.baker_id
+        JOIN users u ON b.user_id = u.user_id
+        JOIN users c ON o.customer_id = c.user_id
+        WHERE o.order_id = ? AND o.customer_id = ? AND o.payment_status = 'success'
+    ";
+    
+    $bill_stmt = $conn->prepare($bill_query);
+    $bill_stmt->bind_param("ii", $bill_order_id, $customer_id);
+    $bill_stmt->execute();
+    $bill_result = $bill_stmt->get_result();
+    
+    $bill_order = null;
+    $bill_items = [];
+    
+    while ($row = $bill_result->fetch_assoc()) {
+        if (!$bill_order) {
+            $bill_order = [
+                'order_id' => $row['order_id'],
+                'order_date' => $row['order_date'],
+                'total_amount' => $row['total_amount'],
+                'delivery_address' => $row['delivery_address'],
+                'delivery_date' => $row['delivery_date'],
+                'baker_name' => $row['baker_name'],
+                'brand_name' => $row['brand_name'],
+                'baker_email' => $row['baker_email'],
+                'customer_name' => $row['customer_name'],
+                'customer_email' => $row['customer_email']
+            ];
+        }
+        
+        $bill_items[] = [
+            'product_name' => $row['product_name'],
+            'quantity' => $row['quantity'],
+            'price' => $row['price'],
+            'total' => $row['quantity'] * $row['price']
+        ];
+    }
+    
+    if ($bill_order) {
+        // Generate bill HTML
+        echo "<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <title>Bill - Order #BJ" . str_pad($bill_order['order_id'], 6, '0', STR_PAD_LEFT) . "</title>
+    <style>
+        @media print { 
+            .no-print { display: none !important; } 
+            body { margin: 0; font-family: Arial, sans-serif; }
+        }
+        .bill-container { 
+            max-width: 800px; margin: 20px auto; padding: 20px; 
+            border: 1px solid #ddd; background: white;
+        }
+        .bill-header { text-align: center; margin-bottom: 30px; }
+        .bill-title { font-size: 24px; font-weight: bold; color: #333; }
+        .bill-info { display: flex; justify-content: space-between; margin: 20px 0; }
+        .bill-section { margin: 15px 0; }
+        .bill-section h3 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .bill-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .bill-table th, .bill-table td { 
+            border: 1px solid #ddd; padding: 10px; text-align: left; 
+        }
+        .bill-table th { background-color: #f8f9fa; font-weight: bold; }
+        .total-row { background-color: #f8f9fa; font-weight: bold; }
+        .btn { 
+            padding: 10px 20px; margin: 10px 5px; cursor: pointer; 
+            border: none; border-radius: 5px; text-decoration: none; display: inline-block;
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <div class='bill-container'>
+        <div class='bill-header'>
+            <h1 class='bill-title'>
+           
+            🧁 BakeJourney</h1>
+            <h2>INVOICE</h2>
+        </div>
+        
+        <div class='bill-info'>
+            <div>
+                <h3>Bill To:</h3>
+                <p><strong>" . htmlspecialchars($bill_order['customer_name']) . "</strong><br>
+                Email: " . htmlspecialchars($bill_order['customer_email']) . "<br>
+                Address: " . htmlspecialchars($bill_order['delivery_address']) . "</p>
+            </div>
+            <div>
+                <h3>From:</h3>
+                <p><strong>" . htmlspecialchars($bill_order['brand_name']) . "</strong><br>
+                Baker: " . htmlspecialchars($bill_order['baker_name']) . "<br>
+                Email: " . htmlspecialchars($bill_order['baker_email']) . "</p>
+            </div>
+        </div>
+        
+        <div class='bill-section'>
+            <h3>Order Details</h3>
+            <p><strong>Order ID:</strong> #BJ" . str_pad($bill_order['order_id'], 6, '0', STR_PAD_LEFT) . "<br>
+            <strong>Order Date:</strong> " . date('d M Y, h:i A', strtotime($bill_order['order_date'])) . "<br>
+            <strong>Delivery Date:</strong> " . date('d M Y, h:i A', strtotime($bill_order['delivery_date'])) . "<br>
+            <strong>Status:</strong> Payment Successful</p>
+        </div>
+        
+        <div class='bill-section'>
+            <h3>Items Ordered</h3>
+            <table class='bill-table'>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>";
+        
+        $subtotal = 0;
+        foreach ($bill_items as $item) {
+            $subtotal += $item['total'];
+            echo "<tr>
+                <td>" . htmlspecialchars($item['product_name']) . "</td>
+                <td>" . $item['quantity'] . "</td>
+                <td>₹" . number_format($item['price'], 2) . "</td>
+                <td>₹" . number_format($item['total'], 2) . "</td>
+            </tr>";
+        }
+        
+        echo "    <tr class='total-row'>
+                        <td colspan='3'><strong>Total Amount</strong></td>
+                        <td><strong>₹" . number_format($bill_order['total_amount'], 2) . "</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class='bill-section'>
+            <p><strong>Payment Status:</strong> <span style='color: green;'>Paid Successfully</span></p>
+            <p><strong>Generated on:</strong> " . date('d M Y, h:i A') . "</p>
+        </div>
+        
+        <div class='no-print' style='text-align: center; margin-top: 30px;'>
+            <button onclick='window.print()' class='btn btn-primary'>🖨️ Print Bill</button>
+            <a href='customerorders.php' class='btn btn-secondary'>← Back to Orders</a>
+        </div>
+    </div>
+    
+    <script>
+        // Auto print on load (optional)
+        // window.onload = function() { window.print(); }
+    </script>
+</body>
+</html>";
+        exit;
+    } else {
+        echo "<script>alert('Bill not found or payment not successful'); window.location.href='customerorders.php';</script>";
+        exit;
+    }
+}
+
+
+
+// Handle order actions (cancel, etc.)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $order_id = intval($_POST['order_id']);
+    $action = $_POST['action'];
+
+    if ($action === 'cancel') {
+        // Cancel order if within 24 hours and not paid
+        $stmt = $conn->prepare("SELECT order_date, payment_status FROM orders WHERE order_id = ? AND customer_id = ?");
+        $stmt->bind_param("ii", $order_id, $customer_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($order_data = $result->fetch_assoc()) {
+            $order_time = strtotime($order_data['order_date']);
+            $within_24hrs = (time() - $order_time) < 86400;
+
+            if ($within_24hrs && $order_data['payment_status'] !== 'success') {
+                $stmt = $conn->prepare("UPDATE orders SET order_status = 'cancelled',payment_status='cancelled' WHERE order_id = ? AND customer_id = ?");
+                $stmt->bind_param("ii", $order_id, $customer_id);
+                $stmt->execute();
+
+                echo "<script>alert('Order cancelled successfully'); window.location.href='customerorders.php';</script>";
+                exit;
+            }
+        }
+    }
+}
+
+
+// Fetch orders with items - FIXED FOR YOUR TABLE STRUCTURE
 $query = "
-    SELECT o.*, oi.*, p.name, p.image, b.brand_name, b.baker_id
+    SELECT o.order_id, o.customer_id, o.baker_id, o.order_date, o.total_amount,
+           o.payment_status, o.order_status, o.delivery_date,
+           oi.order_item_id, oi.product_id, oi.quantity, oi.price,
+           p.name as product_name, p.image,
+           b.brand_name, u.full_name as baker_name,
+           o.delivery_address
     FROM orders o
     JOIN order_items oi ON o.order_id = oi.order_id
     JOIN products p ON oi.product_id = p.product_id
-    JOIN bakers b ON p.baker_id = b.baker_id
+    JOIN bakers b ON o.baker_id = b.baker_id
+    JOIN users u ON b.user_id = u.user_id
     WHERE o.customer_id = ?
     ORDER BY o.order_date DESC
 ";
@@ -44,45 +257,34 @@ while ($row = $result->fetch_assoc()) {
             'payment_status' => $row['payment_status'],
             'delivery_address' => $row['delivery_address'],
             'delivery_date' => $row['delivery_date'],
-            'items' => [],
-            'original_total' => 0,
-            'payable_total' => 0,
-            'can_pay' => false,
-            'has_accepted_items' => false,
-            'all_items_accepted' => true
+            'total_amount' => $row['total_amount'],
+            'baker_name' => $row['baker_name'],
+            'brand_name' => $row['brand_name'],
+            'baker_id' => $row['baker_id'],
+            'items' => []
         ];
         $total_orders++;
 
         // Count active/completed orders
-        if (in_array($row['order_status'], ['pending', 'confirmed', 'shipped'])) {
+        if (in_array($row['order_status'], ['pending', 'accepted', 'shipped'])) {
             $active_orders++;
         } elseif ($row['order_status'] === 'delivered') {
             $completed_orders++;
         }
-    }
-
-    $orders[$order_id]['items'][] = $row;
-
-    // Calculate totals
-    $item_total = $row['unit_price'] * $row['quantity'];
-    $orders[$order_id]['original_total'] += $item_total;
-
-    if ($row['baker_status'] === 'accepted') {
-        $orders[$order_id]['payable_total'] += $item_total;
-        $orders[$order_id]['has_accepted_items'] = true;
 
         // Add to total spent if payment is successful
         if ($row['payment_status'] === 'success') {
-            $total_spent += $item_total;
+            $total_spent += $row['total_amount'];
         }
-    } else {
-        $orders[$order_id]['all_items_accepted'] = false;
     }
-}
 
-// Determine if orders can be paid
-foreach ($orders as &$order) {
-    $order['can_pay'] = $order['has_accepted_items'] && $order['payment_status'] !== 'success';
+    $orders[$order_id]['items'][] = [
+        'product_name' => $row['product_name'],
+        'quantity' => $row['quantity'],
+        'price' => $row['price'],
+        'image' => $row['image'],
+        'total' => $row['quantity'] * $row['price']
+    ];
 }
 
 ?>
@@ -141,7 +343,7 @@ foreach ($orders as &$order) {
             <div class="section-header">
                 <h2 class="section-title">Recent Orders</h2>
                 <div class="filter-tabs">
-                    <button class="filter-tab active">All</button>
+                    <button class="filter-tab active" onclick="showTab('all')">All</button>
                     <button class="filter-tab" onclick="showTab('active')">Active</button>
                     <button class="filter-tab" onclick="showTab('completed')">Completed</button>
                     <button class="filter-tab" onclick="showTab('cancelled')">Cancelled</button>
@@ -158,8 +360,14 @@ foreach ($orders as &$order) {
                     <div class="order-card">
                         <div class="order-header">
                             <div class="order-info">
-                                <div class="order-number">Order ORBKET<?= $order['order_id']; ?></div>
-                                <div class="order-date">Placed on <?= date('d M Y', strtotime($order['order_date'])); ?></div>
+                                <div class="order-number">Order #BJ<?= str_pad($order['order_id'], 6, '0', STR_PAD_LEFT) ?>
+                                </div>
+                                <div class="order-date">Placed on <?= date('d M Y, h:i A', strtotime($order['order_date'])); ?>
+                                </div>
+                                <div class="baker-info">
+                                    <strong>Sold by:</strong> <?= htmlspecialchars($order['brand_name']) ?>
+                                    (<?= htmlspecialchars($order['baker_name']) ?>)
+                                </div>
                             </div>
                             <span class="order-status status-<?= $order['order_status']; ?>">
                                 <?= ucfirst($order['order_status']); ?>
@@ -170,53 +378,36 @@ foreach ($orders as &$order) {
                             <div class="items-list">
                                 <?php foreach ($order['items'] as $item): ?>
                                     <div class="order-item">
+                                        <div class="item-image">
+                                            <img src="<?= $item['image'] ? 'uploads/' . $item['image'] : 'media/placeholder.jpg' ?>"
+                                                alt="<?= htmlspecialchars($item['product_name']) ?>"
+                                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                        </div>
                                         <div class="item-info">
-                                            <div class="item-name"><?= htmlspecialchars($item['name']); ?></div>
+                                            <div class="item-name"><?= htmlspecialchars($item['product_name']); ?></div>
                                             <div class="item-details">
-                                                Quantity: <?= $item['quantity']; ?> × ₹<?= number_format($item['unit_price'], 2); ?>
+                                                Quantity: <?= $item['quantity']; ?> × ₹<?= number_format($item['price'], 2); ?>
                                             </div>
-                                            <div class="baker-name">by: <?= htmlspecialchars($item['brand_name']); ?></div>
                                         </div>
                                         <div class="item-price">
-                                            <div>₹<?= number_format($item['total_price'], 2); ?></div>
-                                            <span class="baker-status status-<?= $item['baker_status']; ?>">
-                                                <?php
-                                                $status = $item['baker_status'];
-                                                if ($status == 'accepted')
-                                                    echo '✅ Accepted';
-                                                elseif ($status == 'pending')
-                                                    echo '⏳ Pending';
-                                                else
-                                                    echo '❌ Rejected';
-                                                ?>
-                                            </span>
+                                            <div>₹<?= number_format($item['total'], 2); ?></div>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
 
-                            <!-- Pricing Information -->
+                            <!-- Order Summary -->
                             <div class="pricing-info">
-                                <div class="price-breakdown">
-                                    <span>Original Total:</span>
-                                    <span>₹<?= number_format($order['original_total'], 2) ?></span>
+                                <div class="price-breakdown payable-amount">
+                                    <span><strong>Order Total:</strong></span>
+                                    <span><strong>₹<?= number_format($order['total_amount'], 2) ?></strong></span>
                                 </div>
 
-                                <?php if ($order['original_total'] != $order['payable_total']): ?>
-                                    <div class="rejected-notice">
-                                        Some items were rejected by bakers and removed from total
-                                    </div>
-                                <?php endif; ?>
-
-                                <div class="price-breakdown payable-amount">
-                                    <span>Payable Amount:</span>
-                                    <span>
-                                        <?php if ($order['payment_status'] === 'success'): ?>
-                                            ₹<?= number_format($order['payable_total'], 2) ?>
-                                        <?php else: ?>
-                                            ₹0.00
-                                        <?php endif; ?>
-                                    </span>
+                                <div class="delivery-info">
+                                    <div><strong>Delivery Address:</strong>
+                                        <?= htmlspecialchars($order['delivery_address'] ?? 'Not specified') ?></div>
+                                    <div><strong>Expected Delivery:</strong>
+                                        <?= date('d M Y, h:i A', strtotime($order['delivery_date'])) ?></div>
                                 </div>
                             </div>
 
@@ -227,23 +418,51 @@ foreach ($orders as &$order) {
                                 $within_24hrs = (time() - $order_time) < 86400;
                                 $status = $order['order_status'];
                                 $paid = $order['payment_status'] === 'success';
-                                $can_pay = $order['can_pay'];
                                 ?>
 
-                                <!-- Pay Now button if there are accepted items and not paid -->
-                                <?php if (!$paid && $can_pay && $order['payable_total'] > 0): ?>
-                                    <form method="POST" action="payments.php" style="display: inline;">
+                                <!-- Payment Status Display -->
+                                <?php if ($paid): ?>
+                                    <span
+                                        style="color: #28a745; font-weight: bold; padding: 8px 16px; background: #d4edda; border-radius: 4px;">
+                                        ✅ Payment Successful
+                                    </span>
+                                <?php elseif ($order['payment_status'] === 'failed'): ?>
+                                    <span
+                                        style="color: #dc3545; font-weight: bold; padding: 8px 16px; background: #f8d7da; border-radius: 4px;">
+                                        ❌ Payment Failed
+                                    </span>
+                                <?php elseif ($order['payment_status'] === 'pending'): ?>
+                                    <span
+                                        style="color: #856404; font-weight: bold; padding: 8px 16px; background: #fff3cd; border-radius: 4px;">
+                                        ⏳ Payment Pending
+                                    </span>
+                                <?php else: ?>
+                                <?php endif; ?>
+
+                                <!-- Generate Bill button for successful payments -->
+                                <?php if ($paid): ?>
+                                    <a href="?generate_bill=1&order_id=<?= $order['order_id'] ?>" 
+                                       class="btn btn-primary" target="_blank">
+                                        📄 Generate Bill
+                                    </a>
+                                <?php endif; ?>
+
+                                <!-- Pay Now button for accepted orders that are not paid -->
+                                <?php if ($status === 'accepted' && !$paid): ?>
+                                    <form method="POST" action="payments.php" style="display: inline; margin-right: 8px;">
                                         <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
-                                        <input type="hidden" name="amount" value="<?= $order['payable_total'] ?>">
+                                        <input type="hidden" name="amount" value="<?= $order['total_amount'] ?>">
+                                        <input type="hidden" name="baker_id" value="<?= $order['baker_id'] ?>">
+                                        <input type="hidden" name="customer_id" value="<?= $customer_id ?>">
                                         <button type="submit" name="action" value="pay" class="btn btn-primary">
-                                            💰 Pay ₹<?= number_format($order['payable_total'], 2) ?>
+                                            💰 Pay Now ₹<?= number_format($order['total_amount'], 2) ?>
                                         </button>
                                     </form>
                                 <?php endif; ?>
 
-                                <!-- Cancel button if within 24 hours and not paid/shipped/delivered -->
+                                <!-- Cancel button if within 24 hours and not paid -->
                                 <?php if (!$paid && $within_24hrs && !in_array($status, ['shipped', 'delivered', 'cancelled'])): ?>
-                                    <form method="POST" action="payments.php" style="display: inline;">
+                                    <form method="POST" action="customerorders.php" style="display: inline; margin-right: 8px;">
                                         <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
                                         <button type="submit" name="action" value="cancel" class="btn btn-danger"
                                             onclick="return confirm('Are you sure you want to cancel this order?')">
@@ -252,23 +471,35 @@ foreach ($orders as &$order) {
                                     </form>
                                 <?php endif; ?>
 
-                                <!-- Track Order button if paid -->
-                                <?php if ($paid && $status !== 'cancelled'): ?>
+                                <!-- Track Order button if paid and order is confirmed -->
+                                <?php if ($paid && in_array($status, ['accepted', 'shipped', 'delivered'])): ?>
                                     <a href="?order_id=<?= $order['order_id'] ?>" class="btn btn-primary"
                                         onclick="event.preventDefault(); openTrackingSidebar(); loadOrderTracking(<?= $order['order_id'] ?>)">
                                         📦 Track Order
                                     </a>
                                 <?php endif; ?>
 
-                                <!-- Show payment status -->
-                                <?php if ($paid): ?>
-                                    <span style="color: #28a745; font-weight: bold; padding: 8px 16px;">
-                                        ✅ Payment Successful
-                                    </span>
-                                <?php elseif ($order['payment_status'] === 'failed'): ?>
-                                    <span style="color: #dc3545; font-weight: bold; padding: 8px 16px;">
-                                        ❌ Payment Failed
-                                    </span>
+                                <!-- Contact Baker -->
+                                <a href="mailto:baker@example.com" class="btn btn-secondary">
+                                    📞 Contact Baker
+                                </a>
+
+                                <!-- Special message for pending orders -->
+                                <?php if ($status === 'pending'): ?>
+                                    <div
+                                        style="margin-top: 8px; padding: 8px; background: #fff3cd; border-radius: 4px; font-size: 14px;">
+                                        <strong>⏳ Waiting for baker confirmation</strong><br>
+                                        <small>You can pay once the baker accepts your order</small>
+                                    </div>
+                                <?php endif; ?>
+
+                                <!-- Special message for accepted unpaid orders -->
+                                <?php if ($status === 'accepted' && !$paid): ?>
+                                    <div
+                                        style="margin-top: 8px; padding: 8px; background: #d1ecf1; border-radius: 4px; font-size: 14px;">
+                                        <strong>🎉 Order Confirmed by Baker!</strong><br>
+                                        <small>Please complete payment to proceed with delivery</small>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -292,8 +523,11 @@ foreach ($orders as &$order) {
                 const status = order.querySelector('.order-status').textContent.toLowerCase().trim();
 
                 switch (tab) {
+                    case 'all':
+                        order.style.display = 'block';
+                        break;
                     case 'active':
-                        order.style.display = ['pending', 'confirmed', 'shipped'].includes(status) ? 'block' : 'none';
+                        order.style.display = ['pending', 'accepted', 'shipped'].includes(status) ? 'block' : 'none';
                         break;
                     case 'completed':
                         order.style.display = status === 'delivered' ? 'block' : 'none';

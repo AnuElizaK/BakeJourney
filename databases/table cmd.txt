@@ -44,25 +44,25 @@ CREATE TABLE products (
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
-    delivery_address TEXT NOT NULL,
-    delivery_date DATETIME NOT NULL,
-    order_status ENUM('pending', 'confirmed', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+    baker_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    payment_method ENUM('Card', 'UPI') NOT NULL,
-    payment_status ENUM('pending','success', 'failed') DEFAULT 'pending',
-    FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE CASCADE
+    total_amount DECIMAL(10,2) NOT NULL,
+    payment_status ENUM('pending', 'success', 'failed','cancelled') DEFAULT 'pending',
+    order_status ENUM('pending', 'accepted', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+    delivery_address text NOT NULL,
+    delivery_date DATETIME NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (baker_id) REFERENCES bakers(baker_id)    
 );
 
-CREATE TABLE IF NOT EXISTS order_items (
+CREATE TABLE order_items (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
-    baker_status ENUM('pending', 'accepted', 'rejected','delivered') DEFAULT 'pending',
-    total_price DECIMAL(10,2) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(product_id) 
 );
 
 CREATE TABLE cart (
