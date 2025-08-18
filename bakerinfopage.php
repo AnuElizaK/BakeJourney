@@ -55,28 +55,6 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
 <?php include 'custnavbar.php'; ?>
 
 <body>
-    <!-- Backup Header -->
-    <!--
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <div class="brand">
-            <div class="brand-logo">
-              <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-            </div>
-            <div>
-              <h1 class="brand-title">BakeJourney</h1>
-              <p class="brand-subtitle">View Baker Profile</p>
-            </div>
-          </div>
-          <a href="customerdashboard.php" class="back-btn">
-            ← Back to Home
-          </a>
-        </div>
-      </div>
-    </header>
-    -->
-
     <!-- Main Content -->
     <main class="container">
         <!-- Profile Section -->
@@ -115,7 +93,7 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
                                 echo "<span class=\"star\">☆</span>";
                             ?>
                         </div>
-                        <span class="rating-text">5.0 · 98% satisfaction rate</span>
+                        <span class="rating-text"><?= number_format($baker['rating'], 1); ?> · 98% satisfaction rate</span>
                     </div>
                 </div>
             </div>
@@ -144,8 +122,9 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
                             <img src=<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : "https://plus.unsplash.com/premium_photo-1690214491960-d447e38d0bd0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ?> alt="<?= htmlspecialchars($product['name']); ?>" class="gallery-image">
                             <div class="gallery-overlay">
                                 <div class="gallery-info">
-                                    <h4><?= htmlspecialchars($product['name']); ?></h4>
-                                    <p>₹<?= htmlspecialchars($product['price']); ?></p>
+                                    <h4 class="item-name"><?= htmlspecialchars($product['name']); ?></h4>
+                                    <p class="item-price">₹<?= htmlspecialchars($product['price']); ?></p>
+                                    <p class="item-descritpion"><?= htmlspecialchars($product['description']); ?></p>
                                 </div>
                             </div>
                         </div>

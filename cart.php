@@ -175,12 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
         <div class="content-card">
           <div class="card-header">
             <h2>Your Cart</h2>
-            <p class="card-description">View your items and change quantity</p>
+            <p class="card-description">View your items and change their quantities</p>
           </div>
           <div class="card-content">
             <?php if (empty($cart_items)) { ?>
-              <h2 class="cart-empty">Oops! Your cart's feeling a little lonely.🥺</h2>
-              <p class="cart-empty">It's currently as empty as a cookie jar after midnight. Why not sprinkle in some
+              <h2 class="cart-empty-title">Oops! Your cart's feeling a little lonely.🥺</h2>
+              <p class="cart-empty-message">It's currently as empty as a cookie jar after midnight. Why not sprinkle in some
                 sweetness and start shopping?</p>
               <p class="cart-empty">
                 <button class="shortcut" onclick="window.location.href='products.php'">Browse Treats</button> or
@@ -188,63 +188,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
               </p>
             <?php } else { ?>
 
-              <!-- Group items by baker (Flipkart-style seller grouping) -->
+              <!-- Group items by baker -->
               <?php
               $total = 0;
               foreach ($baker_groups as $baker_id => $items):
                 $baker_total = 0;
                 ?>
-                
-                  
-                  <!-- Products Grid for this baker -->
-                  <div class="products-grid">
-                    <?php foreach ($items as $item):
-                      $subtotal = $item['price'] * $item['quantity'];
-                      $baker_total += $subtotal;
-                      ?>
-                      <div class="product-card">
-                        <div class="product-image">
-                          <img src="<?php echo $item['image'] ? 'uploads/' . $item['image'] : 'no preview available'; ?>"
-                            alt="<?php echo htmlspecialchars($item['name']); ?>">
-                        </div>
-                        <div class="product-info">
-                          <div class="product-name"><?= htmlspecialchars($item['name']) ?></div>
-                          <div class="product-description"><?= htmlspecialchars($item['brand_name']) ?></div>
-                          <div class="product-price">₹<?= number_format($item['price'], 2) ?></div>
 
-                          <!-- Quantity Controls -->
-                          <form action="cart.php" method="post" class="quantity-controls">
-                            <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
-                            <button name="action" value="decrease" class="quantity-btn" type="submit">-</button>
-                            <input type="number" name="quantity" class="quantity-input" value="<?= $item['quantity'] ?>"
-                              min="1" readonly>
-                            <button name="action" value="increase" class="quantity-btn" type="submit">+</button>
-                          </form>
-
-                          <!-- Delete item -->
-                          <form action="cart.php" method="post" style="margin-top: 12px;">
-                            <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
-                            <button type="submit" name="action" value="delete" class="delete-btn-modern">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <polyline points="3,6 5,6 21,6"></polyline>
-                                <path d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
-                                </path>
-                                <line x1="10" y1="11" x2="10" y2="17"></line>
-                                <line x1="14" y1="11" x2="14" y2="17"></line>
-                              </svg>
-                              Remove
-                            </button>
-                          </form>
-                        </div>
+                <!-- Products Grid for this baker -->
+                <div class="products-grid">
+                  <?php foreach ($items as $item):
+                    $subtotal = $item['price'] * $item['quantity'];
+                    $baker_total += $subtotal;
+                    ?>
+                    <div class="product-card">
+                      <div class="product-image">
+                        <img src="<?php echo $item['image'] ? 'uploads/' . $item['image'] : 'no preview available'; ?>"
+                          alt="<?php echo htmlspecialchars($item['name']); ?>">
                       </div>
-                    <?php endforeach; ?>
-                  </div>
+                      <div class="product-info">
+                        <div class="product-name"
+                          onclick="window.location.href='productinfopage.php?product_id=<?= $item['product_id']; ?>'"
+                          title="View Product Details"><?= htmlspecialchars($item['name']) ?></div>
+                        <div class="product-description"
+                          onclick="window.location.href='bakerinfopage.php?baker_id=<?= $item['baker_id']; ?>'"
+                          title="View Baker Details">
+                          <?= htmlspecialchars($item['brand_name'] ?: $item['full_name']) ?>
+                        </div>
+                        <div class="product-price">₹<?= number_format($item['price'], 2) ?></div>
 
-                  <div style="text-align: right; padding-top: 12px; border-top: 1px solid #e5e7eb; margin-top: 16px;">
-                    <strong>Baker Total: ₹<?= number_format($baker_total, 2) ?></strong>
-                  </div>
-                
+                        <!-- Quantity Controls -->
+                        <form action="cart.php" method="post" class="quantity-controls">
+                          <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
+                          <button name="action" value="decrease" class="quantity-btn" type="submit">-</button>
+                          <input type="number" name="quantity" class="quantity-input" value="<?= $item['quantity'] ?>" min="1"
+                            readonly>
+                          <button name="action" value="increase" class="quantity-btn" type="submit">+</button>
+                        </form>
+
+                        <!-- Delete item -->
+                        <form action="cart.php" method="post" style="margin-top: 12px;">
+                          <input type="hidden" name="cart_id" value="<?= $item['cart_id'] ?>">
+                          <button type="submit" name="action" value="delete" class="delete-btn-modern">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2">
+                              <polyline points="3,6 5,6 21,6"></polyline>
+                              <path d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
+                              </path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>
+                            Remove
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+
+                <div class="sub-total">
+                  <strong style="color: #00a43cff">Sub Total:
+                    ₹<?= number_format($baker_total, 2) ?></strong>
+                </div>
+
                 <?php
                 $total += $baker_total;
               endforeach;
@@ -284,15 +290,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
           <div class="card-content">
             <?php if (!empty($cart_items)) { ?>
               <div class="summary-item">
-                <span class="summary-name"><b>No of items</b></span>
+                <span class="summary-name all"><b>No of items</b></span>
                 <span class="summary-quantity"><?= count($cart_items) ?></span>
               </div>
 
               <?php foreach ($baker_groups as $baker_id => $items):
                 $baker_total = 0;
                 ?>
-
-
                 <?php foreach ($items as $item):
                   $item_total = $item['price'] * $item['quantity'];
                   $baker_total += $item_total;
@@ -305,9 +309,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
 
               <?php endforeach; ?>
 
-              <div class="summary-item">
-                <span class="summary-name"><b>Grand Total</b></span>
-                <span class="summary-price"><b>₹<?= number_format($total, 2) ?></b></span>
+              <div class="summary-item total">
+                <span class="summary-total"><b>Grand Total</b></span>
+                <span class="summary-price sum"><b>₹<?= number_format($total, 2) ?></b></span>
               </div>
 
               <!-- Form for placing order -->
@@ -335,7 +339,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
               </form>
 
               <p style="font-size: 0.75rem; color: #6b7280; text-align: center; margin-top: 16px;">
-               You will receive confirmation emails with details.
+                You will receive a confirmation email with details.
               </p>
             <?php } ?>
           </div>

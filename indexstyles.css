@@ -404,24 +404,8 @@ h2,
   position: relative;
 }
 
-.baker-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #fef7cd;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  border-radius: 24px;
-}
-
-.baker-card:hover::before {
-  opacity: 1;
-}
-
 .baker-card:hover {
+  background: #fef7cd;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
   transform: translateY(-12px);
 }
@@ -666,7 +650,7 @@ h2,
 
 .cta-features {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 48px;
 }
@@ -933,8 +917,10 @@ h2,
 }
 
 .product-card {
+  position: relative;
   background: white;
   border-radius: 20px;
+  padding-bottom: 30px;
   cursor: pointer;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
@@ -989,6 +975,7 @@ h2,
 }
 
 .product-header h3 {
+  width: 60%;
   font-size: 1.5rem;
   font-weight: 600;
   color: #1f2a38;
@@ -1008,6 +995,10 @@ h2,
 }
 
 .creator {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  right: 0;
   color: #f59e0b;
   font-size: 0.8rem;
   cursor: pointer;

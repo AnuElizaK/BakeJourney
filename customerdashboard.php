@@ -1,9 +1,9 @@
-<?php 
+<?php
 session_start();
 include 'db.php';
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
-    header("Location: index.php"); // Redirect to login if not authorized
-    exit();
+  header("Location: index.php"); // Redirect to login if not authorized
+  exit();
 }
 // Prevent back after logout
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
@@ -78,23 +78,32 @@ $bResult = $bkrStmt->get_result();
 
       <div class="products-grid">
         <?php while ($product = $pResult->fetch_assoc()): ?>
-        <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
-          <div class="product-image">
-            <img
-              src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
-              alt="<?= htmlspecialchars($product['name']) ?>">
-            <button class="cart-button">
-              <img src="media/cart2.png" alt="Cart" style="vertical-align:top; width: 20px; height: 20px;"> Add to Cart
-            </button>
-          </div>
-          <div class="product-content">
-            <div class="product-header">
-              <h3><?= htmlspecialchars($product['name']) ?></h3>
-              <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
+          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
+            <div class="product-image">
+              <img
+                src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+                alt="<?= htmlspecialchars($product['name']) ?>">
             </div>
-            <p><?= htmlspecialchars($product['description']) ?></p>
+            <div class="product-content">
+              <div class="product-header">
+                <h3><?= htmlspecialchars($product['name']) ?></h3>
+                <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
+              </div>
+              <p style="font-size: 0.9rem">
+                <?php
+                $desc = strip_tags($product['description']);
+                $words = explode(' ', $desc);
+                $max_words = 10;
+                if (count($words) > $max_words) {
+                  $short = implode(' ', array_slice($words, 0, $max_words)) . '...' . ' more';
+                } else {
+                  $short = $desc;
+                }
+                echo htmlspecialchars($short);
+                ?>
+              </p>
+            </div>
           </div>
-        </div>
         <?php endwhile; ?>
       </div>
       <div id="no-products-message"
@@ -123,22 +132,22 @@ $bResult = $bkrStmt->get_result();
 
       <div class="bakers-grid">
         <?php while ($baker = $bResult->fetch_assoc()): ?>
-        <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
-          <div class="baker-image">
-            <img
-              src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
-              alt="<?php echo htmlspecialchars($baker['full_name']); ?>">
-            <div class="ranking-badge">#<?php echo htmlspecialchars($baker['baker_id']); ?></div>
-          </div>
-          <div class="baker-content">
-            <h3><?php echo htmlspecialchars($baker['full_name']); ?></h3>
-            <p class="baker-specialty"><?php echo htmlspecialchars($baker['specialty']); ?></p>
-            <div class="baker-stats">
-              <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?>+ Years exp.</span>
-              <span class="stat"><?php echo number_format($baker['rating'], 1); ?> Rating</span>
+          <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
+            <div class="baker-image">
+              <img
+                src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                alt="<?php echo htmlspecialchars($baker['full_name']); ?>">
+              <div class="ranking-badge">#<?php echo htmlspecialchars($baker['baker_id']); ?></div>
+            </div>
+            <div class="baker-content">
+              <h3><?php echo htmlspecialchars($baker['full_name']); ?></h3>
+              <p class="baker-specialty"><?php echo htmlspecialchars($baker['specialty']); ?></p>
+              <div class="baker-stats">
+                <span class="stat"><?php echo htmlspecialchars($baker['experience']); ?>+ Years exp.</span>
+                <span class="stat"><?php echo number_format($baker['rating'], 1); ?> Rating</span>
+              </div>
             </div>
           </div>
-        </div>
         <?php endwhile; ?>
       </div>
       <div id="no-bakers-message"

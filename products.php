@@ -11,7 +11,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
-$user_id=$_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 
 // Get products in cart for this customer
 $cart_stmt = $conn->prepare("SELECT product_id FROM cart WHERE user_id = ?");
@@ -21,19 +21,18 @@ $cart_result = $cart_stmt->get_result();
 
 $cart_products = [];
 while ($cart_item = $cart_result->fetch_assoc()) {
-    $cart_products[] = $cart_item['product_id'];
+  $cart_products[] = $cart_item['product_id'];
 }
 
 $stmt = $conn->prepare("
   SELECT *
   FROM products p
   JOIN bakers b ON p.baker_id = b.baker_id
-  ORDER BY created_at DESC
+  JOIN users u ON b.user_id = u.user_id
+  ORDER BY RAND()
 ");
 $stmt->execute();
 $result = $stmt->get_result();
-
-
 
 ?>
 
@@ -228,8 +227,10 @@ $result = $stmt->get_result();
     }
 
     .product-card {
+      position: relative;
       background: white;
       border-radius: 20px;
+      cursor: pointer;
       overflow: hidden;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
       transition: all 0.4s ease;
@@ -373,43 +374,60 @@ $result = $stmt->get_result();
 
       <div class="products-grid">
         <?php while ($product = $result->fetch_assoc()): ?>
- <?php $is_in_cart = in_array($product['product_id'], $cart_products); ?>
+          <?php $is_in_cart = in_array($product['product_id'], $cart_products); ?>
 
-          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
+          <div class="product-card"
+            onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'"
+            data-category="<?= htmlspecialchars($product['category']) ?>">
             <div class="product-image">
               <img
                 src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
                 alt="<?= htmlspecialchars($product['name']) ?>">
 
-                 <?php if ($is_in_cart): ?>
+              <?php if ($is_in_cart): ?>
                 <!-- Show "Added to Cart" button if product is in cart -->
                 <button class="cart-button added" disabled>
-                  <img src="media/cart2.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">Added to Cart
-                </button>
-              <?php else: ?>
-              <form method="POST" action="cart.php">
-                <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" name="add_to_cart" class="cart-button">
-                  <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to
+                  <img src="media/cart2.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">Added to
                   Cart
                 </button>
-              </form>
-               <?php endif; ?>
+              <?php else: ?>
+                <form method="POST" action="cart.php">
+                  <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" name="add_to_cart" class="cart-button">
+                    <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to
+                    Cart
+                  </button>
+                </form>
+              <?php endif; ?>
             </div>
             <div class="product-content">
               <div class="product-header">
                 <h3><?= htmlspecialchars($product['name']) ?> <br>
-                  <small style="font-size:small;">by
-                    <a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>" style="color:orange; text-decoration:none;">
-                      <?= htmlspecialchars($product['brand_name']) ?></a>
+                  <small style="font-size:small;">By
+                    <a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
+                      style="color:orange; text-decoration:none;">
+                      <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?></a>
                   </small>
                 </h3>
                 <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
               </div>
-              <p><?= htmlspecialchars($product['description']) ?></p>
+              <p style="font-size: 0.8rem">
+                <?php
+                $desc = strip_tags($product['description']);
+                $words = explode(' ', $desc);
+                $max_words = 10;
+                if (count($words) > $max_words) {
+                  $short = implode(' ', array_slice($words, 0, $max_words)) . '...'. ' more';
+                } else {
+                  $short = $desc;
+                }
+                echo htmlspecialchars($short);
+                ?>
+              </p>
               <br />
-             <p>Posted on: <?= date('d M Y', strtotime($product['created_at'])) ?></p>           
+              <p style="font-size: 0.65rem; position: absolute; bottom: 20px; left: 20px; color: #8b919c">Posted on
+                <?= date('d M Y', strtotime($product['created_at'])) ?></p>
             </div>
           </div>
         <?php endwhile; ?>
