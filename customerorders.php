@@ -15,7 +15,7 @@ $customer_id = $_SESSION['user_id'];
 // Handle bill generation
 if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
     $bill_order_id = intval($_GET['order_id']);
-    
+
     // Fetch order details for bill
     $bill_query = "
         SELECT o.order_id, o.customer_id, o.baker_id, o.order_date, o.total_amount,
@@ -32,15 +32,15 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
         JOIN users c ON o.customer_id = c.user_id
         WHERE o.order_id = ? AND o.customer_id = ? AND o.payment_status = 'success'
     ";
-    
+
     $bill_stmt = $conn->prepare($bill_query);
     $bill_stmt->bind_param("ii", $bill_order_id, $customer_id);
     $bill_stmt->execute();
     $bill_result = $bill_stmt->get_result();
-    
+
     $bill_order = null;
     $bill_items = [];
-    
+
     while ($row = $bill_result->fetch_assoc()) {
         if (!$bill_order) {
             $bill_order = [
@@ -56,7 +56,7 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
                 'customer_email' => $row['customer_email']
             ];
         }
-        
+
         $bill_items[] = [
             'product_name' => $row['product_name'],
             'quantity' => $row['quantity'],
@@ -64,7 +64,7 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
             'total' => $row['quantity'] * $row['price']
         ];
     }
-    
+
     if ($bill_order) {
         // Generate bill HTML
         echo "<!DOCTYPE html>
@@ -144,7 +144,7 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
                     </tr>
                 </thead>
                 <tbody>";
-        
+
         $subtotal = 0;
         foreach ($bill_items as $item) {
             $subtotal += $item['total'];
@@ -155,7 +155,7 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
                 <td>₹" . number_format($item['total'], 2) . "</td>
             </tr>";
         }
-        
+
         echo "    <tr class='total-row'>
                         <td colspan='3'><strong>Total Amount</strong></td>
                         <td><strong>₹" . number_format($bill_order['total_amount'], 2) . "</strong></td>
@@ -365,8 +365,7 @@ while ($row = $result->fetch_assoc()) {
                                 <div class="order-date">Placed on <?= date('d M Y, h:i A', strtotime($order['order_date'])); ?>
                                 </div>
                                 <div class="baker-info">
-                                    <strong>Sold by:</strong> <?= htmlspecialchars($order['brand_name']) ?>
-                                    (<?= htmlspecialchars($order['baker_name']) ?>)
+                                    <strong>Made by:&nbsp;</strong> <?= htmlspecialchars($order['brand_name'] ?: $order['baker_name']) ?>
                                 </div>
                             </div>
                             <span class="order-status status-<?= $order['order_status']; ?>">
@@ -399,8 +398,8 @@ while ($row = $result->fetch_assoc()) {
                             <!-- Order Summary -->
                             <div class="pricing-info">
                                 <div class="price-breakdown payable-amount">
-                                    <span><strong>Order Total:</strong></span>
-                                    <span><strong>₹<?= number_format($order['total_amount'], 2) ?></strong></span>
+                                    <span><p style="font-weight: 700;">Order Total:</p></span>
+                                    <span><p style="font-weight: 700;">₹<?= number_format($order['total_amount'], 2) ?></p></span>
                                 </div>
 
                                 <div class="delivery-info">
@@ -423,27 +422,27 @@ while ($row = $result->fetch_assoc()) {
                                 <!-- Payment Status Display -->
                                 <?php if ($paid): ?>
                                     <span
-                                        style="color: #28a745; font-weight: bold; padding: 8px 16px; background: #d4edda; border-radius: 4px;">
-                                        ✅ Payment Successful
+                                        style="color: #28a745; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
+                                        ✓ Payment Successful
                                     </span>
                                 <?php elseif ($order['payment_status'] === 'failed'): ?>
                                     <span
-                                        style="color: #dc3545; font-weight: bold; padding: 8px 16px; background: #f8d7da; border-radius: 4px;">
-                                        ❌ Payment Failed
+                                        style="color: #dc3545; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
+                                        ✕ Payment Failed
                                     </span>
                                 <?php elseif ($order['payment_status'] === 'pending'): ?>
                                     <span
-                                        style="color: #856404; font-weight: bold; padding: 8px 16px; background: #fff3cd; border-radius: 4px;">
-                                        ⏳ Payment Pending
+                                        style="color: #d97706; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
+                                        ◉ Payment Pending
                                     </span>
                                 <?php else: ?>
                                 <?php endif; ?>
 
                                 <!-- Generate Bill button for successful payments -->
                                 <?php if ($paid): ?>
-                                    <a href="?generate_bill=1&order_id=<?= $order['order_id'] ?>" 
-                                       class="btn btn-primary" target="_blank">
-                                        📄 Generate Bill
+                                    <a href="?generate_bill=1&order_id=<?= $order['order_id'] ?>" class="btn btn-primary"
+                                        target="_blank">
+                                        Generate Bill
                                     </a>
                                 <?php endif; ?>
 
@@ -455,7 +454,7 @@ while ($row = $result->fetch_assoc()) {
                                         <input type="hidden" name="baker_id" value="<?= $order['baker_id'] ?>">
                                         <input type="hidden" name="customer_id" value="<?= $customer_id ?>">
                                         <button type="submit" name="action" value="pay" class="btn btn-primary">
-                                            💰 Pay Now ₹<?= number_format($order['total_amount'], 2) ?>
+                                            Pay Now ₹<?= number_format($order['total_amount'], 2) ?>
                                         </button>
                                     </form>
                                 <?php endif; ?>
@@ -466,7 +465,7 @@ while ($row = $result->fetch_assoc()) {
                                         <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
                                         <button type="submit" name="action" value="cancel" class="btn btn-danger"
                                             onclick="return confirm('Are you sure you want to cancel this order?')">
-                                            ❌ Cancel Order
+                                            Cancel Order
                                         </button>
                                     </form>
                                 <?php endif; ?>
@@ -475,19 +474,20 @@ while ($row = $result->fetch_assoc()) {
                                 <?php if ($paid && in_array($status, ['accepted', 'shipped', 'delivered'])): ?>
                                     <a href="?order_id=<?= $order['order_id'] ?>" class="btn btn-primary"
                                         onclick="event.preventDefault(); openTrackingSidebar(); loadOrderTracking(<?= $order['order_id'] ?>)">
-                                        📦 Track Order
+                                        Track Order
                                     </a>
                                 <?php endif; ?>
 
                                 <!-- Contact Baker -->
                                 <a href="mailto:baker@example.com" class="btn btn-secondary">
-                                    📞 Contact Baker
-                                </a>
+                                    Contact Baker
+                                </a> 
+                            </div>
 
-                                <!-- Special message for pending orders -->
+                            <!-- Special message for pending orders -->
                                 <?php if ($status === 'pending'): ?>
                                     <div
-                                        style="margin-top: 8px; padding: 8px; background: #fff3cd; border-radius: 4px; font-size: 14px;">
+                                        style="margin-top: 20px; padding: 12px; background: #ffffffff; border-radius: 50px; font-size: 14px; text-align: center;">
                                         <strong>⏳ Waiting for baker confirmation</strong><br>
                                         <small>You can pay once the baker accepts your order</small>
                                     </div>
@@ -496,12 +496,11 @@ while ($row = $result->fetch_assoc()) {
                                 <!-- Special message for accepted unpaid orders -->
                                 <?php if ($status === 'accepted' && !$paid): ?>
                                     <div
-                                        style="margin-top: 8px; padding: 8px; background: #d1ecf1; border-radius: 4px; font-size: 14px;">
+                                        style="margin-top: 20px; padding: 12px; background: #ffffffff; border-radius: 50px; font-size: 14px; text-align: center;">
                                         <strong>🎉 Order Confirmed by Baker!</strong><br>
                                         <small>Please complete payment to proceed with delivery</small>
                                     </div>
                                 <?php endif; ?>
-                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>

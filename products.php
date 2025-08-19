@@ -280,6 +280,12 @@ $result = $stmt->get_result();
       box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
     }
 
+    .cart-button.added {
+      background: white;
+      border: 2px solid #f59e0b;
+      color: #f59e0b;
+    }
+
     .product-content {
       padding: 10px 20px 20px;
     }
@@ -387,7 +393,7 @@ $result = $stmt->get_result();
               <?php if ($is_in_cart): ?>
                 <!-- Show "Added to Cart" button if product is in cart -->
                 <button class="cart-button added" disabled>
-                  <img src="media/cart2.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">Added to
+                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">Added to
                   Cart
                 </button>
               <?php else: ?>

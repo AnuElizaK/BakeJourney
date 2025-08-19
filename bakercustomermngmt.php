@@ -17,14 +17,13 @@
 
         <div class="filters-section">
             <div class="search-box">
-                <span class="search-icon">🔍</span>
                 <input type="text" class="search-input" placeholder="Search customers by name or email...">
             </div>
             <div class="filter-buttons">
-                <button class="filter-btn active">All (47)</button>
-                <button class="filter-btn">Customers (28)</button>
-                <button class="filter-btn">Followers (19)</button>
-                <button class="filter-btn">New (5)</button>
+                <button class="filter-btn active">All • 47</button>
+                <button class="filter-btn">Customers • 28</button>
+                <button class="filter-btn">Followers • 19</button>
+                <button class="filter-btn">New • 5</button>
             </div>
         </div>
 
@@ -67,10 +66,9 @@
                         </td>
                         <td class="table-cell">
                             <span class="status-badge status-customer">Customer</span>
-                            <span style="color: #ffa726;">⭐ VIP</span>
                         </td>
                         <td class="table-cell">
-                            <span class="expand-icon">▶</span>
+                            <button class="expand-icon">▽</button>
                         </td>
                     </tr>
                     <tr class="accordion-content">
@@ -135,7 +133,7 @@
                             <span class="status-badge status-customer">Customer</span>
                         </td>
                         <td class="table-cell">
-                            <span class="expand-icon">▶</span>
+                            <button class="expand-icon">▽</button>
                         </td>
                     </tr>
                     <tr class="accordion-content">
@@ -200,7 +198,7 @@
                             <span class="status-badge status-follower">Follower</span>
                         </td>
                         <td class="table-cell">
-                            <span class="expand-icon">▶</span>
+                            <button class="expand-icon">▽</button>
                         </td>
                     </tr>
                     <tr class="accordion-content">
@@ -266,7 +264,7 @@
                             <span class="status-badge status-follower">Follower</span>
                         </td>
                         <td class="table-cell">
-                            <span class="expand-icon">▶</span>
+                            <button class="expand-icon">▽</button>
                         </td>
                     </tr>
                     <tr class="accordion-content">
@@ -327,7 +325,7 @@
                             <span class="status-badge status-customer">Customer</span>
                         </td>
                         <td class="table-cell">
-                            <span class="expand-icon">▶</span>
+                            <button class="expand-icon">▽</button>
                         </td>
                     </tr>
                     <tr class="accordion-content">
@@ -392,7 +390,7 @@
                             <span class="status-badge status-follower">Follower</span>
                         </td>
                         <td class="table-cell">
-                            <span class="expand-icon">▶</span>
+                            <button class="expand-icon">▽</button>
                         </td>
                     </tr>
                     <tr class="accordion-content">
