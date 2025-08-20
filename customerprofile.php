@@ -302,9 +302,6 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
             <div class="form-group">
               <div class="address-label-row">
                 <label for="address">Address</label>
-                <div class="add-more-addresses">
-                  <button class="btn-more" type="button">+</button>
-                </div>
               </div>
               <textarea id="address" name="address" rows="2"
                 placeholder="Enter your full delivery address"><?php echo htmlspecialchars($user['address']); ?></textarea>

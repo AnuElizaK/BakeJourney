@@ -387,7 +387,7 @@ $result = $stmt->get_result();
             data-category="<?= htmlspecialchars($product['category']) ?>">
             <div class="product-image">
               <img
-                src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+                src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
                 alt="<?= htmlspecialchars($product['name']) ?>">
 
               <?php if ($is_in_cart): ?>

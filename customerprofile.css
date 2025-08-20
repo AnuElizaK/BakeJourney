@@ -217,23 +217,6 @@ h2 {
   justify-content: space-between;
 }
 
-.btn-more {
-  padding: 4px 8px;
-  background: linear-gradient(135deg, #fcd34d, #f59e0b);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-bottom: 10px;
-}
-
-.btn-more:hover {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
 .order-card {
   background: white;
   border-radius: 10px;

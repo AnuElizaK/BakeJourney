@@ -140,7 +140,7 @@
     }
 
     .step.completed .step-icon {
-        background: #f59e0b;
+        background: linear-gradient(135deg, #fcd34d 40%, #f59e0b);
         color: white;
     }
 
@@ -177,7 +177,7 @@
     }
 
     .step-title {
-        font-weight: bold;
+        font-weight: 500;
         color: #f59e0b;
         margin-bottom: 5px;
     }
@@ -225,6 +225,19 @@
         font-weight: 600;
     }
 
+    .delivery-info-section {
+        padding: 20px;
+        border-radius: 15px;
+        background: #f3f4f6;
+        margin-bottom: 25px;
+    }
+
+    .delivery-details {
+        border-top: 1px solid #c0c3c7ff;
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+
     /* Contact baker section */
     .contact-baker {
         background: #fef7cd;
@@ -252,9 +265,9 @@
     }
 
     .btn-contact-sidebar {
-        padding: 10px 20px;
+        padding: 5px 10px;
         border: none;
-        border-radius: 25px;
+        border-radius: 50px;
         cursor: pointer;
         font-weight: 500;
         transition: all 0.3s ease;
@@ -265,20 +278,29 @@
         font-size: 14px;
     }
 
+    .baker-name p {
+        text-align: center;
+        font-weight: 500;
+        font-size: 18px;
+        margin-top: 10px;
+        color: #f59e0b;
+    }
+
     .btn-message {
-        background: #f59e0b;
+        background: linear-gradient(135deg, #fcd34d, #f59e0b);
         color: white;
     }
 
     .btn-call {
-        background: white;
+        background: #ffffff;
         color: #f59e0b;
-        border: 2px solid #f59e0b;
     }
 
     .btn-contact-sidebar:hover {
+        color: white;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     /* Responsive design */
@@ -372,7 +394,6 @@
             padding: 15px;
         }
     }
-
 </style>
 
 <?php
@@ -559,15 +580,18 @@ function renderTrackingSidebar($orderData = null)
                 <div class="sidebar-order-details">
                     <div class="detail-row">
                         <span class="detail-label">Order ID</span>
-                        <span class="detail-value">#BJ<?php echo str_pad($orderData['order_info']['order_id'], 6, '0', STR_PAD_LEFT); ?></span>
+                        <span
+                            class="detail-value">#BJ<?php echo str_pad($orderData['order_info']['order_id'], 6, '0', STR_PAD_LEFT); ?></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Placed</span>
-                        <span class="detail-value"><?php echo date('M j, Y - g:i A', strtotime($orderData['order_info']['order_date'])); ?></span>
+                        <span
+                            class="detail-value"><?php echo date('M j, Y - g:i A', strtotime($orderData['order_info']['order_date'])); ?></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Expected Delivery</span>
-                        <span class="detail-value"><?php echo date('M j, Y - g:i A', strtotime($orderData['order_info']['delivery_date'])); ?></span>
+                        <span
+                            class="detail-value"><?php echo date('M j, Y - g:i A', strtotime($orderData['order_info']['delivery_date'])); ?></span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Total Amount</span>
@@ -576,11 +600,17 @@ function renderTrackingSidebar($orderData = null)
                     <div class="detail-row">
                         <span class="detail-label">Payment Status</span>
                         <span class="detail-value payment-<?php echo $orderData['order_info']['payment_status']; ?>">
-                            <?php 
-                            switch($orderData['order_info']['payment_status']) {
-                                case 'success': echo '✅ Paid'; break;
-                                case 'failed': echo '❌ Failed'; break;
-                                default: echo '⏳ Pending'; break;
+                            <?php
+                            switch ($orderData['order_info']['payment_status']) {
+                                case 'success':
+                                    echo 'Paid';
+                                    break;
+                                case 'failed':
+                                    echo 'Failed';
+                                    break;
+                                default:
+                                    echo '⏳ Pending';
+                                    break;
                             }
                             ?>
                         </span>
@@ -588,14 +618,26 @@ function renderTrackingSidebar($orderData = null)
                     <div class="detail-row">
                         <span class="detail-label">Order Status</span>
                         <span class="detail-value order-<?php echo $orderData['order_info']['order_status']; ?>">
-                            <?php 
-                            switch($orderData['order_info']['order_status']) {
-                                case 'pending': echo '⏳ Pending Confirmation'; break;
-                                case 'accepted': echo '✅ Confirmed'; break;
-                                case 'shipped': echo '📦 Shipped'; break;
-                                case 'delivered': echo '🎉 Delivered'; break;
-                                case 'cancelled': echo '❌ Cancelled'; break;
-                                default: echo ucfirst($orderData['order_info']['order_status']); break;
+                            <?php
+                            switch ($orderData['order_info']['order_status']) {
+                                case 'pending':
+                                    echo 'Pending Confirmation';
+                                    break;
+                                case 'accepted':
+                                    echo 'Confirmed';
+                                    break;
+                                case 'shipped':
+                                    echo 'Shipped';
+                                    break;
+                                case 'delivered':
+                                    echo 'Delivered';
+                                    break;
+                                case 'cancelled':
+                                    echo 'Cancelled';
+                                    break;
+                                default:
+                                    echo ucfirst($orderData['order_info']['order_status']);
+                                    break;
                             }
                             ?>
                         </span>
@@ -612,7 +654,7 @@ function renderTrackingSidebar($orderData = null)
                                 <input type="hidden" name="order_id" value="<?php echo $orderData['order_info']['order_id']; ?>">
                                 <input type="hidden" name="amount" value="<?php echo $orderData['order_info']['total_amount']; ?>">
                                 <button type="submit" name="action" value="pay" class="btn-payment-sidebar">
-                                    💰 Pay Now ₹<?php echo number_format($orderData['order_info']['total_amount'], 2); ?>
+                                    Pay Now: ₹<?php echo number_format($orderData['order_info']['total_amount'], 2); ?>
                                 </button>
                             </form>
                         </div>
@@ -643,7 +685,7 @@ function renderTrackingSidebar($orderData = null)
 
                 <!-- Tracking Steps -->
                 <div class="tracking-steps">
-                    <h4>Order Progress</h4>
+                    <h4 style="margin-bottom: 20px;">Order Progress</h4>
                     <?php
                     $steps = generateTrackingSteps(
                         $orderData['order_info']['order_status'],
@@ -668,10 +710,14 @@ function renderTrackingSidebar($orderData = null)
                 <!-- Delivery Information -->
                 <?php if (!empty($orderData['order_info']['delivery_address'])): ?>
                     <div class="delivery-info-section">
-                        <h4>📍 Delivery Information</h4>
+                        <h4>Delivery Information</h4>
                         <div class="delivery-details">
-                            <p><strong>Address:</strong><br><?php echo htmlspecialchars($orderData['order_info']['delivery_address']); ?></p>
-                            <p><strong>Expected Delivery:</strong><br><?php echo date('l, M j, Y - g:i A', strtotime($orderData['order_info']['delivery_date'])); ?></p>
+                            <p style="font-weight: 500; color: #484c54;">Address:<br>
+                            <p><?php echo htmlspecialchars($orderData['order_info']['delivery_address']); ?></p>
+                            </p>
+                            <p style="font-weight: 500; color: #484c54; margin-top: 10px;">Expected Delivery:<br>
+                            <p><?php echo date('l, M j, Y - g:i A', strtotime($orderData['order_info']['delivery_date'])); ?></p>
+                            </p>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -679,20 +725,20 @@ function renderTrackingSidebar($orderData = null)
                 <!-- Contact Bakers -->
                 <?php if (!empty($orderData['bakers'])): ?>
                     <div class="contact-section">
-        
+
                         <?php foreach ($orderData['bakers'] as $baker): ?>
                             <div class="contact-baker">
                                 <h4>Need Help?</h4>
-                                <div class="baker-info">
-                                    <strong><?php echo htmlspecialchars($baker['brand_name']); ?></strong>
-                                    <br><small><?php echo htmlspecialchars($baker['baker_name']); ?></small>
+                                <small style="color: #484c54">Contact your baker for any queries or assistance regarding your order.</small>
+                                <div class="baker-name">
+                                    <p>Connect with <?php echo htmlspecialchars($baker['baker_name']); ?></p>
                                 </div>
                                 <div class="contact-buttons">
                                     <?php if (!empty($baker['baker_phone'])): ?>
-                                        <a href="tel:<?php echo $baker['baker_phone']; ?>" class="btn-contact-sidebar btn-call">📞 Call</a>
+                                        <a href="tel:<?php echo $baker['baker_phone']; ?>" class="btn-contact-sidebar btn-call">Call</a>
                                     <?php endif; ?>
-                                    <a href="#message" class="btn-contact-sidebar btn-message" 
-                                       onclick="openMessageModal('<?php echo htmlspecialchars($baker['baker_name']); ?>')">💬 Message</a>
+                                    <a href="#message" class="btn-contact-sidebar btn-message"
+                                        onclick="openMessageModal('<?php echo htmlspecialchars($baker['baker_name']); ?>')">Message</a>
                                 </div>
                             </div>
                         <?php endforeach; ?>

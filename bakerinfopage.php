@@ -61,13 +61,14 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
         <section class="profile-section">
             <div class="profile-header">
                 <div class="profile-image">
-                    <img src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                    <img src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'media/baker.png' ?>"
                         alt="<?= htmlspecialchars($baker['full_name']); ?>"
-                        style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover;">
+                        style="width: 200px; height: 200px; border-radius: 50%; object-fit: cover; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);">
                     <div class="verified-badge">✓</div>
                 </div>
                 <div class="profile-info">
                     <h1><?= htmlspecialchars($baker['full_name']); ?></h1>
+                    <div class="profile-brand"><?= htmlspecialchars($baker['brand_name']); ?></div>
                     <div class="profile-specialty"><?= htmlspecialchars($baker['specialty']); ?></div>
                     <div class="profile-stats">
                         <div class="stat">
@@ -118,9 +119,9 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
                 </div>
                 <div class="image-gallery">
                     <?php foreach ($products as $product): ?>
-                        <div class="gallery-item">
+                        <div class="gallery-item" onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'">
                             <img src=<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : "https://plus.unsplash.com/premium_photo-1690214491960-d447e38d0bd0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ?> alt="<?= htmlspecialchars($product['name']); ?>" class="gallery-image">
-                            <div class="gallery-overlay">
+                            <div class="gallery-overlay" >
                                 <div class="gallery-info">
                                     <h4 class="item-name"><?= htmlspecialchars($product['name']); ?></h4>
                                     <p class="item-price">₹<?= htmlspecialchars($product['price']); ?></p>

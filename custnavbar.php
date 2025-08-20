@@ -221,7 +221,7 @@ $has_cart_items = $cart_count > 0;
         backdrop-filter: blur(12px);
         flex-direction: column;
         gap: 0;
-        padding: 20px 24px;
+        padding: 10px 24px;
         border-top: 1px solid rgba(0, 0, 0, 0.1);
         transform: translateY(-10px);
         opacity: 0;
@@ -237,7 +237,7 @@ $has_cart_items = $cart_count > 0;
       }
 
       .nav-link {
-        padding: 16px 0;
+        padding: 14px 0;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         width: 100%;
         text-align: center;
@@ -248,9 +248,10 @@ $has_cart_items = $cart_count > 0;
       }
 
       .nav-cta {
+        width: 50%;
         margin-top: 16px;
         text-align: center;
-        border-radius: 25px;
+        border-radius: 50px;
       }
 
       .nav-brand span {

@@ -73,10 +73,16 @@ h2 {
     margin-bottom: 0.5rem;
 }
 
-.profile-specialty {
+.profile-brand {
     color: #f59e0b;
     font-weight: 500;
-    font-size: 1.2rem;
+    font-size: 1.4rem; 
+}
+
+.profile-specialty {
+    color: #7f8c8d;
+    font-weight: 500;
+    font-size: 1.1rem;
     margin-bottom: 1rem;
 }
 
@@ -143,7 +149,7 @@ h2 {
 .btn {
     padding: 0.75rem 2rem;
     border: none;
-    border-radius: 25px;
+    border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;

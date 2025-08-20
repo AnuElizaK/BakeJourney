@@ -115,7 +115,7 @@ $productResult = $productStmt->get_result();
           <div class="baker-card" onclick="window.location.href='login.php'">
             <div class="baker-image">
               <img
-                src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'media/baker.png' ?>"
                 alt="Profile Image">
 
               <div class="ranking-badge">Top</div>
@@ -230,7 +230,7 @@ $productResult = $productStmt->get_result();
           <div class="product-card" onclick="window.location.href='login.php'">
             <div class="product-image">
               <img
-                src="<?= !empty($product['product_image']) ? 'uploads/' . htmlspecialchars($product['product_image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+                src="<?= !empty($product['product_image']) ? 'uploads/' . htmlspecialchars($product['product_image']) : 'media/pastry.png' ?>"
                 alt="<?= htmlspecialchars($product['product_name']) ?>">
               <span class="product-badge" onclick="window.location.href='login.php'">Order Now</span>
             </div>
@@ -477,9 +477,9 @@ $productResult = $productStmt->get_result();
           <h3 class="attributions">Attributions</h3>
           <ul>
             <li>Icons by <a href="https://icons8.com">Icons8</a> & <a href="https://www.flaticon.com/">Flaticon</a></li>
-            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a>
-            </li>
+            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a></li>
             <li>Fonts by <a href="https://fonts.google.com/">Google Fonts</a></li>
+            <li>Illustrations by <a href="https://storyset.com/">Storyset</a></li>
             <li>Branding font (Puanto) by <a href="https://creativemarket.com/pasha.larin">Larin Type Co.</a></li>
           </ul>
         </div>

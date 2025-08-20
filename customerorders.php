@@ -12,6 +12,8 @@ header("Pragma: no-cache");
 
 $customer_id = $_SESSION['user_id'];
 
+date_default_timezone_set('Asia/Kolkata');
+
 // Handle bill generation
 if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
     $bill_order_id = intval($_GET['order_id']);
@@ -75,49 +77,66 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
     <style>
         @media print { 
             .no-print { display: none !important; } 
-            body { margin: 0; font-family: Arial, sans-serif; }
+            body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
         }
+        
+        body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; line-height: 1.6;}
+        
         .bill-container { 
-            max-width: 800px; margin: 20px auto; padding: 20px; 
+            max-width: 800px; margin: 40px auto; padding: 20px 50px; 
             border: 1px solid #ddd; background: white;
         }
+        
         .bill-header { text-align: center; margin-bottom: 30px; }
-        .bill-title { font-size: 24px; font-weight: bold; color: #333; }
+        
+        .bill-title { font-family: 'Puanto', Roboto, sans-serif; font-size: 24px; font-weight: bold; color: #333; }
+        
         .bill-info { display: flex; justify-content: space-between; margin: 20px 0; }
+        
         .bill-section { margin: 15px 0; }
-        .bill-section h3 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-        .bill-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        
+        .bill-section h3 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+
+        .bill-section p { padding-bottom: 15px; }
+        
+        .bill-table { width: 100%; border-collapse: collapse; margin: 15px 0; border: 1.5px solid #f59e0b; }
+        
         .bill-table th, .bill-table td { 
             border: 1px solid #ddd; padding: 10px; text-align: left; 
         }
-        .bill-table th { background-color: #f8f9fa; font-weight: bold; }
-        .total-row { background-color: #f8f9fa; font-weight: bold; }
+        
+        .bill-table th { background-color: #fef7cd; font-weight: bold; }
+        
+        .total-row { background-color: #fef7cd; font-weight: bold; font-size: 20px; }
+        
         .btn { 
             padding: 10px 20px; margin: 10px 5px; cursor: pointer; 
-            border: none; border-radius: 5px; text-decoration: none; display: inline-block;
+            border: none; border-radius: 50px; text-decoration: none; display: inline-block;
+            font-family: 'Segoe UI', Roboto, sans-serif; font-weight: 500; font-size: 15px;
         }
-        .btn-primary { background: #007bff; color: white; }
+        
+        .btn-primary { background: #f59e0b; color: white; }
+        
         .btn-secondary { background: #6c757d; color: white; }
     </style>
 </head>
 <body>
     <div class='bill-container'>
         <div class='bill-header'>
-            <h1 class='bill-title'>
-           
-            🧁 BakeJourney</h1>
+            <h1 class='bill-title'><img src='media/Logo.png' alt='BakeJourney Logo' style='height: 40px; weight: 40px; vertical-align: text-top;'>
+                BakeJourney</h1>
             <h2>INVOICE</h2>
         </div>
         
         <div class='bill-info'>
             <div>
-                <h3>Bill To:</h3>
+                <h3 style='border-bottom: 2px solid #eee; padding-bottom: 5px;'>Bill To:</h3>
                 <p><strong>" . htmlspecialchars($bill_order['customer_name']) . "</strong><br>
                 Email: " . htmlspecialchars($bill_order['customer_email']) . "<br>
                 Address: " . htmlspecialchars($bill_order['delivery_address']) . "</p>
             </div>
             <div>
-                <h3>From:</h3>
+                <h3 style='border-bottom: 2px solid #eee; padding-bottom: 5px;'>From:</h3>
                 <p><strong>" . htmlspecialchars($bill_order['brand_name']) . "</strong><br>
                 Baker: " . htmlspecialchars($bill_order['baker_name']) . "<br>
                 Email: " . htmlspecialchars($bill_order['baker_email']) . "</p>
@@ -157,8 +176,8 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
         }
 
         echo "    <tr class='total-row'>
-                        <td colspan='3'><strong>Total Amount</strong></td>
-                        <td><strong>₹" . number_format($bill_order['total_amount'], 2) . "</strong></td>
+                        <td colspan='3'>Total Amount</td>
+                        <td>₹" . number_format($bill_order['total_amount'], 2) . "</td>
                     </tr>
                 </tbody>
             </table>
@@ -170,8 +189,8 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
         </div>
         
         <div class='no-print' style='text-align: center; margin-top: 30px;'>
-            <button onclick='window.print()' class='btn btn-primary'>🖨️ Print Bill</button>
-            <a href='customerorders.php' class='btn btn-secondary'>← Back to Orders</a>
+            <button onclick='window.print()' class='btn btn-primary'>Print Bill</button>
+            <button onclick='window.location.href=\"customerorders.php\"' class='btn btn-secondary'>← Back to Orders</button>
         </div>
     </div>
     
@@ -365,7 +384,8 @@ while ($row = $result->fetch_assoc()) {
                                 <div class="order-date">Placed on <?= date('d M Y, h:i A', strtotime($order['order_date'])); ?>
                                 </div>
                                 <div class="baker-info">
-                                    <strong>Made by:&nbsp;</strong> <?= htmlspecialchars($order['brand_name'] ?: $order['baker_name']) ?>
+                                    <strong>Made by:&nbsp;</strong>
+                                    <?= htmlspecialchars($order['brand_name'] ?: $order['baker_name']) ?>
                                 </div>
                             </div>
                             <span class="order-status status-<?= $order['order_status']; ?>">
@@ -398,8 +418,12 @@ while ($row = $result->fetch_assoc()) {
                             <!-- Order Summary -->
                             <div class="pricing-info">
                                 <div class="price-breakdown payable-amount">
-                                    <span><p style="font-weight: 700;">Order Total:</p></span>
-                                    <span><p style="font-weight: 700;">₹<?= number_format($order['total_amount'], 2) ?></p></span>
+                                    <span>
+                                        <p style="font-weight: 700;">Order Total:</p>
+                                    </span>
+                                    <span>
+                                        <p style="font-weight: 700;">₹<?= number_format($order['total_amount'], 2) ?></p>
+                                    </span>
                                 </div>
 
                                 <div class="delivery-info">
@@ -421,18 +445,15 @@ while ($row = $result->fetch_assoc()) {
 
                                 <!-- Payment Status Display -->
                                 <?php if ($paid): ?>
-                                    <span
-                                        style="color: #28a745; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
+                                    <span style="color: #28a745; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
                                         ✓ Payment Successful
                                     </span>
                                 <?php elseif ($order['payment_status'] === 'failed'): ?>
-                                    <span
-                                        style="color: #dc3545; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
+                                    <span style="color: #dc3545; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
                                         ✕ Payment Failed
                                     </span>
                                 <?php elseif ($order['payment_status'] === 'pending'): ?>
-                                    <span
-                                        style="color: #d97706; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
+                                    <span style="color: #d97706; font-weight: bold; padding: 8px 16px; border-radius: 4px;">
                                         ◉ Payment Pending
                                     </span>
                                 <?php else: ?>
@@ -461,7 +482,7 @@ while ($row = $result->fetch_assoc()) {
 
                                 <!-- Cancel button if within 24 hours and not paid -->
                                 <?php if (!$paid && $within_24hrs && !in_array($status, ['shipped', 'delivered', 'cancelled'])): ?>
-                                    <form method="POST" action="customerorders.php" style="display: inline; margin-right: 8px;">
+                                    <form method="POST" action="customerorders.php">
                                         <input type="hidden" name="order_id" value="<?= $order['order_id'] ?>">
                                         <button type="submit" name="action" value="cancel" class="btn btn-danger"
                                             onclick="return confirm('Are you sure you want to cancel this order?')">
@@ -481,26 +502,26 @@ while ($row = $result->fetch_assoc()) {
                                 <!-- Contact Baker -->
                                 <a href="mailto:baker@example.com" class="btn btn-secondary">
                                     Contact Baker
-                                </a> 
+                                </a>
                             </div>
 
                             <!-- Special message for pending orders -->
-                                <?php if ($status === 'pending'): ?>
-                                    <div
-                                        style="margin-top: 20px; padding: 12px; background: #ffffffff; border-radius: 50px; font-size: 14px; text-align: center;">
-                                        <strong>⏳ Waiting for baker confirmation</strong><br>
-                                        <small>You can pay once the baker accepts your order</small>
-                                    </div>
-                                <?php endif; ?>
+                            <?php if ($status === 'pending'): ?>
+                                <div
+                                    style="margin-top: 20px; padding: 12px; background: #ffffff; border-radius: 50px; border: 2px solid #fcd34d; font-size: 14px; text-align: center;">
+                                    <strong>⏳ Waiting for baker confirmation</strong><br>
+                                    <small>You can pay once the baker accepts your order</small>
+                                </div>
+                            <?php endif; ?>
 
-                                <!-- Special message for accepted unpaid orders -->
-                                <?php if ($status === 'accepted' && !$paid): ?>
-                                    <div
-                                        style="margin-top: 20px; padding: 12px; background: #ffffffff; border-radius: 50px; font-size: 14px; text-align: center;">
-                                        <strong>🎉 Order Confirmed by Baker!</strong><br>
-                                        <small>Please complete payment to proceed with delivery</small>
-                                    </div>
-                                <?php endif; ?>
+                            <!-- Special message for accepted unpaid orders -->
+                            <?php if ($status === 'accepted' && !$paid): ?>
+                                <div
+                                    style="margin-top: 20px; padding: 12px; background: #ffffff; border-radius: 50px; border: 2px solid #fcd34d; font-size: 14px; text-align: center;">
+                                    <strong>🎉 Order Confirmed by Baker!</strong><br>
+                                    <small>Please complete payment to proceed with delivery</small>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>

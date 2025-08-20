@@ -171,7 +171,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 /* Section Headers */
 .section-header {
   text-align: center;
-  margin-bottom: 80px;
+  margin-bottom: 60px;
 }
 
 .section-header h2 {
@@ -276,7 +276,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 }
 
 .products {
-  padding: 100px 0;
+  padding: 60px 0;
   background: linear-gradient(#fff1bb, #ffffff);
 }
 
@@ -295,6 +295,7 @@ h1, h2, .baker-cta-title, .nav-title, .contact-form-title {
 .product-card {
   background: white;
   border-radius: 20px;
+  cursor: pointer;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.4s ease;

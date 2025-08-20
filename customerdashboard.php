@@ -78,10 +78,10 @@ $bResult = $bkrStmt->get_result();
 
       <div class="products-grid">
         <?php while ($product = $pResult->fetch_assoc()): ?>
-          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>">
+          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>" onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'">
             <div class="product-image">
               <img
-                src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' ?>"
+                src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
                 alt="<?= htmlspecialchars($product['name']) ?>">
             </div>
             <div class="product-content">
@@ -132,10 +132,10 @@ $bResult = $bkrStmt->get_result();
 
       <div class="bakers-grid">
         <?php while ($baker = $bResult->fetch_assoc()): ?>
-          <div class="baker-card" onclick="window.location.href='bakerinfopage.php'">
+          <div class="baker-card" onclick="window.location.href='bakerinfopage.php?baker_id=<?= $baker['baker_id']; ?>'">
             <div class="baker-image">
               <img
-                src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'media/baker.png' ?>"
                 alt="<?php echo htmlspecialchars($baker['full_name']); ?>">
               <div class="ranking-badge">#<?php echo htmlspecialchars($baker['baker_id']); ?></div>
             </div>

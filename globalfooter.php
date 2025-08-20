@@ -226,6 +226,7 @@
                         <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a
                                 href="https://www.pexels.com/">Pexels</a></li>
                         <li>Fonts by <a href="https://fonts.google.com/">Google Fonts</a></li>
+                        <li>Illustrations by <a href="https://storyset.com/">Storyset</a></li>
                         <li>Branding font (Puanto) by <a href="https://creativemarket.com/pasha.larin">Larin Type
                                 Co.</a></li>
                     </ul>
