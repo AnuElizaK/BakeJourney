@@ -37,6 +37,7 @@ CREATE TABLE products (
   category VARCHAR(100),
   price DECIMAL(10,2) NOT NULL,
   image VARCHAR(255),
+  weight decimal(10,2) not null,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (baker_id) REFERENCES bakers(baker_id) on DELETE CASCADE
 );

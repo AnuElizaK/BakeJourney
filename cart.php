@@ -180,10 +180,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
           <div class="card-content">
             <?php if (empty($cart_items)) { ?>
               <h2 class="cart-empty-title">Oops! Your cart's feeling a little lonely.🥺</h2>
-              <p class="cart-empty-message">It's currently as empty as a cookie jar after midnight. Why not sprinkle in some
-                sweetness and start shopping?</p>
+              <p class="cart-empty-message">It's currently as empty as a cookie jar after midnight. Why not sprinkle in
+                some sweetness and start shopping?</p>
               <p class="cart-empty">
-                <button class="shortcut" onclick="window.location.href='products.php'">Browse Treats</button> or
+                <button class="shortcut" onclick="window.location.href='products.php'">Browse Treats</button> 
+                or
                 <button class="shortcut" onclick="window.location.href='customerdashboard.php'">Return to Home</button>
               </p>
             <?php } else { ?>
@@ -246,6 +247,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                   <?php endforeach; ?>
                 </div>
 
+              <!-- Special Instructions -->             
+                <!-- <div class="special-section">
+                  <h4>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    Special Instructions (if any)
+                  </h4>
+                  <textarea class="form-textarea"  name="special_msg[<?= $item['product_id'] ?>]"
+                    placeholder="Any special requests, dietary restrictions, or custom decorations..."
+                    style="width: 100%; border: 1px solid #f59e0b;"></textarea>
+                </div> -->
+                
                 <div class="sub-total">
                   <strong style="color: #00a43cff">Sub Total:
                     ₹<?= number_format($baker_total, 2) ?></strong>
@@ -255,6 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                 $total += $baker_total;
               endforeach;
               ?>
+
 
               <!-- Customer Information -->
               <div class="form-section">

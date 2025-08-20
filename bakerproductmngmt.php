@@ -29,7 +29,7 @@ if ($result->num_rows > 0) {
 }
 
 // --- Product Image Remove (AJAX, for cancel/remove only) ---
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']) && !isset($_POST['save_changes'])) {
     if (isset($_FILES['product_image_cropped'])) {
         $imgPath = $_FILES['product_image_cropped']['tmp_name'];
         if (file_exists($imgPath)) {
@@ -96,14 +96,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             <?php foreach ($products as $product): ?>
                 <div class="product-card" data-category="<?php echo htmlspecialchars($product['category']); ?>">
                     <div class="product-image-container">
-                        <img src="<?php echo htmlspecialchars($product['image'] ? 'uploads/' . $product['image'] : 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=400&h=300&fit=crop'); ?>"
+                        <img src="<?php echo htmlspecialchars($product['image'] ? 'uploads/' . $product['image'] : 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png'); ?>"
                             alt="<?php echo htmlspecialchars($product['name']); ?>" class="product-image">
                         <div class="product-actions">
 
                             <button class="action-btn edit-btn" onclick="editProduct(this)"
                                 data-id="<?= $product['product_id']; ?>"
                                 data-name="<?= htmlspecialchars($product['name']); ?>"
-                                data-category="<?= $product['category']; ?>" data-price="<?= $product['price']; ?>"
+                                data-category="<?= $product['category']; ?>" 
+                                data-price="<?= $product['price']; ?>"
+                                data-weight="<?=$product['weight'];?>"
                                 data-description="<?= htmlspecialchars($product['description']); ?>">
 
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,6 +229,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">Weight (in kg)</label>
+                    <input type="number" name="weight" step="0.01" class="form-input" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Description</label>
                     <textarea class="form-textarea" name="description" required
                         placeholder="Describe your product..."></textarea>
@@ -287,6 +294,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">Weight (in kg)</label>
+                    <input type="number" name="weight" step="0.01"  id="editProductWeight"  class="form-input" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Description</label>
                     <textarea id="editProductDescription" name="description" class="form-textarea" maxlength="500"
                         require></textarea>
@@ -321,12 +333,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             const name = button.getAttribute('data-name');
             const category = button.getAttribute('data-category');
             const price = button.getAttribute('data-price');
+            const weight = button.getAttribute('data-weight');
             const description = button.getAttribute('data-description');
 
             document.getElementById('editProductId').value = id;
             document.getElementById('editProductName').value = name;
             document.getElementById('editProductCategory').value = category;
             document.getElementById('editProductPrice').value = price;
+            document.getElementById('editProductWeight').value = weight;
             document.getElementById('editProductDescription').value = description;
 
             // Remove any previous image edit group to avoid duplicates
@@ -459,6 +473,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
         $category = $_POST['category'];
         $price = $_POST['price'];
         $description = $_POST['description'];
+        $weight = $_POST['weight'];
         $image = null;
         if (isset($_FILES['product_image_cropped']) && $_FILES['product_image_cropped']['error'] == 0) {
             $fileTmp = $_FILES['product_image_cropped']['tmp_name'];
@@ -472,8 +487,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             }
         }
         // Proceed with insert
-        $stmt = $conn->prepare("INSERT INTO products (name, category, price, description, baker_id, image) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdsis", $name, $category, $price, $description, $baker_id, $image);
+        $stmt = $conn->prepare("INSERT INTO products (name, category, price, description, baker_id, image,weight) VALUES (?, ?, ?, ?, ?, ?,?)");
+        $stmt->bind_param("ssdsisd", $name, $category, $price, $description, $baker_id, $image, $weight);
 
         if ($stmt->execute()) {
             echo "<script>alert('Product added successfully!');window.location.href = 'bakerproductmngmt.php';</script>";
@@ -488,6 +503,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
         $updated_category = $_POST['category'];
         $updated_price = $_POST['price'];
         $updated_description = $_POST['description'];
+        $updated_weight = $_POST['weight'];
         $new_image = null;
         $remove_image = isset($_POST['remove_product_image']) && $_POST['remove_product_image'] === '1';
 
@@ -523,16 +539,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
 
         if ($remove_image) {
             // Remove image from DB
-            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?, image=NULL WHERE product_id=? ");
-            $stmt->bind_param("ssdsi", $updated_name, $updated_category, $updated_price, $updated_description, $id);
+            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?,weight=? ,image=NULL WHERE product_id=? ");
+            $stmt->bind_param("ssdsdi", $updated_name, $updated_category, $updated_price, $updated_description, $updated_weight,$id);
         } else if ($new_image) {
             // Update with new image
-            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?, image=? WHERE product_id=? ");
-            $stmt->bind_param("ssdssi", $updated_name, $updated_category, $updated_price, $updated_description, $new_image, $id);
+            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?,weight=? , image=? WHERE product_id=? ");
+            $stmt->bind_param("ssdsdsi", $updated_name, $updated_category, $updated_price, $updated_description, $updated_weight, $new_image, $id);
         } else {
             // No image change
-            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=? WHERE product_id=? ");
-            $stmt->bind_param("ssdsi", $updated_name, $updated_category, $updated_price, $updated_description, $id);
+            $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=? , weight=? WHERE product_id=? ");
+            $stmt->bind_param("ssdsdi", $updated_name, $updated_category, $updated_price, $updated_description,$updated_weight, $id);
         }
         if ($stmt->execute()) {
             echo "<script>alert('Product updated successfully'); window.location.href = 'bakerproductmngmt.php';</script>";
