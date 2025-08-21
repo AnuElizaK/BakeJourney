@@ -393,7 +393,7 @@ $result = $stmt->get_result();
               <?php if ($is_in_cart): ?>
                 <!-- Show "Added to Cart" button if product is in cart -->
                 <button class="cart-button added" disabled>
-                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">Added to
+                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;"> Added to
                   Cart
                 </button>
               <?php else: ?>

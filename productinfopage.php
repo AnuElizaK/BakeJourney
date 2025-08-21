@@ -53,12 +53,12 @@ $product = $result->fetch_assoc();
         <!-- Product Main Info -->
         <div class="product-card">
             <div class="product-header">
-                <img src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                <img src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
                     alt="<?php echo htmlspecialchars($product['name']); ?>" class="product-image">
 
                 <div class="product-info">
                     <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
-                    <div class="product-category"><?php echo htmlspecialchars($product['category']); ?></div>
+                    <div class="product-category"><?php echo htmlspecialchars('Category • ' . $product['category']); ?></div>
 
                     <div class="product-meta">
                         <div class="meta-item">
@@ -81,7 +81,7 @@ $product = $result->fetch_assoc();
                     </div>
 
                     <div class="baker-info">
-                        <img src="<?= !empty($product['profile_image']) ? 'uploads/' . htmlspecialchars($product['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                        <img src="<?= !empty($product['profile_image']) ? 'uploads/' . htmlspecialchars($product['profile_image']) : 'media/baker.png' ?>"
                             alt="<?php echo htmlspecialchars($product['full_name']); ?>" class="baker-avatar">
                         <div class="baker-details">
                             <h4>Made by <a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
@@ -90,17 +90,16 @@ $product = $result->fetch_assoc();
                             <p>📍 <?php echo htmlspecialchars($product['district'] ?? 'Location not specified'); ?></p>
                         </div>
                     </div>
-
-                    <div class="product-actions">
-                        <div class="price">₹<?php echo htmlspecialchars($product['price']); ?></div>
-                        <form action="cart.php" method="POST">
-                            <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
-                        </form>
-                        <button onclick="messageModal()" class="btn btn-secondary">Message Baker</button>
-                    </div>
                 </div>
+            </div>
+            <div class="product-actions">
+                <div class="price">₹<?php echo htmlspecialchars($product['price']); ?></div>
+                <form action="cart.php" method="POST">
+                    <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
+                </form>
+                <button onclick="messageModal()" class="btn btn-secondary">Message Baker</button>
             </div>
         </div>
 
@@ -217,12 +216,12 @@ $product = $result->fetch_assoc();
         <div class="chat-container">
             <!-- Chat Header -->
             <div class="chat-header">
-                 <img src="<?= !empty($product['profile_image']) ? 'uploads/' . htmlspecialchars($product['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
-                            alt="<?php echo htmlspecialchars($product['full_name']); ?>" class="baker-avatar">
+                <img src="<?= !empty($product['profile_image']) ? 'uploads/' . htmlspecialchars($product['profile_image']) : 'https://images.unsplash.com/photo-1675285458906-26993548039c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' ?>"
+                    alt="<?php echo htmlspecialchars($product['full_name']); ?>" class="baker-avatar">
                 <div class="baker-chat-info">
                     <h4 id="bakerName"><a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
-                                    style="color:white; text-decoration:none;">
-                                    <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?></a></h4>
+                            style="color:white; text-decoration:none;">
+                            <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?></a></h4>
                     <div class="baker-status" id="bakerStatus">Online • Typically replies within minutes</div>
                 </div>
                 <button class="chat-close" onclick="closeChatModal()">&times;</button>
@@ -235,7 +234,9 @@ $product = $result->fetch_assoc();
                     <div class="message-time">2:30 PM</div>
                 </div>
                 <div class="product-reference">
-                    <strong>Product:</strong> <span id="<?php echo $product['product_id']; ?>"><?php echo $product['name']; ?> - ₹<?php echo $product['price']; ?></span>
+                    <strong>Product:</strong> <span
+                        id="<?php echo $product['product_id']; ?>"><?php echo $product['name']; ?> -
+                        ₹<?php echo $product['price']; ?></span>
                 </div>
             </div>
 
@@ -262,7 +263,7 @@ $product = $result->fetch_assoc();
 
 
     <script>
-       // Chat functionality
+        // Chat functionality
         let chatMessages = [];
         let bakerResponses = [
             "Absolutely! I'd be happy to prepare that for you. When would you need it?",
@@ -278,7 +279,7 @@ $product = $result->fetch_assoc();
         function messageModal() {
             const modal = document.getElementById('chatModal');
             modal.classList.add('active');
-            
+
             // Focus on input
             setTimeout(() => {
                 document.getElementById('chatInput').focus();
@@ -298,7 +299,7 @@ $product = $result->fetch_assoc();
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
-            
+
             if (!message) return;
 
             // Add user message
@@ -321,15 +322,15 @@ $product = $result->fetch_assoc();
             const messagesContainer = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
-            
+
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+
             messageDiv.innerHTML = `
                 <div>${text}</div>
                 <div class="message-time">${timeString}</div>
             `;
-            
+
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
@@ -353,11 +354,11 @@ $product = $result->fetch_assoc();
         }
 
         // Event listeners
-        document.getElementById('chatInput').addEventListener('input', function() {
+        document.getElementById('chatInput').addEventListener('input', function () {
             adjustTextareaHeight(this);
         });
 
-        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+        document.getElementById('chatInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
@@ -365,21 +366,21 @@ $product = $result->fetch_assoc();
         });
 
         // Close modal when clicking outside
-        document.getElementById('chatModal').addEventListener('click', function(e) {
+        document.getElementById('chatModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeChatModal();
             }
         });
 
         // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeChatModal();
             }
         });
 
         // Prevent modal from closing when clicking inside chat container
-        document.querySelector('.chat-container').addEventListener('click', function(e) {
+        document.querySelector('.chat-container').addEventListener('click', function (e) {
             e.stopPropagation();
         });
 

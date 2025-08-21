@@ -475,7 +475,7 @@ while ($row = $result->fetch_assoc()) {
                                         <input type="hidden" name="baker_id" value="<?= $order['baker_id'] ?>">
                                         <input type="hidden" name="customer_id" value="<?= $customer_id ?>">
                                         <button type="submit" name="action" value="pay" class="btn btn-primary">
-                                            Pay Now ₹<?= number_format($order['total_amount'], 2) ?>
+                                            Pay ₹<?= number_format($order['total_amount'], 2) ?> Now
                                         </button>
                                     </form>
                                 <?php endif; ?>

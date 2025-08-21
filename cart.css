@@ -218,6 +218,7 @@ h2 {
 
 .product-description:hover {
   color: #374151;
+  font-size: 0.95rem;
 }
 
 .product-price {

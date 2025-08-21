@@ -131,8 +131,8 @@ if (!$order_details && !$success_message) {
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background:  linear-gradient(135deg, #fef3c7, #fee996, #fef3c7);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background:  linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -147,13 +147,14 @@ if (!$order_details && !$success_message) {
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(45deg, #d97706, #f59e0b, #fcd34d);
             color: white;
             padding: 30px;
             text-align: center;
         }
 
         .header h1 {
+            font-family: 'Puanto', Roboto, sans-serif;
             font-size: 2rem;
             margin-bottom: 10px;
         }
@@ -300,12 +301,12 @@ if (!$order_details && !$success_message) {
         }
 
         .payment-method:hover {
-            border-color: #667eea;
+            border-color: #f59e0b;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
         }
 
         .payment-method.selected {
-            border-color: #667eea;
+            border-color: #f59e0b;
             background: #f8f9ff;
         }
 
@@ -323,6 +324,7 @@ if (!$order_details && !$success_message) {
             padding: 12px 30px;
             border: none;
             border-radius: 8px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -333,7 +335,7 @@ if (!$order_details && !$success_message) {
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(45deg, #d97706, #f59e0b, #fcd34d);
             color: white;
         }
 
@@ -356,7 +358,7 @@ if (!$order_details && !$success_message) {
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #667eea;
+            color: #f59e0b;
             text-decoration: none;
             font-weight: 500;
         }
@@ -366,14 +368,14 @@ if (!$order_details && !$success_message) {
         }
 
         .delivery-info {
-            background: #e3f2fd;
+            background: #fef3c7;
             padding: 15px;
             border-radius: 8px;
             margin-top: 20px;
         }
 
         .delivery-info h4 {
-            color: #1565c0;
+            color: #d97706;
             margin-bottom: 10px;
         }
 
@@ -402,7 +404,7 @@ if (!$order_details && !$success_message) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🛒 Secure Payment</h1>
+            <h1>BakeJourney Secure Payment</h1>
             <p>Complete your order payment safely</p>
         </div>
 
@@ -464,7 +466,7 @@ if (!$order_details && !$success_message) {
                     </div>
 
                     <div class="delivery-info">
-                        <h4>📍 Delivery Details</h4>
+                        <h4>Delivery Details</h4>
                         <p><strong>Address:</strong> <?= htmlspecialchars($order_details['delivery_address']) ?></p>
                         <p><strong>Expected Delivery:</strong> <?= date('d M Y, h:i A', strtotime($order_details['delivery_date'])) ?></p>
                     </div>
@@ -472,7 +474,7 @@ if (!$order_details && !$success_message) {
 
                 <!-- Payment Form -->
                 <div class="payment-section">
-                    <h3 style="margin-bottom: 20px; color: #495057;">💳 Choose Payment Method</h3>
+                    <h3 style="margin-bottom: 20px; color: #495057;">Choose Payment Method</h3>
                     
                     <form method="POST" action="payments.php">
                         <input type="hidden" name="order_id" value="<?= $order_details['order_id'] ?>">
@@ -508,7 +510,7 @@ if (!$order_details && !$success_message) {
                         </div>
 
                         <button type="submit" name="process_payment" class="btn btn-primary btn-large">
-                            💰 Pay ₹<?= number_format($order_details['total_amount'], 2) ?> Securely
+                            Pay ₹<?= number_format($order_details['total_amount'], 2) ?> Securely
                         </button>
                     </form>
                 </div>

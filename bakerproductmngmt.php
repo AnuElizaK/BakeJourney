@@ -273,6 +273,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                 <div class="form-group">
                     <label class="form-label">Category</label>
                     <select id="editProductCategory" name="category" class="form-select" required>
+                        <option value="breads">Breads</option>
                         <option value="cakes">Cakes</option>
                         <option value="pastries">Pastries</option>
                         <option value="cookies">Cookies</option>
