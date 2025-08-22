@@ -1,6 +1,6 @@
-<?php 
+<?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 
 include 'db.php';
@@ -8,15 +8,24 @@ include 'db.php';
 $user_id = $_SESSION['user_id'] ?? null; // Avoids warning
 
 if ($user_id) {
-    // Get cart count for this customer
-    $cart_count_stmt = $conn->prepare("SELECT COUNT(*) as cart_count FROM cart WHERE user_id = ?");
-    $cart_count_stmt->bind_param("i", $user_id);
-    $cart_count_stmt->execute();
-    $cart_count_result = $cart_count_stmt->get_result();
-    $cart_data = $cart_count_result->fetch_assoc();
-    $cart_count = $cart_data['cart_count'];
+  // Get cart count for this customer
+  $cart_count_stmt = $conn->prepare("SELECT COUNT(*) as cart_count FROM cart WHERE user_id = ?");
+  $cart_count_stmt->bind_param("i", $user_id);
+  $cart_count_stmt->execute();
+  $cart_count_result = $cart_count_stmt->get_result();
+  $cart_data = $cart_count_result->fetch_assoc();
+  $cart_count = $cart_data['cart_count'];
 } else {
-    $cart_count = 0; // No session user
+  $cart_count = 0; // No session user
+}
+
+if ($user_id) {
+  // Get user information
+  $user_info_stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
+  $user_info_stmt->bind_param("i", $user_id);
+  $user_info_stmt->execute();
+  $user_info_result = $user_info_stmt->get_result();
+  $user_info = $user_info_result->fetch_assoc();
 }
 
 $has_cart_items = $cart_count > 0;
@@ -116,7 +125,7 @@ $has_cart_items = $cart_count > 0;
       background: linear-gradient(135deg, #fcd34d, #f59e0b);
       color: white;
       padding: 10px 20px;
-      border-radius: 25px;
+      border-radius: 50px;
       font-weight: 600;
       transition: all 0.3s ease;
       box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
@@ -144,7 +153,7 @@ $has_cart_items = $cart_count > 0;
       position: relative;
       display: inline-block;
     }
-    
+
     .cart-notification-dot {
       position: absolute;
       top: -5px;
@@ -154,19 +163,43 @@ $has_cart_items = $cart_count > 0;
       background-color: #ff4444;
       border-radius: 50%;
       border: 2px solid white;
-      display: none; /* Hidden by default */
+      display: none;
+      /* Hidden by default */
       animation: pulse 2s infinite;
     }
-    
+
     /* Show dot when cart has items */
     .cart-container.has-items .cart-notification-dot {
       display: block;
     }
-    
+
     @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      cursor: pointer;
+      transform: scale(1.1);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
     }
 
     /* Mobile Menu Toggle */
@@ -355,16 +388,21 @@ $has_cart_items = $cart_count > 0;
           <a href="bakers.php" class="nav-link">Find Your Baker</a>
           <a href="services.php" class="nav-link">Services</a>
           <a href="contact.php" class="nav-link">Contact Us</a>
-          <a href="customerorders.php" class="nav-link">Orders</a>        
-        <!-- Cart link with notification dot -->
+          <a href="customerorders.php" class="nav-link">Orders</a>
+
+          <!-- Cart link with notification dot -->
           <div class="cart-container <?php echo $has_cart_items ? 'has-items' : ''; ?>">
             <a href="cart.php" class="nav-link">
               <img class="cart-icon" src="media/cart.png" title="Cart" alt="Cart" width="30" height="30">
               <div class="cart-notification-dot"></div>
             </a>
           </div>
-          
-          <a href="customerprofile.php" class="nav-link nav-cta">Your Profile</a>
+
+          <!-- User avatar and profile link -->
+          <img onclick="window.location.href='customerprofile.php'"
+            src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
+            alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" 
+            title="Visit Your Profile"class="user-avatar">
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 
@@ -426,4 +464,5 @@ $has_cart_items = $cart_count > 0;
     });
   </script>
 </body>
+
 </html>

@@ -1,3 +1,22 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+include 'db.php';
+
+$user_id = $_SESSION['user_id'] ?? null; // Avoids warning
+
+if ($user_id) {
+  // Get user information
+  $user_info_stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
+  $user_info_stmt->bind_param("i", $user_id);
+  $user_info_stmt->execute();
+  $user_info_result = $user_info_stmt->get_result();
+  $user_info = $user_info_result->fetch_assoc();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -112,6 +131,21 @@
       color: rgb(255, 255, 255);
       background: linear-gradient(135deg, #f59e0b, #d97706);
       box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
+    }
+
+    .baker-avatar {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: all 0.3s ease;
+    }
+
+    .baker-avatar:hover {
+      cursor: pointer;
+      transform: scale(1.1);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
     }
 
     /* Mobile Menu Toggle */
@@ -279,7 +313,10 @@
           <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
           <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
           <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
-          <a href="bakerprofile.php" class="nav-link nav-cta">Your Profile</a>
+          <img onclick="window.location.href='bakerprofile.php'"
+            src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
+            alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" 
+            title="Visit Your Profile" class="baker-avatar">
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 
