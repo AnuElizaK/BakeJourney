@@ -218,14 +218,14 @@
             transform: translateY(-1px);
         }
 
-        .comments-section {
+        .comment-section {
             padding: 1rem 1.5rem;
             background: #f9fafb;
             border-top: 1px solid #e5e7eb;
             display: none;
         }
 
-        .comments-section.show {
+        .comment-section.show {
             display: block;
         }
 
@@ -342,7 +342,7 @@
                                 <span>❤️</span>
                                 <span class="like-count">24</span>
                             </button>
-                            <button class="action-btn" onclick="toggleComments(this)">
+                            <button class="action-btn" onclick="togglecomment(this)">
                                 <span>💬</span>
                                 <span>8</span>
                             </button>
@@ -354,7 +354,7 @@
                         <button class="read-more-btn">Read More</button>
                     </div>
                 </div>
-                <div class="comments-section">
+                <div class="comment-section">
                     <div class="comment">
                         <div class="comment-author">Sarah B.</div>
                         <div class="comment-text">So excited for the new messaging feature! This will help me connect better with my customers.</div>
@@ -386,7 +386,7 @@
                                 <span>❤️</span>
                                 <span class="like-count">156</span>
                             </button>
-                            <button class="action-btn" onclick="toggleComments(this)">
+                            <button class="action-btn" onclick="togglecomment(this)">
                                 <span>💬</span>
                                 <span>23</span>
                             </button>
@@ -398,7 +398,7 @@
                         <button class="read-more-btn">Read More</button>
                     </div>
                 </div>
-                <div class="comments-section">
+                <div class="comment-section">
                     <div class="comment">
                         <div class="comment-author">Emma K.</div>
                         <div class="comment-text">This recipe changed my baking game! The detail in your instructions is amazing.</div>
@@ -430,7 +430,7 @@
                                 <span>❤️</span>
                                 <span class="like-count">89</span>
                             </button>
-                            <button class="action-btn" onclick="toggleComments(this)">
+                            <button class="action-btn" onclick="togglecomment(this)">
                                 <span>💬</span>
                                 <span>15</span>
                             </button>
@@ -442,7 +442,7 @@
                         <button class="read-more-btn">Read More</button>
                     </div>
                 </div>
-                <div class="comments-section">
+                <div class="comment-section">
                     <div class="comment">
                         <div class="comment-author">Aspiring Baker</div>
                         <div class="comment-text">Such an inspiration! I'm hoping to start my own bakery journey soon.</div>
@@ -470,7 +470,7 @@
                                 <span>❤️</span>
                                 <span class="like-count">67</span>
                             </button>
-                            <button class="action-btn" onclick="toggleComments(this)">
+                            <button class="action-btn" onclick="togglecomment(this)">
                                 <span>💬</span>
                                 <span>12</span>
                             </button>
@@ -482,7 +482,7 @@
                         <button class="read-more-btn">Read More</button>
                     </div>
                 </div>
-                <div class="comments-section">
+                <div class="comment-section">
                     <div class="comment">
                         <div class="comment-author">New Baker</div>
                         <div class="comment-text">Great list! I just ordered the scale you recommended.</div>
@@ -510,7 +510,7 @@
                                 <span>❤️</span>
                                 <span class="like-count">142</span>
                             </button>
-                            <button class="action-btn" onclick="toggleComments(this)">
+                            <button class="action-btn" onclick="togglecomment(this)">
                                 <span>💬</span>
                                 <span>31</span>
                             </button>
@@ -522,7 +522,7 @@
                         <button class="read-more-btn">Read More</button>
                     </div>
                 </div>
-                <div class="comments-section">
+                <div class="comment-section">
                     <div class="comment">
                         <div class="comment-author">Professional Baker</div>
                         <div class="comment-text">The pricing guide template is exactly what I needed!</div>
@@ -554,7 +554,7 @@
                                 <span>❤️</span>
                                 <span class="like-count">78</span>
                             </button>
-                            <button class="action-btn" onclick="toggleComments(this)">
+                            <button class="action-btn" onclick="togglecomment(this)">
                                 <span>💬</span>
                                 <span>19</span>
                             </button>
@@ -566,7 +566,7 @@
                         <button class="read-more-btn">Read More</button>
                     </div>
                 </div>
-                <div class="comments-section">
+                <div class="comment-section">
                     <div class="comment">
                         <div class="comment-author">Celiac Customer</div>
                         <div class="comment-text">Finally! A recipe that doesn't taste like cardboard. Thank you!</div>
@@ -613,11 +613,11 @@
             countSpan.textContent = count;
         }
 
-        // Comments functionality
-        function toggleComments(btn) {
+        // comment functionality
+        function togglecomment(btn) {
             const post = btn.closest('.blog-post');
-            const commentsSection = post.querySelector('.comments-section');
-            commentsSection.classList.toggle('show');
+            const commentSection = post.querySelector('.comment-section');
+            commentSection.classList.toggle('show');
         }
 
         // Share functionality
@@ -648,7 +648,7 @@
                 const text = input.value.trim();
                 
                 if (text) {
-                    const commentsContainer = form.parentElement;
+                    const commentContainer = form.parentElement;
                     const newComment = document.createElement('div');
                     newComment.className = 'comment';
                     newComment.innerHTML = `
@@ -656,11 +656,11 @@
                         <div class="comment-text">${text}</div>
                     `;
                     
-                    commentsContainer.insertBefore(newComment, form);
+                    commentContainer.insertBefore(newComment, form);
                     input.value = '';
                     
                     // Update comment count
-                    const post = commentsContainer.closest('.blog-post');
+                    const post = commentContainer.closest('.blog-post');
                     const commentBtn = post.querySelector('.action-btn:nth-child(2) span:last-child');
                     let count = parseInt(commentBtn.textContent);
                     commentBtn.textContent = count + 1;

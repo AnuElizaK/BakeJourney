@@ -335,18 +335,18 @@ h1, h2, h3 {
     color: #f59e0b;
 }
 
-/* Comments Section */
-.comments-section {
+/* comment Section */
+.comment-section {
     margin-top: 1rem;
     border-top: 1px solid #e5e7eb;
     padding-top: 0.75rem;
 }
 
-.comments-section.hidden {
+.comment-section.hidden {
     display: none;
 }
 
-.comments-list {
+.comment-list {
     margin-bottom: 0.75rem;
 }
 

@@ -144,7 +144,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                                     </svg>
                                     <span class="like-count">24</span>
                                 </button>
-                                <button onclick="toggleComments(<?php echo $product['product_id']; ?>)"
+                                <button onclick="togglecomment(<?php echo $product['product_id']; ?>)"
                                     class="social-btn comment-btn">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -162,8 +162,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                             </button>
                         </div>
 
-                        <div id="comments-1" class="comments-section hidden">
-                            <div class="comments-list">
+                        <div id="comment-1" class="comment-section hidden">
+                            <div class="comment-list">
                                 <div class="comment">
                                     <span class="comment-author">Emily R.</span>
                                     <span class="comment-text">Amazing bread! Perfect crust every time.</span>
@@ -447,12 +447,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             }
         }
 
-        function toggleComments(productId) {
-            const commentsSection = document.getElementById(`comments-${productId}`);
-            commentsSection.classList.toggle('hidden');
+        function togglecomment(productId) {
+            const commentSection = document.getElementById(`comment-${productId}`);
+            commentSection.classList.toggle('hidden');
 
-            if (!commentsSection.classList.contains('hidden')) {
-                commentsSection.classList.add('fade-in');
+            if (!commentSection.classList.contains('hidden')) {
+                commentSection.classList.add('fade-in');
             }
         }
 

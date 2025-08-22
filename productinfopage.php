@@ -33,6 +33,66 @@ if ($result->num_rows === 0) {
 
 $product = $result->fetch_assoc();
 
+// Fetch all reviews for this product
+$review_stmt = $conn->prepare("
+    SELECT r.*, u.*
+    FROM reviews r
+    JOIN users u ON r.customer_id = u.user_id
+    WHERE r.product_id = ?
+    ORDER BY r.review_date DESC
+");
+$review_stmt->bind_param("i", $product_id);
+$review_stmt->execute();
+$reviews = $review_stmt->get_result();
+
+// Get average rating + count
+$rating_stmt = $conn->prepare("
+    SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews
+    FROM reviews
+    WHERE product_id = ?
+");
+$rating_stmt->bind_param("i", $product_id);
+$rating_stmt->execute();
+$rating_result = $rating_stmt->get_result()->fetch_assoc();
+$avg_rating = round($rating_result['avg_rating'], 1);
+$total_reviews = $rating_result['total_reviews'];
+
+// Handle review submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_review'])) {
+    $customer_id = $_SESSION['user_id'];  // must be logged in
+    $rating = (int) $_POST['rating'];
+    $comments = $_POST['comments'];
+
+    if ($rating >= 1 && $rating <= 5 && !empty($comments)) {
+        $stmt = $conn->prepare("INSERT INTO reviews (product_id, customer_id, rating, comments) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("iiis", $product_id, $customer_id, $rating, $comments);
+        $stmt->execute();
+        header("Location: productinfopage.php?product_id=".$product_id."#reviews"); // refresh to avoid resubmission
+        exit;
+    }
+}
+
+// Function to generate star HTML
+function generateStars($rating, $maxStars = 5) {
+    $stars = '';
+    for ($i = 1; $i <= $maxStars; $i++) {
+        $stars .= ($i <= $rating) ? '★' : '☆';
+    }
+    return $stars;
+}
+
+// Function to format relative time
+function timeAgo($datetime) {
+    $time = time() - strtotime($datetime);
+    
+    if ($time < 60) return 'just now';
+    if ($time < 3600) return floor($time/60) . ' minutes ago';
+    if ($time < 86400) return floor($time/3600) . ' hours ago';
+    if ($time < 2592000) return floor($time/86400) . ' days ago';
+    if ($time < 31104000) return floor($time/2592000) . ' months ago';
+    return floor($time/31104000) . ' years ago';
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -142,73 +202,80 @@ $product = $result->fetch_assoc();
             </div>
         </div> -->
 
-        <!-- Customer Reviews -->
-        <div class="section-card">
-            <div class="reviews-header">
-                <h2 class="section-title">Customer Reviews</h2>
-                <div class="rating">
-                    <div class="stars">★★★★★</div>
-                    <span class="rating-text">5.0 out of 5 stars • 127 reviews</span>
-                </div>
+<!-- Customer Reviews -->
+<div class="section-card" id="reviews">
+    <div class="reviews-header">
+        <h2 class="section-title">Customer Reviews</h2>
+        <div class="rating">
+            <div class="stars">
+                <?php echo generateStars(round($avg_rating)); ?>
             </div>
-
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80"
-                            alt="Emily R." class="reviewer-avatar">
-                        <div>
-                            <div class="reviewer-name">Emily R.</div>
-                            <div class="review-date">2 days ago</div>
-                        </div>
-                    </div>
-                    <div class="review-stars">★★★★★</div>
-                </div>
-                <div class="review-text">
-                    Sarah's sourdough is absolutely incredible! The texture and flavor are unmatched. I've been ordering
-                    weekly for months now and every loaf is consistently perfect. The 48-hour fermentation really makes
-                    a difference!
-                </div>
-            </div>
-
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80"
-                            alt="Michael C." class="reviewer-avatar">
-                        <div>
-                            <div class="reviewer-name">Michael C.</div>
-                            <div class="review-date">1 week ago</div>
-                        </div>
-                    </div>
-                    <div class="review-stars">★★★★★</div>
-                </div>
-                <div class="review-text">
-                    Best bread I've ever had! Sarah's attention to detail and passion really shows in every loaf. The
-                    sourdough tang is perfect and the crust has that amazing crunch. Professional quality with that
-                    perfect homemade touch.
-                </div>
-            </div>
-
-            <div class="review-item">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80"
-                            alt="Jennifer L." class="reviewer-avatar">
-                        <div>
-                            <div class="reviewer-name">Jennifer L.</div>
-                            <div class="review-date">2 weeks ago</div>
-                        </div>
-                    </div>
-                    <div class="review-stars">★★★★★</div>
-                </div>
-                <div class="review-text">
-                    Amazing experience! Sarah is so professional and her bread is restaurant quality. The delivery was
-                    prompt and the packaging kept everything fresh. This sourdough has become a weekly staple in our
-                    household!
-                </div>
-            </div>
+            <span class="rating-text">
+                <?php echo $avg_rating; ?> out of 5 stars • <?php echo $total_reviews; ?> reviews
+            </span>
         </div>
+    </div>
+
+    <?php if ($reviews->num_rows > 0): ?>
+        <?php while ($rev = $reviews->fetch_assoc()): ?>
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/baker.png' ?>"
+                             alt="<?php echo htmlspecialchars($rev['full_name']); ?>" class="reviewer-avatar">
+                        <div>
+                            <div class="reviewer-name"><?php echo htmlspecialchars($rev['full_name']); ?></div>
+                            <div class="review-date"><?php echo timeAgo($rev['review_date']); ?></div>
+                        </div>
+                    </div>
+                    <div class="review-stars">
+                        
+                             <span class="stars"><?php echo generateStars($rev['rating']); ?></span> 
+                       
+                    </div>
+                </div>
+                <div class="review-text">
+                    <?php echo nl2br(htmlspecialchars($rev['comments'])); ?>
+                </div>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p>No reviews yet. Be the first to leave one!</p>
+    <?php endif; ?>
+
+    <!-- Post comment textbox -->
+    
+        <form method="POST" id="review-form">
+            <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+            <input type="hidden" name="rating" id="rating-input" value="0">
+            <div class="comment-form-container">
+                <div class="comment-form">
+                    <div class="comment-input-section">
+                        <img src="<?= !empty($product['profile_image']) ? 'uploads/' . htmlspecialchars($product['profile_image']) : 'media/baker.png' ?>"
+                             alt="<?php echo htmlspecialchars($product['full_name']); ?>" class="user-avatar">
+                        <textarea id="comment" class="comment-textarea" name="comments"
+                                  placeholder="Add a comment..." rows="1" required></textarea>
+                    </div>
+                    
+                    <div class="actions-section">
+                        <div class="star-rating">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <label>
+                                    <input type="radio" name="rating" value="<?php echo $i; ?>" style="display:none;" required>
+                                    <span class="star">★</span>
+                                </label>
+                            <?php endfor; ?>
+                        </div>
+                        <button type="submit"  name="submit_review" class="post-btn">Post</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+  
+</div>
+
+
+
     </div>
 
     <!-- Chat Modal -->
@@ -263,6 +330,72 @@ $product = $result->fetch_assoc();
 
 
     <script>
+      document.addEventListener('DOMContentLoaded', function() {
+    const commentTextarea = document.getElementById('comment');
+    const ratingInput = document.getElementById('rating-input');
+    const stars = document.querySelectorAll('.star');
+    let currentRating = 0;
+
+ // Auto-resize textarea
+    commentTextarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        updatePostButton();
+    });
+
+    // Star rating functionality
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            currentRating = index + 1;
+            ratingInput.value = currentRating;
+            updateStars();
+            updatePostButton();
+        });
+
+        star.addEventListener('mouseover', () => {
+            highlightStars(index + 1);
+        });
+    });
+
+    document.querySelector('.star-rating').addEventListener('mouseleave', () => {
+        updateStars();
+    });
+
+    function highlightStars(rating) {
+        stars.forEach((star, index) => {
+            star.classList.toggle('active', index < rating);
+        });
+    }
+
+    function updateStars() {
+        stars.forEach((star, index) => {
+            star.classList.toggle('active', index < currentRating);
+        });
+    }
+  // Form submission validation
+    document.getElementById('review-form').addEventListener('submit', function(e) {
+        const comment = commentTextarea.value.trim();
+        
+        if (currentRating === 0) {
+            e.preventDefault();
+            alert('Please select a rating!');
+            return false;
+        }
+        
+        if (comment === '') {
+            e.preventDefault();
+            alert('Please write a comment!');
+            return false;
+        }
+        
+       
+    });
+   
+ 
+});
+
+
+
         // Chat functionality
         let chatMessages = [];
         let bakerResponses = [
