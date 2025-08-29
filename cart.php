@@ -278,17 +278,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                 <div class="form-grid">
                   <div class="form-group">
                     <label class="form-label">Full Name</label>
-                    <input type="text" name="full_name" class="form-input" required
+                    <input type="text" name="full_name" class="form-input" required readonly
                       value="<?= htmlspecialchars($_SESSION['name']) ?>">
                   </div>
                   <div class="form-group">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" required
+                    <input type="email" name="email" class="form-input" required readonly
                       value="<?= htmlspecialchars($_SESSION['email']) ?>">
                   </div>
                   <div class="form-group">
-                    <label class="form-label">Phone</label>
-                    <input type="tel" name="phone" class="form-input" required
+                    <label class="form-label">Phone
+                      <small><a href="customerprofile.php">(Change phone number?)</a></small>
+                    </label>
+                    <input type="tel" name="phone" class="form-input" required readonly
                       value="<?= htmlspecialchars($_SESSION['phone']) ?>">
                   </div>
                 </div>

@@ -1,4 +1,5 @@
-<?php session_start();
+<?php
+session_start();
 include 'db.php';
 
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
@@ -24,8 +25,22 @@ while ($cart_item = $cart_result->fetch_assoc()) {
   $cart_products[] = $cart_item['product_id'];
 }
 
+// Get liked products for this customer
+$like_stmt = $conn->prepare("SELECT product_id FROM product_likes WHERE customer_id = ?");
+$like_stmt->bind_param("i", $user_id);
+$like_stmt->execute();
+$like_result = $like_stmt->get_result();
+
+$liked_products = [];
+while ($like_item = $like_result->fetch_assoc()) {
+  $liked_products[] = $like_item['product_id'];
+}
+
 $stmt = $conn->prepare("
-  SELECT *
+  SELECT *,
+  (SELECT COUNT(*) 
+          FROM product_likes pl 
+          WHERE pl.product_id = p.product_id) AS like_count
   FROM products p
   JOIN bakers b ON p.baker_id = b.baker_id
   JOIN users u ON b.user_id = u.user_id
@@ -34,6 +49,46 @@ $stmt = $conn->prepare("
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Like function
+if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
+    header('Content-Type: application/json');
+    
+    $product_id = intval($_POST['product_id']);
+    
+    try {
+        // Check if user already liked this product
+        $check_stmt = $conn->prepare("SELECT like_id FROM product_likes WHERE product_id = ? AND customer_id = ?");
+        $check_stmt->bind_param("ii", $product_id, $user_id);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+        
+        if ($check_result->num_rows > 0) {
+            // Unlike - remove the like
+            $delete_stmt = $conn->prepare("DELETE FROM product_likes WHERE product_id = ? AND customer_id = ?");
+            $delete_stmt->bind_param("ii", $product_id, $user_id);
+            $delete_stmt->execute();
+            $liked = false;
+        } else {
+            // Like - add the like
+            $insert_stmt = $conn->prepare("INSERT INTO product_likes (product_id, customer_id) VALUES (?, ?)");
+            $insert_stmt->bind_param("ii", $product_id, $user_id);
+            $insert_stmt->execute();
+            $liked = true;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'liked' => $liked,
+           
+        ]);
+        exit();
+        
+        
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => 'Database error']);
+        exit();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -145,7 +200,56 @@ $result = $stmt->get_result();
       line-height: 1.7;
     }
 
-    /* Products */
+    /* Like Button */
+    .social-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      color: orange;
+    }
+
+    .like-btn svg {
+      width: 20px;
+      height: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .like-btn.liked svg {
+      fill: #ef4444;
+      stroke: #ef4444;
+    }
+
+    .like-btn:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.1);
+    }
+
+    .like-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #f59e0b;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
 
     /* Filter Tabs */
     .filter-section {
@@ -380,8 +484,10 @@ $result = $stmt->get_result();
 
       <div class="products-grid">
         <?php while ($product = $result->fetch_assoc()): ?>
-          <?php $is_in_cart = in_array($product['product_id'], $cart_products); ?>
-
+          <?php 
+            $is_in_cart = in_array($product['product_id'], $cart_products);
+            $is_liked = in_array($product['product_id'], $liked_products);
+          ?>
           <div class="product-card"
             onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'"
             data-category="<?= htmlspecialchars($product['category']) ?>">
@@ -406,6 +512,13 @@ $result = $stmt->get_result();
                   </button>
                 </form>
               <?php endif; ?>
+
+              <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>" data-product-id="<?= $product['product_id'] ?>">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             </div>
             <div class="product-content">
               <div class="product-header">
@@ -458,14 +571,17 @@ $result = $stmt->get_result();
       // Update active button
       buttons.forEach(btn => {
         btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().replace(/ & /g, ' ') === category || (category === 'all' && btn.textContent === 'All Products')) {
+          btn.classList.add('active');
+        }
       });
-      event.target.classList.add('active');
 
       // Products Filters
       products.forEach(product => {
         if (category === 'all' || product.dataset.category === category) {
           product.style.display = 'block';
           product.classList.add('fade-in');
+          visibleCount++;
         } else {
           product.style.display = 'none';
         }
@@ -483,8 +599,8 @@ $result = $stmt->get_result();
       let visibleCount = 0;
 
       products.forEach(product => {
-        const title = product.querySelector('.product-content').textContent.toLowerCase();
-        const desc = product.querySelector('.product-header').textContent.toLowerCase();
+        const title = product.querySelector('.product-header h3').textContent.toLowerCase();
+        const desc = product.querySelector('.product-content p').textContent.toLowerCase();
         if (title.includes(searchValue) || desc.includes(searchValue)) {
           product.style.display = 'block';
           visibleCount++;
@@ -497,6 +613,35 @@ $result = $stmt->get_result();
       }
     });
 
+    // ---Like Button Functionality---
+    document.querySelectorAll('.like-btn').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.stopPropagation(); // Prevent card click from triggering
+        const productId = this.dataset.productId;
+        
+
+        fetch('', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `action=toggle_like&product_id=${productId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            this.classList.toggle('liked', data.liked);
+            
+          } else {
+            alert('Error: ' + data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while processing your request.');
+        });
+      });
+    });
   </script>
 </body>
 

@@ -754,5 +754,55 @@ h2 {
             cursor: pointer;
             transition: all 0.2s ease;           
         }
+     
+        /* Like Button */
+        .social-btn {
+            position: relative;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            color: orange;
+        }
 
+        .like-btn svg {
+            width: 20px;
+            height: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .like-btn.liked svg {
+            fill: #ef4444;
+            stroke: #ef4444;
+        }
+
+        .like-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .like-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #f59e0b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
        

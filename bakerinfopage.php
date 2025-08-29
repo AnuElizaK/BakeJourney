@@ -107,6 +107,7 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
             <div class="profile-actions">
                 <a href="#" class="btn btn-primary">Message Baker</a>
                 <a href="#menu" class="btn btn-secondary">View Menu</a>
+                 <a href="#menu" class="btn btn-secondary">Follow</a>
             </div>
         </section>
 

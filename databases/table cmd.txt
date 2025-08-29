@@ -92,8 +92,19 @@ CREATE TABLE reviews (
     product_id INT NOT NULL,
     customer_id INT NOT NULL,
     rating INT CHECK(rating BETWEEN 1 AND 5),
-    comment TEXT,
+    comments TEXT,
     review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(product_id),
     FOREIGN KEY (customer_id) REFERENCES users(user_id)
 );
+
+CREATE TABLE product_likes (
+    like_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    customer_id INT NOT NULL,
+    liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY (product_id, customer_id), -- prevents duplicate likes
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (customer_id) REFERENCES users(user_id)
+);
+

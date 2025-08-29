@@ -24,6 +24,25 @@ if ($result->num_rows > 0) {
     $stmt->bind_param("i", $baker_id);
     $stmt->execute();
     $products = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $product_ids = array_column($products, 'product_id');
+
+    $all_reviews = [];  // array to store reviews for each product
+
+    foreach ($product_ids as $pid) {
+        $reviewstmt = $conn->prepare(
+            "SELECT r.*, u.*
+    FROM reviews r
+    JOIN users u ON r.customer_id = u.user_id
+    WHERE r.product_id = ?
+    ORDER BY r.review_date DESC"
+        );
+        $reviewstmt->bind_param("i", $pid);
+        $reviewstmt->execute();
+        $reviews = $reviewstmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        $all_reviews[$pid] = $reviews; // store reviews under that product_id
+    }
+
 } else {
     echo "Baker not found.";
 }
@@ -39,6 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
     echo '<script>alert("✅ Product image removed."); window.location.href = "bakerproductmngmt.php";</script>';
     exit;
 }
+
+
 
 ?>
 
@@ -103,9 +124,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                             <button class="action-btn edit-btn" onclick="editProduct(this)"
                                 data-id="<?= $product['product_id']; ?>"
                                 data-name="<?= htmlspecialchars($product['name']); ?>"
-                                data-category="<?= $product['category']; ?>" 
-                                data-price="<?= $product['price']; ?>"
-                                data-weight="<?=$product['weight'];?>"
+                                data-category="<?= $product['category']; ?>" data-price="<?= $product['price']; ?>"
+                                data-weight="<?= $product['weight']; ?>"
                                 data-description="<?= htmlspecialchars($product['description']); ?>">
 
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,53 +154,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                         </div>
                         <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
 
+
+
                         <div class="engagement-actions">
                             <div class="social-actions">
-                                <button onclick="toggleLike(this, <?php echo $product['product_id']; ?>)"
-                                    class="social-btn like-btn">
+                                <button class="social-btn like-btn">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
                                     <span class="like-count">24</span>
                                 </button>
+
+                                <!-- comment section -->
                                 <button onclick="togglecomment(<?php echo $product['product_id']; ?>)"
                                     class="social-btn comment-btn">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     </svg>
-                                    <span>5</span>
+                                    <span><?php echo count($all_reviews[$product['product_id']] ?? []); ?></span>
                                 </button>
                             </div>
-                            <button onclick="toggleSave(this, <?php echo $product['product_id']; ?>)"
-                                class="social-btn save-btn">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                                </svg>
-                            </button>
                         </div>
+                        <div id="comment-<?php echo $product['product_id']; ?>" class="comment-section hidden">
+                            <?php $reviews = $all_reviews[$product['product_id']] ?? []; ?>
 
-                        <div id="comment-1" class="comment-section hidden">
                             <div class="comment-list">
-                                <div class="comment">
-                                    <span class="comment-author">Emily R.</span>
-                                    <span class="comment-text">Amazing bread! Perfect crust every time.</span>
-                                </div>
-                                <div class="comment">
-                                    <span class="comment-author">Mike T.</span>
-                                    <span class="comment-text">Best sourdough in town!</span>
-                                </div>
+                                <?php if (!empty($reviews)): ?>
+                                    <?php foreach ($reviews as $review): ?>
+                                        <div class="comment">
+                                            <span
+                                                class="comment-author"><?php echo htmlspecialchars($review['full_name']); ?></span>
+                                            <span class="comment-text"><?php echo htmlspecialchars($review['comments']); ?></span>
+                                           
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p class="no-comments">No comments yet for this product!</p>
+                                <?php endif; ?>
+
                             </div>
                             <div class="comment-form">
-                                <input type="text" placeholder="Add a comment..." class="comment-input">
-                                <button class="comment-submit">Post</button>
+                                <!-- <form method ="POST"> -->
+                                <input type="text" name="comment" placeholder="Add a comment..." class="comment-input">
+                                <button class="comment-submit" type="submit" name="post_comment">Post</button>
+                                <!-- </form> -->
                             </div>
                         </div>
+
+
                     </div>
                 </div>
             <?php endforeach; ?>
+
 
         </div>
         <div id="no-results-message"
@@ -296,7 +323,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
 
                 <div class="form-group">
                     <label class="form-label">Weight (in kg)</label>
-                    <input type="number" name="weight" step="0.01"  id="editProductWeight"  class="form-input" placeholder="0.00" required>
+                    <input type="number" name="weight" step="0.01" id="editProductWeight" class="form-input"
+                        placeholder="0.00" required>
                 </div>
 
                 <div class="form-group">
@@ -358,11 +386,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             const modal = document.getElementById('editModal');
             modal.classList.remove('active');
         }
-
-
-
-
-
 
         // Filter Functions
         function filterProducts(category) {
@@ -541,7 +564,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
         if ($remove_image) {
             // Remove image from DB
             $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?,weight=? ,image=NULL WHERE product_id=? ");
-            $stmt->bind_param("ssdsdi", $updated_name, $updated_category, $updated_price, $updated_description, $updated_weight,$id);
+            $stmt->bind_param("ssdsdi", $updated_name, $updated_category, $updated_price, $updated_description, $updated_weight, $id);
         } else if ($new_image) {
             // Update with new image
             $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=?,weight=? , image=? WHERE product_id=? ");
@@ -549,7 +572,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
         } else {
             // No image change
             $stmt = $conn->prepare("UPDATE products SET name=?, category=?, price=?, description=? , weight=? WHERE product_id=? ");
-            $stmt->bind_param("ssdsdi", $updated_name, $updated_category, $updated_price, $updated_description,$updated_weight, $id);
+            $stmt->bind_param("ssdsdi", $updated_name, $updated_category, $updated_price, $updated_description, $updated_weight, $id);
         }
         if ($stmt->execute()) {
             echo "<script>alert('Product updated successfully'); window.location.href = 'bakerproductmngmt.php';</script>";
@@ -583,6 +606,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             echo "<script>alert('Error deleting product');</script>";
         }
     }
+
     ?>
     <!-- Cropper.js JS for product image upload -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" crossorigin="anonymous"
