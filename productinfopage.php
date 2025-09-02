@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'db.php';
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer' && $_SESSION['role'] !== 'baker') {
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
 }

@@ -26,14 +26,13 @@ while ($like_item = $like_result->fetch_assoc()) {
 }
 
 $stmt = $conn->prepare("
-  SELECT *,
-  (SELECT COUNT(*) 
-          FROM blog_likes bl 
-          WHERE bl.blog_id = b.blog_id) AS like_count
-  FROM blog b
-  JOIN users u ON b.user_id = u.user_id
-  JOIN bakers ba ON u.user_id = ba.user_id
-  ORDER BY RAND()
+    SELECT b.*, u.full_name, ba.baker_id,
+           (SELECT COUNT(*) FROM blog_likes bl WHERE bl.blog_id = b.blog_id) AS like_count,
+           (SELECT COUNT(*) FROM blog_comments bc WHERE bc.blog_id = b.blog_id) AS comment_count
+    FROM blog b
+    JOIN users u ON b.user_id = u.user_id
+    JOIN bakers ba ON u.user_id = ba.user_id
+    ORDER BY RAND()
 ");
 $stmt->execute();
 $result = $stmt->get_result();
@@ -65,14 +64,20 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
             $liked = true;
         }
 
+        // Get updated like count
+        $count_stmt = $conn->prepare("SELECT COUNT(*) AS like_count FROM blog_likes WHERE blog_id = ?");
+        $count_stmt->bind_param("i", $blog_id);
+        $count_stmt->execute();
+        $count_result = $count_stmt->get_result();
+        $like_count = $count_result->fetch_assoc()['like_count'];
+
         echo json_encode([
             'success' => true,
             'liked' => $liked,
+            'like_count' => $like_count
 
         ]);
         exit();
-
-
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => 'Database error']);
         exit();
@@ -90,6 +95,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
     echo '<script>alert("✅ Blog image removed."); window.location.href = "bakerblog.php";</script>';
     exit;
 }
+
+// Comment submission
+if (isset($_POST['action']) && $_POST['action'] === 'add_comment') {
+    header('Content-Type: application/json');
+
+    $blog_id = intval($_POST['blog_id']);
+    $comment_text = trim($_POST['comment_text']);
+    $user_id = $_SESSION['user_id'];
+
+    try {
+        if (empty($comment_text)) {
+            echo json_encode(['success' => false, 'error' => 'Comment cannot be empty']);
+            exit();
+        }
+
+        // Get user's full name for comment display
+        $user_stmt = $conn->prepare("SELECT full_name FROM users WHERE user_id = ?");
+        $user_stmt->bind_param("i", $user_id);
+        $user_stmt->execute();
+        $user_result = $user_stmt->get_result();
+        $user = $user_result->fetch_assoc();
+        $full_name = $user['full_name'] ?? 'You';
+
+        // Insert comment into database
+        $stmt = $conn->prepare("INSERT INTO blog_comments (blog_id, user_id, comment_text) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $blog_id, $user_id, $comment_text);
+        $stmt->execute();
+
+        // Get updated comment count
+        $count_stmt = $conn->prepare("SELECT COUNT(*) AS comment_count FROM blog_comments WHERE blog_id = ?");
+        $count_stmt->bind_param("i", $blog_id);
+        $count_stmt->execute();
+        $count_result = $count_stmt->get_result();
+        $comment_count = $count_result->fetch_assoc()['comment_count'];
+
+        echo json_encode([
+            'success' => true,
+            'comment' => [
+                'comment_text' => htmlspecialchars($comment_text),
+                'author' => htmlspecialchars($full_name),
+                'comment_date' => date('Y-m-d H:i:s')
+            ],
+            'comment_count' => $comment_count
+        ]);
+        exit();
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+        exit();
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -143,6 +199,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
                 <?php while ($blog = $result->fetch_assoc()): ?>
                     <?php
                     $is_liked = in_array($blog['blog_id'], $liked_blog);
+                    // Fetch comments for this blog post
+$comment_stmt = $conn->prepare("
+    SELECT bc.comment_text, bc.comment_date, u.full_name
+    FROM blog_comments bc
+    JOIN users u ON bc.user_id = u.user_id
+    WHERE bc.blog_id = ?
+    ORDER BY bc.comment_date DESC
+    
+    ");
+$comment_stmt->bind_param("i", $blog['blog_id']);
+$comment_stmt->execute();
+$comment_result = $comment_stmt->get_result();
                     ?>
                     <article class="blog-post" data-category="<?= htmlspecialchars($blog['category']) ?>">
                         <div class="post-image">
@@ -152,7 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
                         <div class="post-content">
                             <div class="post-meta">
                                 <span class="category-badge <?= strtolower($blog['category']) ?>"><?= htmlspecialchars($blog['category']) ?></span>
-                                <span class="author"
+                                <span class="author" data-user-id="<?= $blog['user_id'] ?>"
                                     onclick="window.location.href='bakerinfopage.php?baker_id=<?= $blog['baker_id'] ?>'"
                                     title="Visit the author">By <?= htmlspecialchars($blog['full_name']) ?>
                                 </span>
@@ -183,15 +251,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
-                                        <span class="like-count">24</span>
+                                        <span class="like-count"><?= $blog['like_count'] ?></span>
                                     </button>
 
-                                    <button class="action-btn comment-btn" onclick="togglecomment(this)">
+                                    <button class="action-btn comment-btn" onclick="toggleComment(this)">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                         </svg>
-                                        <span>8</span>
+                                        <span class="comment-count"><?= $blog['comment_count'] ?></span>
                                     </button>
 
                                     <button class="action-btn share-btn" onclick="sharePost(this)">
@@ -213,19 +281,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
                             </div>
                         </div>
                         <div class="comment-section">
-                            <div class="comment">
-                                <div class="comment-author">Sarah B.</div>
-                                <div class="comment-text">So excited for the new messaging feature! This will help me
-                                    connect
-                                    better with my customers.</div>
-                            </div>
-                            <div class="comment">
-                                <div class="comment-author">Mike's Artisan Breads</div>
-                                <div class="comment-text">Can't wait to try the order tracking improvements!</div>
-                            </div>
+                            <?php
+                            while ($comment = $comment_result->fetch_assoc()):
+                                ?>
+                                <div class="comment">
+                                    <div class="comment-author"><?= htmlspecialchars($comment['full_name']) ?></div>
+                                    <div class="comment-text"><?= htmlspecialchars($comment['comment_text']) ?></div>
+                                </div>
+                            <?php endwhile; ?>
                             <div class="comment-form">
                                 <input type="text" class="comment-input" placeholder="Add a comment...">
-                                <button class="comment-submit">Post</button>
+                                <button class="comment-submit" data-blog-id="<?= $blog['blog_id'] ?>">Post</button>
                             </div>
                         </div>
                     </article>
@@ -304,31 +370,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
         }
 
         // TabFilter functionality
-        function filterblogs(type) {
-            // Update active tab
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
+function filterblogs(type) {
+    // Update active tab
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    event.target.classList.add('active');
 
-            // Get all blog items
-            const blogs = document.querySelectorAll('.blog-item');
+    // Get all blog posts
+    const blogs = document.querySelectorAll('.blog-post');
+    const noblogs = document.getElementById('no-blogs-message');
+    let visibleCount = 0;
 
-            blogs.forEach(blog => {
-                if (type === 'all') {
-                    blog.style.display = 'flex';
-                } else if (type === 'your') {
-                    blog.style.display = blog.classList.contains('your') ? 'flex' : 'none';
-                }
-            });
+    // Get current user ID from PHP 
+    const currentUserId = <?php echo json_encode($user_id); ?>;
 
-            // Hide/show sections based on filter
-            const sections = document.querySelectorAll('.creator-section');
-            sections.forEach(section => {
-                const visibleItems = section.querySelectorAll('.creator-item[style*="flex"], .creator-item:not([style])');
-                section.style.display = visibleItems.length > 0 ? 'block' : 'none';
-            });
+    blogs.forEach(blog => {
+        const blogUserId = parseInt(blog.querySelector('.author').dataset.userId || 0);
+        if (type === 'all') {
+            blog.style.display = 'block';
+            visibleCount++;
+        } else if (type === 'your' && blogUserId === currentUserId) {
+            blog.style.display = 'block';
+            visibleCount++;
+        } else {
+            blog.style.display = 'none';
         }
+    });
+
+    // Show/hide no blogs message
+    if (noblogs) {
+        noblogs.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+}
 
 
         // Blog Search
@@ -382,43 +456,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
         });
 
         // Like functionality
-        function toggleLike(btn) {
-            btn.classList.toggle('liked');
-            const countSpan = btn.querySelector('.like-count');
-            let count = parseInt(countSpan.textContent);
-            if (btn.classList.contains('liked')) {
-                count++;
-            } else {
-                count--;
-            }
-            countSpan.textContent = count;
+                function toggleLike(btn) {
+            const blogId = btn.dataset.blogId;
+            fetch(window.location.href, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=toggle_like&blog_id=${blogId}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        btn.classList.toggle('liked', data.liked);
+                        const countSpan = btn.querySelector('.like-count');
+                        countSpan.textContent = data.like_count;
+                    } else {
+                        alert('Error: ' + (data.error || 'Failed to update like'));
+                    }
+                })
+                .catch(error => {
+                    alert('Error: Failed to connect to server');
+                });
         }
 
-        // comment functionality
-        function togglecomment(btn) {
+          // Comment functionality
+        function toggleComment(btn) {
             const post = btn.closest('.blog-post');
             const commentSection = post.querySelector('.comment-section');
             commentSection.classList.toggle('show');
-        }
-
-        // Share functionality
-        function sharePost(btn) {
-            const post = btn.closest('.blog-post');
-            const title = post.querySelector('.post-title').textContent;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: 'Check out this blog post from Sweet Spot Bakery',
-                    url: window.location.href
-                });
-            } else {
-                // Fallback - copy to clipboard
-                const url = window.location.href;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Link copied to clipboard!');
-                });
-            }
         }
 
         // Comment submission
@@ -426,25 +490,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
             btn.addEventListener('click', (e) => {
                 const form = e.target.closest('.comment-form');
                 const input = form.querySelector('.comment-input');
+                const blogId = btn.dataset.blogId;
                 const text = input.value.trim();
 
                 if (text) {
-                    const commentContainer = form.parentElement;
-                    const newComment = document.createElement('div');
-                    newComment.className = 'comment';
-                    newComment.innerHTML = `
-                        <div class="comment-author">You</div>
-                        <div class="comment-text">${text}</div>
-                    `;
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `action=add_comment&blog_id=${blogId}&comment_text=${encodeURIComponent(text)}`
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const commentContainer = form.parentElement;
+                                const newComment = document.createElement('div');
+                                newComment.className = 'comment';
+                                newComment.innerHTML = `
+                                <div class="comment-author">${data.comment.author}</div>
+                                <div class="comment-text">${data.comment.comment_text}</div>
+                            `;
+                                commentContainer.insertBefore(newComment, form);
+                                input.value = '';
 
-                    commentContainer.insertBefore(newComment, form);
-                    input.value = '';
-
-                    // Update comment count
-                    const post = commentContainer.closest('.blog-post');
-                    const commentBtn = post.querySelector('.action-btn:nth-child(2) span:last-child');
-                    let count = parseInt(commentBtn.textContent);
-                    commentBtn.textContent = count + 1;
+                                // Update comment count
+                                const post = commentContainer.closest('.blog-post');
+                                const commentBtn = post.querySelector('.comment-count');
+                                commentBtn.textContent = data.comment_count;
+                            } else {
+                                alert('Error: ' + (data.error || 'Failed to post comment'));
+                            }
+                        })
+                        .catch(error => {
+                            alert('Error: Failed to connect to server');
+                        });
                 }
             });
         });
@@ -575,7 +653,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) &
     <!-- Cropper.js JS for blog image upload -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" crossorigin="anonymous"
         referrerpolicy="no-referrer"></script>
-    <script src="image-cropper.js"></script>
+    <script src="blog-cropper.js"></script>
     <script src="edit-cropper.js"></script>
 </body>
 

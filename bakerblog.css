@@ -321,6 +321,11 @@ h2 {
     color: #ef4444;
 }
 
+.like-btn.liked svg {
+     fill: #ef4444;
+    stroke: #ef4444;
+}
+
 .comment-btn:hover {
     color: #2e65bd;
 }

@@ -103,12 +103,12 @@ document.addEventListener('DOMContentLoaded', function () {
     cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob(function (blob) {
       croppedBlob = blob;
       // Remove any previous hidden input
-      let existingInput = modalForm.querySelector('input[name="post_image_cropped"]');
+      let existingInput = modalForm.querySelector('input[name="blog_image_cropped"]');
       if (existingInput) existingInput.remove();
       // Create a hidden file input and append to form
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
-      fileInput.name = 'post_image_cropped';
+      fileInput.name = 'blog_image_cropped';
       fileInput.style.display = 'none';
       // Use DataTransfer to set the file input's files
       const dt = new DataTransfer();
