@@ -369,6 +369,11 @@ $has_cart_items = $cart_count > 0;
         width: 10px;
         height: 10px;
       }
+
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+      }
     }
   </style>
 </head>
@@ -388,6 +393,7 @@ $has_cart_items = $cart_count > 0;
           <a href="bakers.php" class="nav-link">Find Your Baker</a>
           <a href="services.php" class="nav-link">Services</a>
           <a href="contact.php" class="nav-link">Contact Us</a>
+          <a href="blog.php" class="nav-link">Blog</a>
           <a href="customerorders.php" class="nav-link">Orders</a>
 
           <!-- Cart link with notification dot -->
@@ -401,8 +407,8 @@ $has_cart_items = $cart_count > 0;
           <!-- User avatar and profile link -->
           <img onclick="window.location.href='customerprofile.php'"
             src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
-            alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" 
-            title="Visit Your Profile"class="user-avatar">
+            alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" title="Visit Your Profile"
+            class="user-avatar">
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 

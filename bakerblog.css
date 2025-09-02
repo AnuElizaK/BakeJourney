@@ -49,6 +49,39 @@ h2 {
     line-height: 1.7;
 }
 
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+}
+
+.filter-tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.filter-tab.active {
+    color: #d97706;
+    border-bottom-color: #d97706;
+}
+
+.filter-tab:hover {
+    color: #d97706;
+}
+
 .filters {
     background: none;
     padding: 15px 20px;
@@ -57,13 +90,14 @@ h2 {
 }
 
 .blog-search-box {
-    flex: 1;
+    display: flex;
+    gap: 0.5rem;
     min-width: 250px;
     position: relative;
 }
 
 .blog-search-input {
-    width: 100%;
+    width: 80%;
     padding: 12px 45px;
     background: transparent url("media/search.png") no-repeat 10px center;
     border: 1.5px solid #9ca3af;
@@ -83,6 +117,25 @@ h2 {
     box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
 }
 
+.create-blog-btn {
+    width: 20%;
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    padding: 0.5rem 2rem;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-blog-btn:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: translateY(-2px);
+}
+
 .filter-buttons {
     display: flex;
     margin-top: 1rem;
@@ -90,6 +143,7 @@ h2 {
     border-radius: 0.65rem;
     gap: 0.5rem;
     flex-wrap: wrap;
+    flex-direction: row;
 }
 
 .filter-btn {
@@ -356,21 +410,237 @@ h2 {
     background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #fef7cd;
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fee996 0%, #fef7cd 100%);
+    border-bottom: 2.5px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1f2a38;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #1f2a38;
+    transform: rotate(90deg);
+}
+
+.modal-form {
+    padding: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    min-height: 100px;
+}
+
+.price-input-container {
+    position: relative;
+}
+
+.price-symbol {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.price-input {
+    padding-left: 2rem;
+}
+
+/* File Upload */
+.file-upload {
+    border: 2px dashed #9ca3af;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.file-upload:hover {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #9ca3af;
+    margin: 0 auto 1rem;
+}
+
+.upload-text {
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.browse-btn {
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.browse-btn:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.upload-note {
+    font-size: 0.75rem;
+    color: #80858f;
+    margin-top: 0.5rem;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #9ca3af;
+    background: #fee996;
+    color: #374151;
+    border-radius: 0.5rem;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #ffffff;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;
     }
 
-    .header h1 {
+    .header h2 {
         font-size: 2rem;
+    }
+
+    .header p {
+        font-size: 1rem;
     }
 
     .blog-grid {
         grid-template-columns: 1fr;
     }
 
-    .filter-buttons {
+    .blog-search-box {
         flex-direction: column;
+    }
+
+    .blog-search-input, .create-blog-btn {
+        width: 100%;
+    }
+
+    .filter-buttons {
+        flex-direction: row;
         align-items: center;
     }
 

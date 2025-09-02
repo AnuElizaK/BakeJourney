@@ -293,6 +293,11 @@ if ($user_id) {
       .nav-brand span {
         display: inline;
       }
+
+      .baker-avatar {
+        width: 30px;
+        height: 30px;
+      }
     }
   </style>
 </head>
@@ -312,6 +317,7 @@ if ($user_id) {
           <a href="bakercustomermngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
           <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
           <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
+          <a href="bakerblog.php" class="nav-link" onclick="toggleSelect(this)">Blog</a>
           <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
           <img onclick="window.location.href='bakerprofile.php'"
             src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"

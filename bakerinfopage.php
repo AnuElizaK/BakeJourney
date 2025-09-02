@@ -1,6 +1,6 @@
 <?php session_start();
 include 'db.php';
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer' && $_SESSION['role'] !== 'baker') {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
 }
@@ -52,7 +52,13 @@ $products = $productResult->fetch_all(MYSQLI_ASSOC);
 </head>
 
 <!-- Sticky Navigation Bar -->
-<?php include 'custnavbar.php'; ?>
+<?php
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
+    include 'custnavbar.php';
+} else {
+    include 'bakernavbar.php';
+}
+?>
 
 <body>
     <!-- Main Content -->

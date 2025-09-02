@@ -81,8 +81,6 @@ $result = $stmt->get_result();
           </div>
         <?php endif; ?>
 
-
-
       </div>
       <div id="no-bakers-message"
         style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">

@@ -51,43 +51,43 @@ $result = $stmt->get_result();
 
 // Like function
 if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
-    header('Content-Type: application/json');
-    
-    $product_id = intval($_POST['product_id']);
-    
-    try {
-        // Check if user already liked this product
-        $check_stmt = $conn->prepare("SELECT like_id FROM product_likes WHERE product_id = ? AND customer_id = ?");
-        $check_stmt->bind_param("ii", $product_id, $user_id);
-        $check_stmt->execute();
-        $check_result = $check_stmt->get_result();
-        
-        if ($check_result->num_rows > 0) {
-            // Unlike - remove the like
-            $delete_stmt = $conn->prepare("DELETE FROM product_likes WHERE product_id = ? AND customer_id = ?");
-            $delete_stmt->bind_param("ii", $product_id, $user_id);
-            $delete_stmt->execute();
-            $liked = false;
-        } else {
-            // Like - add the like
-            $insert_stmt = $conn->prepare("INSERT INTO product_likes (product_id, customer_id) VALUES (?, ?)");
-            $insert_stmt->bind_param("ii", $product_id, $user_id);
-            $insert_stmt->execute();
-            $liked = true;
-        }
+  header('Content-Type: application/json');
 
-        echo json_encode([
-            'success' => true,
-            'liked' => $liked,
-           
-        ]);
-        exit();
-        
-        
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'error' => 'Database error']);
-        exit();
+  $product_id = intval($_POST['product_id']);
+
+  try {
+    // Check if user already liked this product
+    $check_stmt = $conn->prepare("SELECT like_id FROM product_likes WHERE product_id = ? AND customer_id = ?");
+    $check_stmt->bind_param("ii", $product_id, $user_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+
+    if ($check_result->num_rows > 0) {
+      // Unlike - remove the like
+      $delete_stmt = $conn->prepare("DELETE FROM product_likes WHERE product_id = ? AND customer_id = ?");
+      $delete_stmt->bind_param("ii", $product_id, $user_id);
+      $delete_stmt->execute();
+      $liked = false;
+    } else {
+      // Like - add the like
+      $insert_stmt = $conn->prepare("INSERT INTO product_likes (product_id, customer_id) VALUES (?, ?)");
+      $insert_stmt->bind_param("ii", $product_id, $user_id);
+      $insert_stmt->execute();
+      $liked = true;
     }
+
+    echo json_encode([
+      'success' => true,
+      'liked' => $liked,
+
+    ]);
+    exit();
+
+
+  } catch (Exception $e) {
+    echo json_encode(['success' => false, 'error' => 'Database error']);
+    exit();
+  }
 }
 ?>
 
@@ -100,355 +100,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
   <title>All Products | BakeJourney</title>
   <meta name="description" content="BakeJourney - The Home Baker's Marketplace" />
   <meta name="author" content="BakeJourney" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      line-height: 1.6;
-      padding-top: 80px;
-      color: #1f2a38;
-    }
-
-    h1,
-    h2 {
-      font-family: 'Puanto', Roboto, sans-serif;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 36px;
-      font-size: 1.125rem;
-      font-weight: 600;
-      border-radius: 50px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      position: relative;
-      overflow: hidden;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #fcd34d, #f59e0b);
-      color: white;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(217, 119, 6, 0.4);
-    }
-
-    .btn-large {
-      padding: 18px 48px;
-      font-size: 1.25rem;
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    .btn-outline {
-      border: 2px solid white;
-      color: white;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-    }
-
-    .btn-outline:hover {
-      background: white;
-      color: #f59e0b;
-      transform: translateY(-2px);
-    }
-
-    /* Section Headers */
-    .section-header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .section-header h2 {
-      font-size: 3rem;
-      font-weight: bold;
-      color: #1f2a38;
-      margin-bottom: 20px;
-      letter-spacing: -0.02em;
-    }
-
-    .section-header p {
-      font-size: 1.25rem;
-      color: #6b7280;
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-
-    /* Like Button */
-    .social-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      color: orange;
-    }
-
-    .like-btn svg {
-      width: 20px;
-      height: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .like-btn.liked svg {
-      fill: #ef4444;
-      stroke: #ef4444;
-    }
-
-    .like-btn:hover {
-      background: rgba(255, 255, 255, 1);
-      transform: scale(1.1);
-    }
-
-    .like-count {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      background: #f59e0b;
-      color: white;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    /* Filter Tabs */
-    .filter-section {
-      background: none;
-      padding: 15px 20px;
-      border-radius: 0.75rem;
-      margin-bottom: 2rem;
-    }
-
-    .product-search-input {
-      width: 100%;
-      padding: 12px 45px;
-      background: transparent url("media/search.png") no-repeat 10px center;
-      border: 1.5px solid #c6c8ca;
-      border-radius: 0.65rem;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.3s ease;
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .product-search-input:hover {
-      border-color: #8b919c;
-      background-color: #f8f9fa;
-    }
-
-    .product-search-input:focus {
-      outline: none;
-      border-color: #f59e0b;
-      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
-    }
-
-    .filter-tabs {
-      display: flex;
-      margin-top: 0.5rem;
-      margin-bottom: 0.5rem;
-      border-radius: 0.65rem;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      padding: 12px 15px;
-      border: none;
-      background: #f8f9fa;
-      border-radius: 0.65rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: #6b7280;
-    }
-
-    .filter-btn.active {
-      background: linear-gradient(135deg, #fcd34d, #f59e0b);
-      color: white;
-    }
-
-    .filter-btn:hover:not(.active) {
-      background: #fee996;
-    }
-
-    .products {
-      padding: 50px 0;
-      background: linear-gradient(#fff1bb, #ffffff);
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
-
-    @media (min-width: 768px) {
-      .products-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-    }
-
-    .product-card {
-      position: relative;
-      background: white;
-      border-radius: 20px;
-      cursor: pointer;
-      overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-      transition: all 0.4s ease;
-    }
-
-    .product-card:hover {
-      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
-      transform: translateY(-10px);
-    }
-
-    .product-image {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .product-image img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-
-    .product-card:hover .product-image img {
-      transform: scale(1.1);
-    }
-
-    .cart-button {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: linear-gradient(135deg, #fcd34d, #d97706);
-      color: white;
-      padding: 8px 16px;
-      border: none;
-      cursor: pointer;
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      border-radius: 25px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: all 0.4s ease;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-    }
-
-    .cart-button:hover {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
-    }
-
-    .cart-button.added {
-      background: white;
-      border: 2px solid #f59e0b;
-      color: #f59e0b;
-    }
-
-    .product-content {
-      padding: 10px 20px 20px;
-    }
-
-    .product-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .product-header h3 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #1f2a38;
-      line-height: 1.3;
-      margin: 0;
-    }
-
-    .product-price {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #f59e0b;
-      margin: 0;
-      line-height: 1.3;
-    }
-
-    .product-content p {
-      color: #6b7280;
-      line-height: 1.6;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .section-header h2 {
-        font-size: 2rem;
-      }
-
-      .section-header p {
-        font-size: 1rem;
-      }
-
-      .products-grid {
-        gap: 20px;
-      }
-
-      .product-card {
-        border-radius: 14px;
-      }
-
-      .product-image img {
-        height: 120px;
-      }
-
-      .product-content {
-        padding: 24px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="products.css" />
 </head>
 
 <!-- Sticky Navigation Bar -->
@@ -484,9 +136,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
 
       <div class="products-grid">
         <?php while ($product = $result->fetch_assoc()): ?>
-          <?php 
-            $is_in_cart = in_array($product['product_id'], $cart_products);
-            $is_liked = in_array($product['product_id'], $liked_products);
+          <?php
+          $is_in_cart = in_array($product['product_id'], $cart_products);
+          $is_liked = in_array($product['product_id'], $liked_products);
           ?>
           <div class="product-card"
             onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'"
@@ -499,7 +151,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
               <?php if ($is_in_cart): ?>
                 <!-- Show "Added to Cart" button if product is in cart -->
                 <button class="cart-button added" disabled>
-                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;"> Added to
+                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">
+                  Added to
                   Cart
                 </button>
               <?php else: ?>
@@ -513,10 +166,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
                 </form>
               <?php endif; ?>
 
-              <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>" data-product-id="<?= $product['product_id'] ?>">
+              <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>"
+                data-product-id="<?= $product['product_id'] ?>">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </button>
             </div>
@@ -537,7 +191,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
                 $words = explode(' ', $desc);
                 $max_words = 10;
                 if (count($words) > $max_words) {
-                  $short = implode(' ', array_slice($words, 0, $max_words)) . '...'. ' more';
+                  $short = implode(' ', array_slice($words, 0, $max_words)) . '...' . ' more';
                 } else {
                   $short = $desc;
                 }
@@ -546,7 +200,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
               </p>
               <br />
               <p style="font-size: 0.65rem; position: absolute; bottom: 20px; left: 20px; color: #8b919c">Posted on
-                <?= date('d M Y', strtotime($product['created_at'])) ?></p>
+                <?= date('d M Y', strtotime($product['created_at'])) ?>
+              </p>
             </div>
           </div>
         <?php endwhile; ?>
@@ -561,7 +216,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
   <?php include 'globalfooter.php'; ?>
 
   <script>
-    // ---Product Search and Filter Functions---
+    // ---Product Filter Functions---
     function filterProducts(category) {
       const products = document.querySelectorAll('.product-card');
       const buttons = document.querySelectorAll('.filter-btn');
@@ -615,10 +270,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
 
     // ---Like Button Functionality---
     document.querySelectorAll('.like-btn').forEach(button => {
-      button.addEventListener('click', function(e) {
+      button.addEventListener('click', function (e) {
         e.stopPropagation(); // Prevent card click from triggering
         const productId = this.dataset.productId;
-        
+
 
         fetch('', {
           method: 'POST',
@@ -627,19 +282,19 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           },
           body: `action=toggle_like&product_id=${productId}`
         })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            this.classList.toggle('liked', data.liked);
-            
-          } else {
-            alert('Error: ' + data.error);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while processing your request.');
-        });
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              this.classList.toggle('liked', data.liked);
+
+            } else {
+              alert('Error: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing your request.');
+          });
       });
     });
   </script>

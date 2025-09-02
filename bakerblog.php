@@ -2,7 +2,7 @@
 session_start();
 include 'db.php';
 
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
 }
@@ -10,7 +10,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
 // Prevent back after logout
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
-header("Pragma: no-cache");
+header("Pragma: no-cache");@
 
 $user_id = $_SESSION['user_id'];
 
@@ -78,6 +78,18 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
         exit();
     }
 }
+
+// --- Blog Image Remove (AJAX, for cancel/remove only) ---
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_blog_image']) && !isset($_POST['save_changes'])) {
+    if (isset($_FILES['blog_image_cropped'])) {
+        $imgPath = $_FILES['blog_image_cropped']['tmp_name'];
+        if (file_exists($imgPath)) {
+            unlink($imgPath);
+        }
+    }
+    echo '<script>alert("✅ Blog image removed."); window.location.href = "bakerblog.php";</script>';
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -88,11 +100,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog | BakeJourney</title>
     <meta name="description" content="BakeJourney - The Home Baker's Marketplace" />
-    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="bakerblog.css">
+    <!-- Cropper.js CSS for blog image upload -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="blog-cropper.css">
+    <!-- <link rel="stylesheet" href="edit-blog-cropper.css"> -->
 </head>
 
 <!-- Sticky Navigation Bar -->
-<?php include 'custnavbar.php'; ?>
+<?php include 'bakernavbar.php'; ?>
 
 <body>
     <section class="blog" id="blog">
@@ -102,9 +119,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
                 <p>Discover recipes, stories, and updates from our amazing baker community</p>
             </div>
 
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterblogs('all')">All</button>
+                <button class="filter-tab" onclick="filterblogs('your')">Your Blogs</button>
+            </div>
+
             <div class="filters">
                 <div class="blog-search-box">
                     <input type="search" placeholder="Search or filter posts..." class="blog-search-input">
+                    <button onclick="toggleUploadModal()" class="create-blog-btn">+ Create New Post</button>
                 </div>
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">All Posts</button>
@@ -122,17 +146,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
                     ?>
                     <article class="blog-post" data-category="<?= htmlspecialchars($blog['category']) ?>">
                         <div class="post-image">
-                            <img src="<?= !empty($blog['blog_image_uploaded']) ? 'uploads/' . htmlspecialchars($blog['blog_image_uploaded']) : 'media/pastry.png' ?>"
+                            <img src="<?= !empty($blog['blog_image']) ? 'uploads/' . htmlspecialchars($blog['blog_image']) : 'media/pastry.png' ?>"
                                 alt="<?= htmlspecialchars($blog['blog_title']) ?>">
                         </div>
                         <div class="post-content">
                             <div class="post-meta">
-                                <span
-                                    class="category-badge <?= strtolower($blog['category']) ?>"><?= htmlspecialchars($blog['category']) ?>
-                                </span>
+                                <span class="category-badge <?= strtolower($blog['category']) ?>"><?= htmlspecialchars($blog['category']) ?></span>
                                 <span class="author"
                                     onclick="window.location.href='bakerinfopage.php?baker_id=<?= $blog['baker_id'] ?>'"
-                                    title="Visit the author"><?= htmlspecialchars($blog['full_name']) ?>
+                                    title="Visit the author">By <?= htmlspecialchars($blog['full_name']) ?>
                                 </span>
                             </div>
                             <h2 class="post-title"><?= htmlspecialchars($blog['blog_title']) ?></h2>
@@ -216,9 +238,99 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
         </div>
     </section>
 
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Blog Post</h2>
+                <button onclick="toggleUploadModal()" class="close-btn">&times;</button>
+            </div>
+
+            <form class="modal-form" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="form-label">Blog Title</label>
+                    <input type="text" class="form-input" name="blog_title" placeholder="Enter blog title" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" name="category" required>
+                        <option value="">Select category</option>
+                        <option value="recipes">Recipes</option>
+                        <option value="tips">Tips</option>
+                        <option value="stories">Stories</option>
+                        <option value="announcements">Announcements</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-textarea" name="content" required
+                        placeholder="Type your content..."></textarea>
+                </div>
+
+                <!-- Image upload field handled by blog-cropper.js -->
+                <?php if (isset($_SESSION['uploaded_blog_image'])): ?>
+                    <div style="margin:10px 0; color:green;">Image uploaded:
+                        <?php echo htmlspecialchars($_SESSION['uploaded_blog_image']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="form-actions">
+                    <button type="button" onclick="toggleUploadModal()" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary" name="create_blog">Create blog</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <?php include 'globalfooter.php'; ?>
 
     <script>
+        // Modal Functions
+        function toggleUploadModal() {
+            const modal = document.getElementById('uploadModal');
+            modal.classList.toggle('active');
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function (event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        }
+
+        // TabFilter functionality
+        function filterblogs(type) {
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Get all blog items
+            const blogs = document.querySelectorAll('.blog-item');
+
+            blogs.forEach(blog => {
+                if (type === 'all') {
+                    blog.style.display = 'flex';
+                } else if (type === 'your') {
+                    blog.style.display = blog.classList.contains('your') ? 'flex' : 'none';
+                }
+            });
+
+            // Hide/show sections based on filter
+            const sections = document.querySelectorAll('.creator-section');
+            sections.forEach(section => {
+                const visibleItems = section.querySelectorAll('.creator-item[style*="flex"], .creator-item:not([style])');
+                section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+            });
+        }
+
+
         // Blog Search
         document.querySelector('.blog-search-input').addEventListener('input', function (e) {
             const searchValue = e.target.value.toLowerCase();
@@ -346,6 +458,125 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
             });
         });
     </script>
+
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_blog'])) {
+        $title = $_POST['blog_title'];
+        $category = $_POST['category'];
+        $content = $_POST['content'];
+        $image = null;
+        if (isset($_FILES['blog_image_cropped']) && $_FILES['blog_image_cropped']['error'] == 0) {
+            $fileTmp = $_FILES['blog_image_cropped']['tmp_name'];
+            $fileType = mime_content_type($fileTmp);
+            if ($fileType === 'image/jpeg') {
+                $filename = 'blog_' . $user_id . '_' . time() . '.jpg';
+                $dest = __DIR__ . '/uploads/' . $filename;
+                if (move_uploaded_file($fileTmp, $dest)) {
+                    $image = $filename;
+                }
+            }
+        }
+        // Proceed with insert
+        $stmt = $conn->prepare("INSERT INTO blog (blog_title, category, content, user_id, blog_image) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssis", $title, $category, $content, $user_id, $image);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Blog created successfully!');window.location.href = 'bakerblog.php';</script>";
+        } else {
+            echo "<script>alert('Error in creating blog!');</script>";
+        }
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_changes'])) {
+        $id = $_POST['blog_id'];
+        $updated_name = $_POST['blog_title'];
+        $updated_category = $_POST['category'];
+        $updated_content = $_POST['content'];
+        $new_image = null;
+        $remove_image = isset($_POST['remove_blog_image']) && $_POST['remove_blog_image'] === '1';
+
+        // Handle new image upload
+        if (isset($_FILES['blog_image_cropped']) && $_FILES['blog_image_cropped']['error'] == 0) {
+            $fileTmp = $_FILES['blog_image_cropped']['tmp_name'];
+            $fileType = mime_content_type($fileTmp);
+            if ($fileType === 'image/jpeg') {
+                $filename = 'blog_' . $user_id . '_' . time() . '.jpg';
+                $dest = __DIR__ . '/uploads/' . $filename;
+                if (move_uploaded_file($fileTmp, $dest)) {
+                    $new_image = $filename;
+                }
+            }
+        }
+
+        // If remove image or new image, delete old image file
+        if ($remove_image || $new_image) {
+            $imgStmt = $conn->prepare("SELECT image FROM blog WHERE blog_id = ?");
+            $imgStmt->bind_param("i", $id);
+            $imgStmt->execute();
+            $imgResult = $imgStmt->get_result();
+            if ($imgResult->num_rows > 0) {
+                $row = $imgResult->fetch_assoc();
+                if (!empty($row['image'])) {
+                    $imgPath = __DIR__ . '/uploads/' . $row['image'];
+                    if (file_exists($imgPath)) {
+                        unlink($imgPath);
+                    }
+                }
+            }
+        }
+
+        if ($remove_image) {
+            // Remove image from DB
+            $stmt = $conn->prepare("UPDATE blog SET title=?, category=?, content=?, image=NULL WHERE blog_id=? ");
+            $stmt->bind_param("sssi", $updated_name, $updated_category, $updated_content, $id);
+        } else if ($new_image) {
+            // Update with new image
+            $stmt = $conn->prepare("UPDATE blog SET title=?, category=?, content=?, image=? WHERE blog_id=? ");
+            $stmt->bind_param("ssssi", $updated_name, $updated_category, $updated_content, $new_image, $id);
+        } else {
+            // No image change
+            $stmt = $conn->prepare("UPDATE blog SET title=?, category=?, content=? WHERE blog_id=? ");
+            $stmt->bind_param("sssi", $updated_name, $updated_category, $updated_content, $id);
+        }
+        if ($stmt->execute()) {
+            echo "<script>alert('Blog updated successfully.'); window.location.href = 'bakerblog.php';</script>";
+        } else {
+            echo "<script>alert('Update failed.');</script>";
+        }
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_blog'])) {
+        $blogId = $_POST['delete_blog_id'];
+        // Remove blog image from uploads if exists
+        $imgStmt = $conn->prepare("SELECT image FROM blog WHERE blog_id = ?");
+        $imgStmt->bind_param("i", $blogId);
+        $imgStmt->execute();
+        $imgResult = $imgStmt->get_result();
+        if ($imgResult->num_rows > 0) {
+            $row = $imgResult->fetch_assoc();
+            if (!empty($row['image'])) {
+                $imgPath = __DIR__ . '/uploads/' . $row['image'];
+                if (file_exists($imgPath)) {
+                    unlink($imgPath);
+                }
+            }
+        }
+        $stmt = $conn->prepare("DELETE FROM blog WHERE blog_id = ?");
+        $stmt->bind_param("i", $blogId);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Blog deleted successfully!'); window.location.href = window.location.href;</script>";
+        } else {
+            echo "<script>alert('Error in deleting blog!');</script>";
+        }
+    }
+
+    ?>
+    <!-- Cropper.js JS for blog image upload -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="image-cropper.js"></script>
+    <script src="edit-cropper.js"></script>
 </body>
 
 </html>

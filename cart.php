@@ -262,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                 </div> -->
                 
                 <div class="sub-total">
-                  <strong style="color: #00a43cff">Sub Total:
+                  <strong style="color: #006c4a">Sub Total:
                     ₹<?= number_format($baker_total, 2) ?></strong>
                 </div>
 
@@ -288,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
                   </div>
                   <div class="form-group">
                     <label class="form-label">Phone
-                      <small><a href="customerprofile.php">(Change phone number?)</a></small>
+                      <small style="color: #6b7280">(<a style="color: #6b7280" href="customerprofile.php">Change phone number?</a>)</small>
                     </label>
                     <input type="tel" name="phone" class="form-input" required readonly
                       value="<?= htmlspecialchars($_SESSION['phone']) ?>">

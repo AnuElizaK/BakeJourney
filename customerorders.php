@@ -333,7 +333,7 @@ while ($row = $result->fetch_assoc()) {
     <main class="container">
         <!-- Page Header -->
         <h1 class="page-title">My Orders</h1>
-        <p class="page-subtitle">Track your baking orders and manage your purchases</p>
+        <p class="page-subtitle">Track your orders and manage your purchases</p>
 
         <!-- Orders Overview -->
         <section class="orders-overview">
@@ -371,7 +371,7 @@ while ($row = $result->fetch_assoc()) {
 
             <?php if (empty($orders)): ?>
                 <div class="no-orders">
-                    <p>🛍️ You have no orders yet. Start shopping now!</p>
+                    <p>You have no orders yet. Start shopping now!</p>
                     <a href="products.php" class="btn btn-primary">Shop Now</a>
                 </div>
             <?php else: ?>

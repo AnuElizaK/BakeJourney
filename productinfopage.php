@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'db.php';
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer' && $_SESSION['role'] !== 'baker') {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
 }
@@ -147,7 +147,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 }
 
 // Function to generate star HTML
-function generateStars($rating, $maxStars = 5) {
+function generateStars($rating, $maxStars = 5)
+{
     $stars = '';
     for ($i = 1; $i <= $maxStars; $i++) {
         $stars .= ($i <= $rating) ? '★' : '☆';
@@ -156,14 +157,20 @@ function generateStars($rating, $maxStars = 5) {
 }
 
 // Function to format relative time
-function timeAgo($datetime) {
+function timeAgo($datetime)
+{
     $time = time() - strtotime($datetime);
 
-    if ($time < 60) return 'just now';
-    if ($time < 3600) return floor($time / 60) . ' minutes ago';
-    if ($time < 86400) return floor($time / 3600) . ' hours ago';
-    if ($time < 2592000) return floor($time / 86400) . ' days ago';
-    if ($time < 31104000) return floor($time / 2592000) . ' months ago';
+    if ($time < 60)
+        return 'just now';
+    if ($time < 3600)
+        return floor($time / 60) . ' minutes ago';
+    if ($time < 86400)
+        return floor($time / 3600) . ' hours ago';
+    if ($time < 2592000)
+        return floor($time / 86400) . ' days ago';
+    if ($time < 31104000)
+        return floor($time / 2592000) . ' months ago';
     return floor($time / 31104000) . ' years ago';
 }
 ?>
@@ -176,11 +183,17 @@ function timeAgo($datetime) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($product['name']); ?> - BakeJourney</title>
     <link rel="stylesheet" href="productinfopage.css">
-    
+
 </head>
 
 <!-- Sticky Navigation Bar -->
-<?php include 'custnavbar.php'; ?>
+<?php
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
+    include 'custnavbar.php';
+} else {
+    include 'bakernavbar.php';
+}
+?>
 
 <body>
     <div class="container">
@@ -188,15 +201,25 @@ function timeAgo($datetime) {
         <div class="product-card">
             <div class="product-header">
                 <div class="product-image-container">
-                   
                     <img src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
                         alt="<?php echo htmlspecialchars($product['name']); ?>" class="product-image">
-                    
+                    <div class="meta-item">
+                        <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>"
+                            data-product-id="<?= $product['product_id'] ?>">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            <div class="like-count"><?= $product['like_count'] ?></div>
+
+                        </button>
+                    </div>
                 </div>
 
                 <div class="product-info">
                     <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
-                    <div class="product-category"><?php echo htmlspecialchars('Category • ' . $product['category']); ?></div>
+                    <div class="product-category"><?php echo htmlspecialchars('Category • ' . $product['category']); ?>
+                    </div>
 
                     <div class="product-meta">
                         <div class="meta-item">
@@ -211,22 +234,12 @@ function timeAgo($datetime) {
                             <div class="meta-value"><?php echo htmlspecialchars($product['weight']); ?></div>
                             <div class="meta-label">Weight</div>
                         </div>
-                        <div class="meta-item"> 
-                            <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>" data-product-id="<?= $product['product_id'] ?>">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        
-                        <div class="like-count"><?= $product['like_count'] ?></div>
-                       
-                    </button>
-                </div>
                     </div>
 
                     <div class="rating">
                         <div class="stars"><?php echo generateStars(round($avg_rating)); ?></div>
-                        <span class="rating-text"><?php echo $avg_rating; ?> • <?php echo $total_reviews; ?> reviews</span>
+                        <span class="rating-text"><?php echo $avg_rating; ?> • <?php echo $total_reviews; ?>
+                            reviews</span>
                     </div>
 
                     <div class="baker-info">
@@ -323,7 +336,8 @@ function timeAgo($datetime) {
                             <div class="star-rating">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
                                     <label>
-                                        <input type="radio" name="rating" value="<?php echo $i; ?>" style="display:none;" required>
+                                        <input type="radio" name="rating" value="<?php echo $i; ?>" style="display:none;"
+                                            required>
                                         <span class="star">★</span>
                                     </label>
                                 <?php endfor; ?>
@@ -460,19 +474,19 @@ function timeAgo($datetime) {
                     },
                     body: `action=toggle_like&product_id=${productId}`
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        this.classList.toggle('liked', data.liked);
-                        likeCountSpan.textContent = data.like_count;
-                    } else {
-                        alert('Error: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while processing your request.');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.classList.toggle('liked', data.liked);
+                            likeCountSpan.textContent = data.like_count;
+                        } else {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while processing your request.');
+                    });
             });
 
             // Chat functionality

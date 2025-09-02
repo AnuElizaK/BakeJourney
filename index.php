@@ -25,7 +25,18 @@ $productStmt = $conn->prepare("
 $productStmt->execute();
 $productResult = $productStmt->get_result();
 
+// Fetch blog posts
+$blogStmt = $conn->prepare("
+  SELECT bg.blog_id, bg.blog_title, bg.content, bg.blog_image, bg.category, u.full_name
+  FROM blog bg
+  JOIN users u ON bg.user_id = u.user_id
+  ORDER BY RAND()
+  LIMIT 3
+");
+$blogStmt->execute();
+$blogResult = $blogStmt->get_result();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,6 +72,7 @@ $productResult = $productStmt->get_result();
           <a href="#featured" class="nav-link">Menu</a>
           <a href="#about" class="nav-link">About</a>
           <a href="#services" class="nav-link">Services</a>
+          <a href="#blog" class="nav-link">Blog</a>
           <a href="#contact" class="nav-link">Contact Us</a>
           <a href="bakersignup.php?role=baker" class="nav-link nav-cta">Join as Baker</a>
           <a href="login.php" class="nav-link nav-cta">Login or Sign Up</a>
@@ -152,7 +164,6 @@ $productResult = $productStmt->get_result();
         View All Bakers →
       </h4>
     </div>
-
   </section>
 
   <!-- Sign Up CTA Section -->
@@ -248,6 +259,11 @@ $productResult = $productStmt->get_result();
           </div>
         <?php endwhile; ?>
       </div>
+    </div>
+    <div>
+      <h4 class="btn-primary more" onclick="window.location.href='login.php'">
+        Explore All Products →
+      </h4>
     </div>
   </section>
 
@@ -374,6 +390,105 @@ $productResult = $productStmt->get_result();
     </div>
   </section>
 
+  <section class="blog" id="blog">
+    <div class="container">
+      <div class="section-header">
+        <h2>Community Blog</h2>
+        <p>Stay updated with the latest trends, tips, and stories from our baking community.</p>
+      </div>
+
+      <div class="blog-grid">
+        <?php while ($blog = $blogResult->fetch_assoc()): ?>
+          <article class="blog-post" data-category="announcements">
+            <div class="post-image">
+              <div class="post-image">
+                <img
+                  src="<?= !empty($blog['blog_image']) ? 'uploads/' . htmlspecialchars($blog['blog_image']) : 'media/pastry.png' ?>"
+                  alt="<?= htmlspecialchars($blog['blog_title']) ?>">
+              </div>
+            </div>
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="category-badge <?= strtolower($blog['category']) ?>"><?= htmlspecialchars($blog['category']) ?></span>
+                <span class="post-author">
+                  <p class="author" onclick="window.location.href='login.php'" title="Visit the author">
+                    By <?= htmlspecialchars($blog['full_name']) ?>
+                  </p>
+                </span>
+              </div>
+              <h2 class="post-title"><?= htmlspecialchars($blog['blog_title']) ?></h2>
+              <p class="post-excerpt">
+                <?php
+                $content = strip_tags($blog['content']);
+                $words = explode(' ', $content);
+                $max_words = 20;
+                if (count($words) > $max_words) {
+                  $excerpt = implode(' ', array_slice($words, 0, $max_words)) . '...';
+                } else {
+                  $excerpt = $content;
+                }
+                echo htmlspecialchars($excerpt);
+                ?>
+              </p>
+              <div class="post-actions">
+                <div class="action-group">
+                  <button class="action-btn like-btn" onclick="window.location.href='login.php'" title="Log in to like">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span class="like-count">24</span>
+                  </button>
+
+                  <button class="action-btn comment-btn" onclick="window.location.href='login.php'"
+                    title="Log in to comment">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <span>8</span>
+                  </button>
+
+                  <button class="action-btn share-btn" onclick="sharePost(this)">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2" />
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2" />
+                      <circle cx="6" cy="12" r="3" fill="currentColor" />
+                      <circle cx="18" cy="6" r="3" fill="currentColor" />
+                      <circle cx="18" cy="18" r="3" fill="currentColor" />
+                    </svg>
+                    <span>Share</span>
+                  </button>
+                </div>
+                <button class="read-more-btn" onclick="window.location.href='login.php'" title="Log in to read more">Read
+                  More</button>
+              </div>
+            </div>
+            <div class="comment-section">
+              <div class="comment">
+                <div class="comment-author">Sarah B.</div>
+                <div class="comment-text">So excited for the new messaging feature! This will help me connect better with
+                  my customers.</div>
+              </div>
+              <div class="comment">
+                <div class="comment-author">Mike's Artisan Breads</div>
+                <div class="comment-text">Can't wait to try the order tracking improvements!</div>
+              </div>
+              <div class="comment-form">
+                <input type="text" class="comment-input" placeholder="Add a comment...">
+                <button class="comment-submit">Post</button>
+              </div>
+            </div>
+          </article>
+        <?php endwhile; ?>
+      </div>
+      <div>
+        <h4 class="btn-primary more" onclick="window.location.href='login.php'">
+          Discover More →
+        </h4>
+      </div>
+  </section>
+
   <!-- Contact Section -->
   <section class="contact" id="contact">
     <div class="container">
@@ -477,7 +592,8 @@ $productResult = $productStmt->get_result();
           <h3 class="attributions">Attributions</h3>
           <ul>
             <li>Icons by <a href="https://icons8.com">Icons8</a> & <a href="https://www.flaticon.com/">Flaticon</a></li>
-            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a></li>
+            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a>
+            </li>
             <li>Fonts by <a href="https://fonts.google.com/">Google Fonts</a></li>
             <li>Illustrations by <a href="https://storyset.com/">Storyset</a></li>
             <li>Branding font (Puanto) by <a href="https://creativemarket.com/pasha.larin">Larin Type Co.</a></li>
@@ -531,7 +647,7 @@ $productResult = $productStmt->get_result();
     });
 
     // Highlight nav link for section in view on scroll
-    const sectionIds = ['home', 'featured', 'about', 'services', 'contact'];
+    const sectionIds = ['home', 'featured', 'about', 'services', 'blog', 'contact'];
     const navLinks = sectionIds.map(id => document.querySelector(`.nav-link[href="#${id}"]`));
     const sections = sectionIds.map(id => document.getElementById(id));
 
@@ -555,6 +671,26 @@ $productResult = $productStmt->get_result();
       event.preventDefault();
       alert("Thank you for your message! We'll get back to you soon.");
       event.target.reset();
+    }
+
+    // Blog post share functionality
+    function sharePost(btn) {
+      const post = btn.closest('.blog-post');
+      const title = post.querySelector('.post-title').textContent;
+
+      if (navigator.share) {
+        navigator.share({
+          title: title,
+          text: 'Check out this blog post from Sweet Spot Bakery',
+          url: window.location.href
+        });
+      } else {
+        // Fallback - copy to clipboard
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+          alert('Link copied to clipboard!');
+        });
+      }
     }
 
   </script>
