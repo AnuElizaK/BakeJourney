@@ -27,6 +27,7 @@ if ($result->num_rows > 0) {
     $product_ids = array_column($products, 'product_id');
 
     $all_reviews = [];  // array to store reviews for each product
+    $all_like_counts = []; // Array to store like counts for each product
 
     foreach ($product_ids as $pid) {
         $reviewstmt = $conn->prepare(
@@ -39,13 +40,74 @@ if ($result->num_rows > 0) {
         $reviewstmt->bind_param("i", $pid);
         $reviewstmt->execute();
         $reviews = $reviewstmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
         $all_reviews[$pid] = $reviews; // store reviews under that product_id
+
+        // Fetch like count for the product
+        $likestmt = $conn->prepare("SELECT COUNT(*) as like_count FROM product_likes WHERE product_id = ?");
+        $likestmt->bind_param("i", $pid);
+        $likestmt->execute();
+        $like_result = $likestmt->get_result()->fetch_assoc();
+        $all_like_counts[$pid] = $like_result['like_count'];
+
+        // check if this user has already liked this product
+        $user_like_stmt = $conn->prepare("SELECT COUNT(*) as user_liked FROM product_likes WHERE product_id = ? AND customer_id = ?");
+        $user_like_stmt->bind_param("ii", $pid, $user_id);
+        $user_like_stmt->execute();
+        $user_like_result = $user_like_stmt->get_result()->fetch_assoc();
+        $all_user_likes[$pid] = $user_like_result['user_liked'] > 0;
     }
 
 } else {
     echo "Baker not found.";
 }
+
+// Handle like/unlike action
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['action'] === 'toggle_like') {
+    header('Content-Type: application/json');
+
+    $product_id = intval($_POST['product_id']);
+
+    try {
+        // Check if user already liked this product
+        $check_stmt = $conn->prepare("SELECT like_id FROM product_likes WHERE product_id = ? AND customer_id = ?");
+        $check_stmt->bind_param("ii", $product_id, $user_id);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+
+        if ($check_result->num_rows > 0) {
+            // Unlike - remove the like
+            $delete_stmt = $conn->prepare("DELETE FROM product_likes WHERE product_id = ? AND customer_id = ?");
+            $delete_stmt->bind_param("ii", $product_id, $user_id);
+            $delete_stmt->execute();
+            $liked = false;
+        } else {
+            // Like - add the like
+            $insert_stmt = $conn->prepare("INSERT INTO product_likes (product_id, customer_id) VALUES (?, ?)");
+            $insert_stmt->bind_param("ii", $product_id, $user_id);
+            $insert_stmt->execute();
+            $liked = true;
+        }
+
+        // Get updated like count
+        $count_stmt = $conn->prepare("SELECT COUNT(*) as like_count FROM product_likes WHERE product_id = ?");
+        $count_stmt->bind_param("i", $product_id);
+        $count_stmt->execute();
+        $count_result = $count_stmt->get_result();
+        $like_count = $count_result->fetch_assoc()['like_count'];
+
+        echo json_encode([
+            'success' => true,
+            'liked' => $liked,
+            'like_count' => $like_count
+        ]);
+        exit();
+
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => 'Database error']);
+        exit();
+    }
+}
+
 
 // --- Product Image Remove (AJAX, for cancel/remove only) ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']) && !isset($_POST['save_changes'])) {
@@ -59,6 +121,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
     exit;
 }
 
+// Function to format relative time
+function timeAgo($datetime)
+{
+    $time = time() - strtotime($datetime);
+
+    if ($time < 60)
+        return 'just now';
+    if ($time < 3600)
+        return floor($time / 60) . 'm';
+    if ($time < 86400)
+        return floor($time / 3600) . 'h';
+    if ($time < 2592000)
+        return floor($time / 86400) . 'd';
+    if ($time < 31104000)
+        return floor($time / 2592000) . 'm';
+    return floor($time / 31104000) . 'y';
+}
 
 
 ?>
@@ -155,15 +234,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                         <p class="product-description"><?php echo htmlspecialchars($product['description']); ?></p>
 
 
-
+                        <!-- like button -->
                         <div class="engagement-actions">
                             <div class="social-actions">
-                                <button class="social-btn like-btn">
+                                <?php $is_liked = $all_user_likes[$product['product_id']] ?? false; ?>
+                                <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>"
+                                    data-product-id="<?= $product['product_id'] ?>">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                     </svg>
-                                    <span class="like-count">24</span>
+                                    <span class="like-count"><?= $all_like_counts[$product['product_id']] ?></span>
                                 </button>
 
                                 <!-- comment section -->
@@ -186,8 +267,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
                                         <div class="comment">
                                             <span
                                                 class="comment-author"><?php echo htmlspecialchars($review['full_name']); ?></span>
+                                            <small class="comment-date"><?php echo timeAgo($review['review_date']); ?></small>
+                                            <br />
                                             <span class="comment-text"><?php echo htmlspecialchars($review['comments']); ?></span>
-                                           
+                                            <span
+                                                class="stars"><?= str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']) ?></span>
+
+
                                         </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
@@ -436,39 +522,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['remove_product_image']
             }
         });
 
-        // Social Functions
-        function toggleLike(button, productId) {
-            const likeIcon = button.querySelector('svg');
-            const likeCount = button.querySelector('.like-count');
-            const isLiked = button.classList.contains('liked');
+        // like Functions
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.like-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const productId = this.dataset.productId;
+                    const likeCountSpan = this.querySelector('.like-count');
 
-            if (isLiked) {
-                button.classList.remove('liked');
-                likeIcon.setAttribute('fill', 'none');
-                likeCount.textContent = parseInt(likeCount.textContent) - 1;
-            } else {
-                button.classList.add('liked');
-                likeIcon.setAttribute('fill', 'currentColor');
-                likeCount.textContent = parseInt(likeCount.textContent) + 1;
-                button.classList.add('heart-animation');
-                setTimeout(() => button.classList.remove('heart-animation'), 300);
-            }
-        }
+                    fetch('', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `action=toggle_like&product_id=${productId}`
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                this.classList.toggle('liked', data.liked);
+                                likeCountSpan.textContent = data.like_count;
+                                if (data.liked) {
+                                    this.classList.add('heart-animation');
+                                    setTimeout(() => this.classList.remove('heart-animation'), 300);
+                                }
+                            } else {
+                                alert('Error: ' + data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while processing your request.');
+                        });
+                });
+            });
+        });
 
-        function toggleSave(button, productId) {
-            const saveIcon = button.querySelector('svg');
-            const isSaved = button.classList.contains('saved');
-
-            if (isSaved) {
-                button.classList.remove('saved');
-                saveIcon.setAttribute('fill', 'none');
-            } else {
-                button.classList.add('saved');
-                saveIcon.setAttribute('fill', 'currentColor');
-                button.classList.add('save-animation');
-                setTimeout(() => button.classList.remove('save-animation'), 300);
-            }
-        }
 
         function togglecomment(productId) {
             const commentSection = document.getElementById(`comment-${productId}`);
