@@ -745,3 +745,29 @@ h1, h2, h3 {
         text-align: center;
     }
 }
+
+/* delete button */
+.delete-btn-modern {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 50px;
+  color: #ef4444;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn-modern:hover {
+  background: #fef2f2;
+  border-color: #ef4444;
+}
+
+.delete-btn-modern:active {
+  transform: translateY(0);
+}

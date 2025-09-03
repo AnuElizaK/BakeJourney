@@ -139,7 +139,15 @@ function timeAgo($datetime)
     return floor($time / 31104000) . 'y';
 }
 
-
+//delete a review by a user
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
+    $review_id = intval($_POST['review_id']);
+    $stmt = $conn->prepare("DELETE FROM reviews WHERE review_id = ? ");
+    $stmt->bind_param("i", $review_id);
+    $stmt->execute();
+    header("Location: bakerproductmngmt.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -265,6 +273,23 @@ function timeAgo($datetime)
                                 <?php if (!empty($reviews)): ?>
                                     <?php foreach ($reviews as $review): ?>
                                         <div class="comment">
+
+                                            <form method="post" style="margin-top: 12px;">
+                                                <input type="hidden" name="review_id" value="<?= $review['review_id'] ?>">
+                                                <button type="submit" name="delete_comment" value="delete_comment"
+                                                    class="delete-btn-modern"
+                                                    onclick="return confirm('Are you sure you want to delete this comment?');">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2">
+                                                        <polyline points="3,6 5,6 21,6"></polyline>
+                                                        <path
+                                                            d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
+                                                        </path>
+                                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                    </svg>
+                                                </button>
+                                            </form>
                                             <span
                                                 class="comment-author"><?php echo htmlspecialchars($review['full_name']); ?></span>
                                             <small class="comment-date"><?php echo timeAgo($review['review_date']); ?></small>

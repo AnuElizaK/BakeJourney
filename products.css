@@ -212,6 +212,22 @@ h2 {
     transform: translateY(-2px);
 }
 
+.filter-btn.l-btn {
+    background: #f8c8dc;   /* pastel pink */
+     color: #6b7280;
+}
+
+.filter-btn.l-btn:hover:not(.active) {
+    background: #f4b6d1;   /* slightly darker pastel pink */
+    color: #484c54;
+    transform: translateY(-2px);
+}
+
+.filter-btn.l-btn.active {
+    background: linear-gradient(135deg, #f9a8d4, #f472b6); /* gradient pink when active */
+    color: white;
+}
+
 .products {
     padding: 50px 0;
     background: linear-gradient(#fff1bb, #ffffff);

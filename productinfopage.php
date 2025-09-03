@@ -173,6 +173,16 @@ function timeAgo($datetime)
         return floor($time / 2592000) . ' months ago';
     return floor($time / 31104000) . ' years ago';
 }
+// to delete a comment by the user
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
+    $review_id = intval($_POST['review_id']);
+    $stmt = $conn->prepare("DELETE FROM reviews WHERE review_id = ? AND customer_id = ?");
+    $stmt->bind_param("ii", $review_id, $user_id);
+    $stmt->execute();
+    header("Location: productinfopage.php?product_id=" . $product_id . "#reviews");
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -298,6 +308,25 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <?php if ($reviews->num_rows > 0): ?>
                 <?php while ($rev = $reviews->fetch_assoc()): ?>
                     <div class="review-item">
+
+                    <!-- to delete a comment by the user -->
+                   <?php $logged_in_user_id = $_SESSION['user_id'];
+                   if ($rev['customer_id'] == $logged_in_user_id):?>                        
+                        <form  method="post" style="margin-top: 12px;">
+                          <input type="hidden" name="review_id" value="<?= $rev['review_id'] ?>">
+                          <button type="submit" name="delete_comment" value="delete_comment" class="delete-btn-modern" onclick="return confirm('Are you sure you want to delete this comment?');">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2">
+                              <polyline points="3,6 5,6 21,6"></polyline>
+                              <path d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
+                              </path>
+                              <line x1="10" y1="11" x2="10" y2="17"></line>
+                              <line x1="14" y1="11" x2="14" y2="17"></line>
+                            </svg>                           
+                          </button>
+                        </form>
+                         <?php endif; ?>
+
                         <div class="review-header">
                             <div class="reviewer-info">
                                 <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/baker.png' ?>"
@@ -315,6 +344,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <?php echo nl2br(htmlspecialchars($rev['comments'])); ?>
                         </div>
                     </div>
+
+                    
                 <?php endwhile; ?>
             <?php else: ?>
                 <p>No reviews yet. Be the first to leave one!</p>
@@ -340,7 +371,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                                             required>
                                         <span class="star">★</span>
                                     </label>
-                                <?php endfor; ?>
+                                <?php endfor; ?>    
                             </div>
                             <button type="submit" name="submit_review" class="post-btn">Post</button>
                         </div>

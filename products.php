@@ -79,11 +79,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
     echo json_encode([
       'success' => true,
       'liked' => $liked,
-
     ]);
     exit();
-
-
   } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Database error']);
     exit();
@@ -131,6 +128,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           <button onclick="filterProducts('candy')" class="filter-btn">Candy</button>
           <button onclick="filterProducts('pudding')" class="filter-btn">Pudding</button>
           <button onclick="filterProducts('pies tarts')" class="filter-btn">Pies & Tarts</button>
+          <button onclick="filterProducts('liked')" class="filter-btn l-btn">Liked Products</button>
         </div>
       </div>
 
@@ -141,8 +139,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           $is_liked = in_array($product['product_id'], $liked_products);
           ?>
           <div class="product-card"
-            onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'"
-            data-category="<?= htmlspecialchars($product['category']) ?>">
+               data-category="<?= htmlspecialchars($product['category']) ?>"
+               data-liked="<?= $is_liked ? 'true' : 'false' ?>"
+               onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'">
             <div class="product-image">
               <img
                 src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
@@ -152,25 +151,23 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
                 <!-- Show "Added to Cart" button if product is in cart -->
                 <button class="cart-button added" disabled>
                   <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">
-                  Added to
-                  Cart
+                  Added to Cart
                 </button>
               <?php else: ?>
                 <form method="POST" action="cart.php">
                   <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
                   <input type="hidden" name="quantity" value="1">
                   <button type="submit" name="add_to_cart" class="cart-button">
-                    <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to
-                    Cart
+                    <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to Cart
                   </button>
                 </form>
               <?php endif; ?>
 
               <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>"
-                data-product-id="<?= $product['product_id'] ?>">
+                      data-product-id="<?= $product['product_id'] ?>">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </button>
             </div>
@@ -179,8 +176,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
                 <h3><?= htmlspecialchars($product['name']) ?> <br>
                   <small style="font-size:small;">By
                     <a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
-                      style="color:orange; text-decoration:none;">
-                      <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?></a>
+                       style="color:orange; text-decoration:none;">
+                      <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?>
+                    </a>
                   </small>
                 </h3>
                 <span class="product-price">₹<?= number_format($product['price'], 2) ?></span>
@@ -207,7 +205,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
         <?php endwhile; ?>
       </div>
       <div id="no-products-message"
-        style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+           style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
         No products found.
       </div>
     </div>
@@ -226,14 +224,17 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
       // Update active button
       buttons.forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent.toLowerCase().replace(/ & /g, ' ') === category || (category === 'all' && btn.textContent === 'All Products')) {
+        const btnText = btn.textContent.toLowerCase().replace(/ & /g, ' ');
+        if (btnText === category || (category === 'all' && btnText === 'all products') || (category === 'liked' && btnText === 'liked products')) {
           btn.classList.add('active');
         }
       });
 
-      // Products Filters
+      // Filter products
       products.forEach(product => {
-        if (category === 'all' || product.dataset.category === category) {
+        if (category === 'all' || 
+            (category === 'liked' && product.dataset.liked === 'true') ||
+            (category !== 'liked' && product.dataset.category === category)) {
           product.style.display = 'block';
           product.classList.add('fade-in');
           visibleCount++;
@@ -241,9 +242,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           product.style.display = 'none';
         }
       });
-      if (noProducts) {
-        noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
-      }
+
+      noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     // Product Search
@@ -263,9 +263,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           product.style.display = 'none';
         }
       });
-      if (noProducts) {
-        noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
-      }
+      noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
     });
 
     // ---Like Button Functionality---
@@ -273,7 +271,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
       button.addEventListener('click', function (e) {
         e.stopPropagation(); // Prevent card click from triggering
         const productId = this.dataset.productId;
-
 
         fetch('', {
           method: 'POST',
@@ -286,7 +283,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           .then(data => {
             if (data.success) {
               this.classList.toggle('liked', data.liked);
-
+              // Update data-liked attribute dynamically
+              this.closest('.product-card').dataset.liked = data.liked ? 'true' : 'false';
             } else {
               alert('Error: ' + data.error);
             }
