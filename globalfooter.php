@@ -198,7 +198,13 @@
                         <li><a href="contact.php">Contact</a></li>
                         <li><a href="sitemap.php">Sitemap</a></li>
                         <li><a href="privacypolicy.php">Privacy Policy</a></li>
-                        <li><a href="blog.php">Blog</a></li>
+                        <?php
+                        if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
+                            echo '<li><a href="blog.php">Blog</a></li>';
+                        } else {
+                            echo '<li><a href="bakerblog.php">Blog</a></li>';
+                        }
+                        ?>
                     </ul>
                 </div>
                 <div class="footer-social">

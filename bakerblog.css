@@ -165,7 +165,7 @@ h2 {
 
 .filter-btn:hover:not(.active) {
     background: #fee996;
-    color: #484c54;
+    color: #d97706;
     transform: translateY(-2px);
 }
 

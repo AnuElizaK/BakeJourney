@@ -66,6 +66,7 @@ if ($user_id) {
       font-family: 'Puanto', Roboto, sans-serif;
       text-decoration: none;
       color: #1f2a38;
+      cursor: pointer;
     }
 
     .nav-links {
@@ -308,7 +309,7 @@ if ($user_id) {
       <div class="nav-content">
         <div class="nav-brand">
           <img class="nav-logo" src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-          <span class="nav-title">BakeJourney</span>
+          <span onclick="window.location.href='bakerdashboard.php'" class="nav-title">BakeJourney</span>
         </div>
 
         <div class="nav-links">

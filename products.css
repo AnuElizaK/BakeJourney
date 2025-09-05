@@ -208,23 +208,23 @@ h2 {
 
 .filter-btn:hover:not(.active) {
     background: #fee996;
-    color: #484c54;
+    color: #d97706;
     transform: translateY(-2px);
 }
 
 .filter-btn.l-btn {
-    background: #f8c8dc;   /* pastel pink */
-     color: #6b7280;
+    background: #ff9393;  
+     color: #ffffff;
 }
 
 .filter-btn.l-btn:hover:not(.active) {
-    background: #f4b6d1;   /* slightly darker pastel pink */
-    color: #484c54;
+    background: #ffcbcb; 
+    color: #ef4444;
     transform: translateY(-2px);
 }
 
 .filter-btn.l-btn.active {
-    background: linear-gradient(135deg, #f9a8d4, #f472b6); /* gradient pink when active */
+    background: #ef4444;
     color: white;
 }
 

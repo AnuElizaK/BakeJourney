@@ -14,63 +14,65 @@ body {
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-h1, h2, h3 {
-  font-family: 'Puanto', Roboto, sans-serif;
+h1,
+h2,
+h3 {
+    font-family: 'Puanto', Roboto, sans-serif;
 }
 
 /* Header Styles */
 .header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 16px 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 16px 0;
 }
 
 .header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .brand-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: 1px solid #f59e0b;
-  background: #fef3c7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid #f59e0b;
+    background: #fef3c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .brand-title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #1f2a38;
-  margin-bottom: 4px;
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #1f2a38;
+    margin-bottom: 4px;
 }
 
 .brand-subtitle {
-  grid-template-columns: repeat(2, auto);
-  color: #6b7280;
-  font-size: 0.875rem;
+    grid-template-columns: repeat(2, auto);
+    color: #6b7280;
+    font-size: 0.875rem;
 }
 
-.add-product-section{
+.add-product-section {
     margin-bottom: 2rem;
 }
 
@@ -89,35 +91,36 @@ h1, h2, h3 {
 }
 
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #fcd34d, #f59e0b);
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+    color: #ffffff;
+    text-decoration: none;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 8px;
 }
 
 .btn:hover {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border-color: #f59e0b;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border-color: #f59e0b;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #fcd34d, #f59e0b);
-  color: white;
-  border-color: #d97706;
+    background: linear-gradient(135deg, #fcd34d, #f59e0b);
+    color: white;
+    border-color: #d97706;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+    background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 /* Main Content */
@@ -136,12 +139,12 @@ h1, h2, h3 {
     margin-bottom: 2rem;
 }
 
-.search-input{
+.search-input {
     width: 100%;
     padding: 12px 45px;
     background: transparent url("media/search.png") no-repeat 10px center;
     border: 1.5px solid #d1d5db;
-    border-radius: 0.65rem;
+    border-radius: 50px;
     font-size: 1rem;
     outline: none;
     transition: border-color 0.3s ease;
@@ -172,7 +175,7 @@ h1, h2, h3 {
     padding: 12px 15px;
     border: none;
     background: #f3f4f6;
-    border-radius: 0.65rem;
+    border-radius: 50px;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -188,6 +191,8 @@ h1, h2, h3 {
 .filter-btn:hover:not(.active) {
     background: #fee996;
     color: #d97706;
+    transform: translateY(-2px);
+
 }
 
 /* Products Grid */
@@ -310,47 +315,45 @@ h1, h2, h3 {
     gap: 0.25rem;
     background: none;
     border: none;
-    color: #000000;
+    color: #1f2937;
     cursor: pointer;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     font-size: 0.875rem;
-   
 }
 
 .social-btn svg {
     width: 1.30rem;
     height: 1.30rem;
     transition: all 0.3s ease;
-    color: orange;
-    pointer-events: none; /* This prevents SVG from interfering with click events */
+    pointer-events: none;
+    /* prevents SVG from interfering with click events */
 }
-
-.like-btn svg {
-      width: 20px;
-      height: 20px;
-      transition: all 0.3s ease;
-    }
-
 
 .like-btn.liked svg {
-            fill: #ef4444;
-            stroke: #ef4444;
-        }
-.like-btn:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: scale(1.1);
+    fill: #ef4444;
+    stroke: #ef4444;
 }
 
+.like-btn:hover {
+    color: #ef4444;
+}
 
 @keyframes heart-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .comment-btn:hover {
     color: #2e65bd;
-    transform: scale(1.1);
 }
 
 
@@ -366,7 +369,6 @@ h1, h2, h3 {
     transition: all 0.3s ease;
 }
 
-
 .comment-section.hidden {
     display: none !important;
 }
@@ -374,6 +376,7 @@ h1, h2, h3 {
 .comment-section.fade-in {
     animation: fadeIn 0.3s ease-in-out;
 }
+
 .comment-list {
     max-height: 200px;
     overflow-y: auto;
@@ -381,13 +384,14 @@ h1, h2, h3 {
 }
 
 @keyframes fadeIn {
-    from { 
-        opacity: 0; 
-        transform: translateY(-10px); 
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -418,19 +422,17 @@ h1, h2, h3 {
     margin-left: 0.5rem;
 }
 
-
 .comment-form {
     display: flex;
     gap: 0.5rem;
     margin-top: 1rem;
-    
 }
 
 .comment-input {
     flex: 1;
     padding: 0.5rem;
     border: 1px solid #d1d5db;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 0.875rem;
 }
 
@@ -445,7 +447,9 @@ h1, h2, h3 {
     color: white;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 50px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -514,11 +518,12 @@ h1, h2, h3 {
     font-size: 1.5rem;
     cursor: pointer;
     color: #6b7280;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .close-btn:hover {
     color: #1f2a38;
+    transform: rotate(90deg);
 }
 
 .modal-form {
@@ -672,9 +677,17 @@ h1, h2, h3 {
 }
 
 @keyframes heartBeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .save-animation {
@@ -682,9 +695,17 @@ h1, h2, h3 {
 }
 
 @keyframes saveEffect {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .fade-in {
@@ -692,8 +713,15 @@ h1, h2, h3 {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .fade-out {
@@ -701,8 +729,15 @@ h1, h2, h3 {
 }
 
 @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
 }
 
 /* Responsive Design */
@@ -748,26 +783,26 @@ h1, h2, h3 {
 
 /* delete button */
 .delete-btn-modern {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: transparent;
-  border: 1px solid #d1d5db;
-  border-radius: 50px;
-  color: #ef4444;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid #d1d5db;
+    border-radius: 50px;
+    color: #ef4444;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .delete-btn-modern:hover {
-  background: #fef2f2;
-  border-color: #ef4444;
+    background: #fef2f2;
+    border-color: #ef4444;
 }
 
 .delete-btn-modern:active {
-  transform: translateY(0);
+    transform: translateY(0);
 }

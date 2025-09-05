@@ -187,13 +187,14 @@ $comment_result = $comment_stmt->get_result();
                     <?php
                     $is_liked = in_array($blog['blog_id'], $liked_blog);
                     // Fetch comments for this blog post
-                    $comment_stmt = $conn->prepare("
-    SELECT bc.comment_text, bc.comment_date, u.full_name
-    FROM blog_comments bc
-    JOIN users u ON bc.user_id = u.user_id
-    WHERE bc.blog_id = ?
-    ORDER BY bc.comment_date DESC
-    ");
+                    $comment_stmt = $conn->prepare(
+                        "SELECT bc.comment_text, bc.comment_date, u.full_name
+                        FROM blog_comments bc
+                        JOIN users u ON bc.user_id = u.user_id
+                        WHERE bc.blog_id = ?
+                        ORDER BY bc.comment_date DESC
+                        "
+                    );
                     $comment_stmt->bind_param("i", $blog['blog_id']);
                     $comment_stmt->execute();
                     $comment_result = $comment_stmt->get_result();
@@ -241,7 +242,7 @@ $comment_result = $comment_stmt->get_result();
                                         <span class="like-count"><?= $blog['like_count'] ?></span>
                                     </button>
 
-                                    <button class="action-btn comment-btn" onclick="toggleComment(this)">
+                                    <button title="Read more to comment" class="action-btn comment-btn" onclick="toggleComment(this)">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -267,21 +268,6 @@ $comment_result = $comment_stmt->get_result();
                                     More</button>
                             </div>
                         </div>
-                        <div class="comment-section">
-                            <?php
-                            while ($comment = $comment_result->fetch_assoc()):
-                                ?>
-                                <div class="comment">
-                                    <div class="comment-author"><?= htmlspecialchars($comment['full_name']) ?></div>
-                                    <div class="comment-text"><?= htmlspecialchars($comment['comment_text']) ?></div>
-                                </div>
-                            <?php endwhile; ?>
-
-                            <div class="comment-form">
-                                <input type="text" class="comment-input" placeholder="Add a comment...">
-                                <button class="comment-submit" data-blog-id="<?= $blog['blog_id'] ?>">Post</button>
-                            </div>
-                        </div>
                     </article>
                 <?php endwhile; ?>
             </div>
@@ -305,8 +291,9 @@ $comment_result = $comment_stmt->get_result();
             blogs.forEach(blog => {
                 const title = blog.querySelector('.post-content h2').textContent.toLowerCase();
                 const auth = blog.querySelector('.post-content .author').textContent.toLowerCase();
+                const date = blog.querySelector('.post-date').textContent.toLowerCase();
                 const desc = blog.querySelector('.post-excerpt').textContent.toLowerCase();
-                if (title.includes(searchValue) || auth.includes(searchValue) || desc.includes(searchValue)) {
+                if (title.includes(searchValue) || auth.includes(searchValue) || date.includes(searchValue) || desc.includes(searchValue)) {
                     blog.style.display = 'block';
                     visibleCount++;
                 } else {
@@ -365,13 +352,6 @@ $comment_result = $comment_stmt->get_result();
                 .catch(error => {
                     alert('Error: Failed to connect to server');
                 });
-        }
-
-        // Comment functionality
-        function toggleComment(btn) {
-            const post = btn.closest('.blog-post');
-            const commentSection = post.querySelector('.comment-section');
-            commentSection.classList.toggle('show');
         }
 
         // Comment submission

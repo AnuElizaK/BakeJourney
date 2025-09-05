@@ -61,7 +61,7 @@ h2 {
     padding: 40px 20px;
 }
 
-.product-card {
+.blog-card {
     background: white;
     border: 2px solid #fcd34d;
     border-radius: 20px;
@@ -70,17 +70,17 @@ h2 {
     margin-bottom: 30px;
 }
 
-.product-header {
+.blog-header {
     display: flex;
     gap: 40px;
     align-items: flex-start;
 }
 
-.product-image-container {
+.blog-image-container {
     position: relative;
 }
 
-.product-image {
+.blog-image {
     width: 340px;
     height: 340px;
     border-radius: 15px;
@@ -88,29 +88,55 @@ h2 {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.product-info {
+.blog-info {
     flex: 1;
 }
 
-.product-title {
+.blog-title {
     display: inline-block;
     font-size: 36px;
-    color: #2c3e50;
+    color: #1f2a38;
     margin-bottom: 10px;
     font-weight: 700;
 }
 
-.product-category {
+.blog-category {
     color: #f59e0b;
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 20px;
     text-transform: capitalize;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    letter-spacing: 0.5px;
+    background: #d1d5db;
+    color: #6b7280;
 }
 
-.product-meta {
+.blog-category.tips {
+    background: #c8ffe5;
+    color: #006c4a;
+}
+
+.blog-category.recipes {
+    background: #fff3c3;
+    color: #d97706;
+}
+
+.blog-category.stories {
+    background: #cdecff;
+    color: #016492;
+}
+
+.blog-category.announcements {
+    background: #ffe9e9;
+    color: #ef4444;
+}
+
+.blog-meta {
     display: flex;
     gap: 40px;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -119,9 +145,8 @@ h2 {
 }
 
 .meta-value {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
-    color: #2c3e50;
 }
 
 .meta-label {
@@ -167,7 +192,9 @@ h2 {
 }
 
 .baker-details h4 {
-    color: #2c3e50;
+    font-weight: 600;
+    font-size: 18px;
+    color: #1f2a38;
     margin-bottom: 5px;
 }
 
@@ -176,7 +203,7 @@ h2 {
     font-size: 14px;
 }
 
-.product-actions {
+.blog-actions {
     display: flex;
     gap: 20px;
     align-items: center;
@@ -187,37 +214,6 @@ h2 {
     font-size: 32px;
     font-weight: 700;
     color: #f59e0b;
-}
-
-.quantity-selector {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-right: 20px;
-}
-
-.quantity-btn {
-    width: 35px;
-    height: 35px;
-    border: 2px solid #f59e0b;
-    background: white;
-    color: #f59e0b;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s;
-}
-
-.quantity-btn:hover {
-    background: #f59e0b;
-    color: white;
-}
-
-.quantity-display {
-    min-width: 40px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 16px;
 }
 
 .section-card {
@@ -231,69 +227,52 @@ h2 {
 
 .section-title {
     font-size: 24px;
-    color: #2c3e50;
+    color: #1f2a38;
     margin-bottom: 20px;
     font-weight: 600;
 }
 
-.product-description {
+.blog-content {
+    padding-top: 2rem;
     line-height: 1.8;
     color: #555;
     font-size: 16px;
 }
 
-.ingredients-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 15px;
+@media (max-width: 1177px) {
+    .blog-content {
+        padding-top: 0rem;
+    }
 }
 
-.ingredient-item {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.ingredient-name {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.ingredient-amount {
-    color: #7f8c8d;
-    font-size: 14px;
-}
-
-.reviews-header {
+.comments-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
 }
 
-.review-item {
+.comment-item {
     background: linear-gradient(135deg, #fef3c7, #f8f9fa);
     border-radius: 15px;
     padding: 1.5rem;
     margin-bottom: 1rem;
 }
 
-.review-header {
+.comment-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
 }
 
-.reviewer-info {
+.commenter-info {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.reviewer-avatar {
+.commenter-avatar {
     width: 40px;
     height: 40px;
     border: 1px solid #f59e0b;
@@ -301,42 +280,43 @@ h2 {
     object-fit: cover;
 }
 
-.reviewer-name {
+.commenter-name {
     font-weight: 600;
-    color: #2c3e50;
+    color: #1f2a38;
 }
 
-.review-date {
+.comment-date {
     color: #7f8c8d;
     font-size: 14px;
 }
 
-.review-stars {
-    color: #f59e0b;
-}
-
-.review-text {
+.comment-text {
     color: #555;
     line-height: 1.6;
 }
 
 @media (max-width: 768px) {
-    .product-header {
+    .blog-header {
         flex-direction: column;
         text-align: center;
         align-items: center;
+        gap: 20px;
     }
 
-    .product-card {
+    .blog-title {
+        font-size: 28px;
+    }
+
+    .blog-card {
         padding: 40px 20px;
     }
 
-    .product-image {
+    .blog-image {
         width: 200px;
         height: 200px;
     }
 
-    .product-meta {
+    .blog-meta {
         justify-content: center;
         gap: 10px;
     }
@@ -357,7 +337,7 @@ h2 {
         font-size: 24px;
     }
 
-    .product-actions {
+    .blog-actions {
         flex-wrap: wrap;
         justify-content: center;
     }
@@ -366,7 +346,11 @@ h2 {
         text-align: center;
     }
 
-    .reviews-header {
+    .blog-content {
+        padding-top: 0rem;
+    }
+
+    .comments-header {
         flex-direction: column;
     }
 
@@ -374,7 +358,7 @@ h2 {
         text-align: center;
     }
 
-    .review-header {
+    .comment-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
@@ -639,7 +623,7 @@ h2 {
     }
 }
 
-.product-reference {
+.blog-reference {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-left: 4px solid #f59e0b;
     padding: 12px 16px;
@@ -648,7 +632,7 @@ h2 {
     font-size: 13px;
 }
 
-.product-reference strong {
+.blog-reference strong {
     color: #f59e0b;
 }
 
@@ -727,7 +711,7 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 0.5rem;
+    padding-top: 1rem;
     border-top: 1px solid #f0f0f0;
 }
 
@@ -753,11 +737,17 @@ h2 {
     color: white;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 50px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.post-btn:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
 }
 
 /* Like Button */
@@ -809,30 +799,4 @@ h2 {
     justify-content: center;
     font-size: 0.75rem;
     font-weight: 600;
-}
-
-/* delete button */
-.delete-btn-modern {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: transparent;
-  border: 1px solid #d1d5db;
-  border-radius: 50px;
-  color: #ef4444;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.delete-btn-modern:hover {
-  background: #fef2f2;
-  border-color: #ef4444;
-}
-
-.delete-btn-modern:active {
-  transform: translateY(0);
 }

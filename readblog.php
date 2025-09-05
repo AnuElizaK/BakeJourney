@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'db.php';
-if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer') {
+if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'customer' && $_SESSION['role'] !== 'baker') {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
 }
@@ -21,90 +21,78 @@ if ($user_id) {
   $user_info = $user_info_result->fetch_assoc();
 }
 
-if (!isset($_GET['product_id'])) {
-    echo "Product not found.";
+if (!isset($_GET['blog_id'])) {
+    echo "Post not found.";
     exit;
 }
 
-// Get products in cart for this customer
-$user_id = $_SESSION['user_id'];
-$cart_stmt = $conn->prepare("SELECT product_id FROM cart WHERE user_id = ?");
-$cart_stmt->bind_param("i", $user_id);
-$cart_stmt->execute();
-$cart_result = $cart_stmt->get_result();
-
-$cart_products = [];
-while ($cart_item = $cart_result->fetch_assoc()) {
-    $cart_products[] = $cart_item['product_id'];
-}
-
-// Get liked products for this customer
-$like_stmt = $conn->prepare("SELECT product_id FROM product_likes WHERE customer_id = ?");
+// Get liked blogs for this user
+$like_stmt = $conn->prepare("SELECT blog_id FROM blog_likes WHERE user_id = ?");
 $like_stmt->bind_param("i", $user_id);
 $like_stmt->execute();
 $like_result = $like_stmt->get_result();
 
-$liked_products = [];
+$liked_blogs = [];
 while ($like_item = $like_result->fetch_assoc()) {
-    $liked_products[] = $like_item['product_id'];
+    $liked_blogs[] = $like_item['blog_id'];
 }
 
-$product_id = $_GET['product_id'];
-$sql = "SELECT p.*, b.*, u.*,
-        (SELECT COUNT(*) FROM product_likes pl WHERE pl.product_id = p.product_id) AS like_count
-        FROM products p 
-        JOIN bakers b ON p.baker_id = b.baker_id
-        JOIN users u ON b.user_id = u.user_id 
-        WHERE p.product_id = ?";
+$blog_id = $_GET['blog_id'];
+$sql = "SELECT bg.*, b.*, u.*,
+        (SELECT COUNT(*) FROM blog_likes bgl WHERE bgl.blog_id = bg.blog_id) AS like_count
+        FROM blog bg
+        JOIN bakers b ON bg.user_id = b.baker_id
+        JOIN users u ON b.user_id = u.user_id
+        WHERE bg.blog_id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $product_id);
+$stmt->bind_param("i", $blog_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    echo "Product not found.";
+    echo "Blog not found.";
     exit;
 }
 
-$product = $result->fetch_assoc();
-$is_in_cart = in_array($product['product_id'], $cart_products);
-$is_liked = in_array($product['product_id'], $liked_products);
+$blog = $result->fetch_assoc();
+$is_liked = in_array($blog['blog_id'], $liked_blogs);
 
-// Fetch all reviews for this product
-$review_stmt = $conn->prepare("
-    SELECT r.*, u.*
-    FROM reviews r
-    JOIN users u ON r.customer_id = u.user_id
-    WHERE r.product_id = ?
-    ORDER BY r.review_date DESC
+// Fetch all comments for this blog
+$comment_stmt = $conn->prepare("
+    SELECT c.*, u.*
+    FROM blog_comments c
+    JOIN users u ON c.user_id = u.user_id
+    WHERE c.blog_id = ?
+    ORDER BY c.comment_date DESC
 ");
-$review_stmt->bind_param("i", $product_id);
-$review_stmt->execute();
-$reviews = $review_stmt->get_result();
+$comment_stmt->bind_param("i", $blog_id);
+$comment_stmt->execute();
+$comments = $comment_stmt->get_result();
 
-// Get average rating + count
-$rating_stmt = $conn->prepare("
-    SELECT AVG(rating) as avg_rating, COUNT(*) as total_reviews
-    FROM reviews
-    WHERE product_id = ?
+// Get total likes and comments count
+$social_stmt = $conn->prepare("
+    SELECT COUNT(*) as total_likes, COUNT(*) as total_comments
+    FROM blog_likes bgl
+    JOIN blog_comments bc ON bgl.blog_id = bc.blog_id
+    JOIN blog bg ON bgl.blog_id = bg.blog_id || bc.blog_id
+    WHERE bgl.blog_id = ? OR bc.blog_id = ?
 ");
-$rating_stmt->bind_param("i", $product_id);
-$rating_stmt->execute();
-$rating_result = $rating_stmt->get_result()->fetch_assoc();
-$avg_rating = round($rating_result['avg_rating'], 1);
-$total_reviews = $rating_result['total_reviews'];
+$social_stmt->bind_param("ii", $blog_id, $blog_id);
+$social_stmt->execute();
+$social_result = $social_stmt->get_result()->fetch_assoc();
+$total_likes = round($social_result['total_likes'], 1);
+$total_comments = $social_result['total_comments'];
 
-// Handle review submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_review'])) {
-    $customer_id = $_SESSION['user_id'];
-    $rating = (int) $_POST['rating'];
+// Handle comments submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
+    $user_id = $_SESSION['user_id'];
     $comments = $_POST['comments'];
 
-    if ($rating >= 1 && $rating <= 5 && !empty($comments)) {
-        $stmt = $conn->prepare("INSERT INTO reviews (product_id, customer_id, rating, comments) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("iiis", $product_id, $customer_id, $rating, $comments);
+    if ($social >= 1 && $social <= 5 && !empty($comments)) {
+        $stmt = $conn->prepare("INSERT INTO blog_comments (blog_id, user_id, comment) VALUES (?, ?, ?)");
+        $stmt->bind_param("iis", $blog_id, $user_id, $comments);
         $stmt->execute();
-        header("Location: productinfopage.php?product_id=" . $product_id . "#reviews");
+        header("Location: readblog.php?blog_id=" . $blog_id . "#comments");
         exit;
     }
 }
@@ -113,32 +101,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_review'])) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
     header('Content-Type: application/json');
 
-    $product_id = intval($_POST['product_id']);
+    $blog_id = intval($_POST['blog_id']);
 
     try {
-        // Check if user already liked this product
-        $check_stmt = $conn->prepare("SELECT like_id FROM product_likes WHERE product_id = ? AND customer_id = ?");
-        $check_stmt->bind_param("ii", $product_id, $user_id);
+        // Check if user already liked this blog
+        $check_stmt = $conn->prepare("SELECT like_id FROM blog_likes WHERE blog_id = ? AND user_id = ?");
+        $check_stmt->bind_param("ii", $blog_id, $user_id);
         $check_stmt->execute();
         $check_result = $check_stmt->get_result();
 
         if ($check_result->num_rows > 0) {
             // Unlike - remove the like
-            $delete_stmt = $conn->prepare("DELETE FROM product_likes WHERE product_id = ? AND customer_id = ?");
-            $delete_stmt->bind_param("ii", $product_id, $user_id);
+            $delete_stmt = $conn->prepare("DELETE FROM blog_likes WHERE blog_id = ? AND user_id = ?");
+            $delete_stmt->bind_param("ii", $blog_id, $user_id);
             $delete_stmt->execute();
             $liked = false;
         } else {
             // Like - add the like
-            $insert_stmt = $conn->prepare("INSERT INTO product_likes (product_id, customer_id) VALUES (?, ?)");
-            $insert_stmt->bind_param("ii", $product_id, $user_id);
+            $insert_stmt = $conn->prepare("INSERT INTO blog_likes (blog_id, user_id) VALUES (?, ?)");
+            $insert_stmt->bind_param("ii", $blog_id, $user_id);
             $insert_stmt->execute();
             $liked = true;
         }
 
         // Get updated like count
-        $count_stmt = $conn->prepare("SELECT COUNT(*) as like_count FROM product_likes WHERE product_id = ?");
-        $count_stmt->bind_param("i", $product_id);
+        $count_stmt = $conn->prepare("SELECT COUNT(*) as like_count FROM blog_likes WHERE blog_id = ?");
+        $count_stmt->bind_param("i", $blog_id);
         $count_stmt->execute();
         $count_result = $count_stmt->get_result();
         $like_count = $count_result->fetch_assoc()['like_count'];
@@ -157,14 +145,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 }
 
 // Function to generate star HTML
-function generateStars($rating, $maxStars = 5)
-{
-    $stars = '';
-    for ($i = 1; $i <= $maxStars; $i++) {
-        $stars .= ($i <= $rating) ? '★' : '☆';
-    }
-    return $stars;
-}
+// function generateStars($social, $maxStars = 5)
+// {
+//     $stars = '';
+//     for ($i = 1; $i <= $maxStars; $i++) {
+//         $stars .= ($i <= $social) ? '★' : '☆';
+//     }
+//     return $stars;
+// }
 
 // Function to format relative time
 function timeAgo($datetime)
@@ -183,16 +171,6 @@ function timeAgo($datetime)
         return floor($time / 2592000) . ' months ago';
     return floor($time / 31104000) . ' years ago';
 }
-// to delete a comment by the user
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
-    $review_id = intval($_POST['review_id']);
-    $stmt = $conn->prepare("DELETE FROM reviews WHERE review_id = ? AND customer_id = ?");
-    $stmt->bind_param("ii", $review_id, $user_id);
-    $stmt->execute();
-    header("Location: productinfopage.php?product_id=" . $product_id . "#reviews");
-    exit;
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -201,8 +179,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($product['name']); ?> - BakeJourney</title>
-    <link rel="stylesheet" href="productinfopage.css">
+    <title><?php echo htmlspecialchars($blog['blog_title']); ?> | BakeJourney</title>
+    <link rel="stylesheet" href="readblog.css">
 
 </head>
 
@@ -217,153 +195,98 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
 
 <body>
     <div class="container">
-        <!-- Product Main Info -->
-        <div class="product-card">
-            <div class="product-header">
-                <div class="product-image-container">
-                    <img src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
-                        alt="<?php echo htmlspecialchars($product['name']); ?>" class="product-image">
+        <!-- Blog Main Info -->
+        <div class="blog-card">
+            <div class="blog-header">
+                <div class="blog-image-container">
+                    <img src="<?= !empty($blog['blog_image']) ? 'uploads/' . htmlspecialchars($blog['blog_image']) : 'media/pastry.png' ?>"
+                        alt="<?php echo htmlspecialchars($blog['blog_title']); ?>" class="blog-image">
                     <div class="meta-item">
                         <button class="social-btn like-btn <?= $is_liked ? 'liked' : '' ?>"
-                            data-product-id="<?= $product['product_id'] ?>">
+                            data-blog-id="<?= $blog['blog_id'] ?>">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                             </svg>
-                            <div class="like-count"><?= $product['like_count'] ?></div>
-
+                            <div class="like-count"><?= $blog['like_count'] ?></div>
                         </button>
                     </div>
                 </div>
 
-                <div class="product-info">
-                    <h1 class="product-title"><?php echo htmlspecialchars($product['name']); ?></h1>
-                    <div class="product-category"><?php echo htmlspecialchars('Category • ' . $product['category']); ?>
-                    </div>
+                <div class="blog-info">
+                    <h1 class="blog-title"><?php echo htmlspecialchars($blog['blog_title']); ?></h1>
+                    <span class="blog-category <?= strtolower($blog['category']) ?>"><?php echo htmlspecialchars('Category • ' .$blog['category']); ?>
+                    </span>
 
-                    <div class="product-meta">
+                    <div class="blog-meta">
                         <div class="meta-item">
-                            <div class="meta-value"><?php echo $total_reviews; ?></div>
-                            <div class="meta-label">Reviews</div>
+                            <div class="meta-value"><?php echo $total_comments; ?></div>
+                            <div class="meta-label">Comments</div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-value">2.5</div>
-                            <div class="meta-label">Hours Prep</div>
+                            <div class="meta-value">1 minute</div>
+                            <div class="meta-label">Read</div>
                         </div>
-                        <div class="meta-item">
-                            <div class="meta-value"><?php echo htmlspecialchars($product['weight']); ?></div>
-                            <div class="meta-label">Weight</div>
-                        </div>
-                    </div>
-
-                    <div class="rating">
-                        <div class="stars"><?php echo generateStars(round($avg_rating)); ?></div>
-                        <span class="rating-text"><?php echo $avg_rating; ?> • <?php echo $total_reviews; ?>
-                            reviews</span>
                     </div>
 
                     <div class="baker-info">
-                        <img src="<?= !empty($product['profile_image']) ? 'Uploads/' . htmlspecialchars($product['profile_image']) : 'media/baker.png' ?>"
-                            alt="<?php echo htmlspecialchars($product['full_name']); ?>" class="baker-avatar">
+                        <img src="<?= !empty($blog['profile_image']) ? 'Uploads/' . htmlspecialchars($blog['profile_image']) : 'media/baker.png' ?>"
+                            alt="<?php echo htmlspecialchars($blog['full_name']); ?>" class="baker-avatar">
                         <div class="baker-details">
-                            <h4>Made by <a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
-                                    style="color:orange; text-decoration:none;">
-                                    <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?></a></h4>
-                            <p>📍 <?php echo htmlspecialchars($product['district'] ?? 'Location not specified'); ?></p>
+                            <h4>By <a href="bakerinfopage.php?baker_id=<?= $blog['baker_id']; ?>"
+                                    style="color: #f59e0b; text-decoration: none;">
+                                    <?= htmlspecialchars($blog['full_name']) ?></a></h4>
+                            <p>📍 <?php echo htmlspecialchars($blog['district'] ?? 'Location not specified'); ?></p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="product-actions">
-                <div class="price">₹<?php echo htmlspecialchars($product['price']); ?></div>
-                <?php if ($is_in_cart): ?>
-                    <button class="btn btn-primary">Added to Cart</button>
-                <?php else: ?>
-                    <form action="cart.php" method="POST">
-                        <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
-                    </form>
-                <?php endif; ?>
-                <button onclick="messageModal()" class="btn btn-secondary">Message Baker</button>
-            </div>
-        </div>
 
-        <!-- Product Description -->
-        <div class="section-card">
-            <h2 class="section-title">Product Description</h2>
-            <div class="product-description">
-                <?php if ($product['description']): ?>
-                    <p><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
+            <div class="blog-content">
+                <?php if ($blog['content']): ?>
+                    <p><?php echo nl2br(htmlspecialchars($blog['content'])); ?></p>
                 <?php else: ?>
-                    <p>No description available</p>
+                    <p>Content not available yet.</p>
                 <?php endif; ?>
             </div>
         </div>
 
-        <!-- Customer Reviews -->
-        <div class="section-card" id="reviews">
-            <div class="reviews-header">
-                <h2 class="section-title">Customer Reviews</h2>
+        <!-- Blog Comments -->
+        <div class="section-card" id="comments">
+            <div class="comments-header">
+                <h2 class="section-title">Comments</h2>
                 <div class="rating">
-                    <div class="stars">
-                        <?php echo generateStars(round($avg_rating)); ?>
-                    </div>
                     <span class="rating-text">
-                        <?php echo $avg_rating; ?> out of 5 stars • <?php echo $total_reviews; ?> reviews
+                        <?php echo $total_likes; ?> Likes • <?php echo $total_comments; ?> Comments
                     </span>
                 </div>
             </div>
 
-            <?php if ($reviews->num_rows > 0): ?>
-                <?php while ($rev = $reviews->fetch_assoc()): ?>
-                    <div class="review-item">
-
-                    <!-- to delete a comment by the user -->
-                   <?php $logged_in_user_id = $_SESSION['user_id'];
-                   if ($rev['customer_id'] == $logged_in_user_id):?>                        
-                        <form  method="post" style="margin-top: 12px;">
-                          <input type="hidden" name="review_id" value="<?= $rev['review_id'] ?>">
-                          <button type="submit" name="delete_comment" value="delete_comment" class="delete-btn-modern" onclick="return confirm('Are you sure you want to delete this comment?');">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                              stroke-width="2">
-                              <polyline points="3,6 5,6 21,6"></polyline>
-                              <path d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
-                              </path>
-                              <line x1="10" y1="11" x2="10" y2="17"></line>
-                              <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>                           
-                          </button>
-                        </form>
-                         <?php endif; ?>
-
-                        <div class="review-header">
-                            <div class="reviewer-info">
+            <?php if ($comments->num_rows > 0): ?>
+                <?php while ($rev = $comments->fetch_assoc()): ?>
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="commenter-info">
                                 <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/baker.png' ?>"
-                                    alt="<?php echo htmlspecialchars($rev['full_name']); ?>" class="reviewer-avatar">
+                                    alt="<?php echo htmlspecialchars($rev['full_name']); ?>" class="commenter-avatar">
                                 <div>
-                                    <div class="reviewer-name"><?php echo htmlspecialchars($rev['full_name']); ?></div>
-                                    <div class="review-date"><?php echo timeAgo($rev['review_date']); ?></div>
+                                    <div class="commenter-name"><?php echo htmlspecialchars($rev['full_name']); ?></div>
+                                    <div class="comment-date"><?php echo timeAgo($rev['comment_date']); ?></div>
                                 </div>
                             </div>
-                            <div class="review-stars">
-                                <span class="stars"><?php echo generateStars($rev['rating']); ?></span>
-                            </div>
                         </div>
-                        <div class="review-text">
+                        <div class="comment-text">
                             <?php echo nl2br(htmlspecialchars($rev['comments'])); ?>
                         </div>
                     </div>
-
-                    
                 <?php endwhile; ?>
             <?php else: ?>
-                <p>No reviews yet. Be the first to leave one!</p>
+                <p>No comments yet. Be the first to leave one!</p>
             <?php endif; ?>
 
             <!-- Post comment textbox -->
-            <form method="POST" id="review-form">
-                <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
+            <form method="POST" id="comment-form">
+                <input type="hidden" name="blog_id" value="<?php echo $blog_id; ?>">
                 <input type="hidden" name="rating" id="rating-input" value="0">
                 <div class="comment-form-container">
                     <div class="comment-form">
@@ -374,16 +297,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                                 placeholder="Add a comment..." rows="1" required></textarea>
                         </div>
                         <div class="actions-section">
-                            <div class="star-rating">
-                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                    <label>
-                                        <input type="radio" name="rating" value="<?php echo $i; ?>" style="display:none;"
-                                            required>
-                                        <span class="star">★</span>
-                                    </label>
-                                <?php endfor; ?>    
-                            </div>
-                            <button type="submit" name="submit_review" class="post-btn">Post</button>
+                            <button type="submit" name="submit_comment" class="post-btn">Post</button>
                         </div>
                     </div>
                 </div>
@@ -396,12 +310,12 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
         <div class="chat-container">
             <!-- Chat Header -->
             <div class="chat-header">
-                <img src="<?= !empty($product['profile_image']) ? 'uploads/' . htmlspecialchars($product['profile_image']) : 'media/baker.png' ?>"
-                    alt="<?php echo htmlspecialchars($product['full_name']); ?>" class="baker-avatar">
+                <img src="<?= !empty($blog['profile_image']) ? 'uploads/' . htmlspecialchars($blog['profile_image']) : 'media/baker.png' ?>"
+                    alt="<?php echo htmlspecialchars($blog['full_name']); ?>" class="baker-avatar">
                 <div class="baker-chat-info">
-                    <h4 id="bakerName"><a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
+                    <h4 id="bakerName"><a href="bakerinfopage.php?baker_id=<?= $blog['baker_id']; ?>"
                             style="color:white; text-decoration:none;">
-                            <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?></a></h4>
+                            <?= htmlspecialchars($blog['brand_name'] ?: $blog['full_name']) ?></a></h4>
                     <div class="baker-status" id="bakerStatus">Online • Typically replies within minutes</div>
                 </div>
                 <button class="chat-close" onclick="closeChatModal()">&times;</button>
@@ -410,13 +324,12 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <!-- Chat Messages -->
             <div class="chat-messages" id="chatMessages">
                 <div class="message received">
-                    <div>Hi! 👋 Thanks for your interest in my products. How can I help you today?</div>
+                    <div>Hi! 👋 Thanks for your interest in my blog. How can I help you today?</div>
                     <div class="message-time">2:30 PM</div>
                 </div>
-                <div class="product-reference">
-                    <strong>Product:</strong> <span
-                        id="<?php echo $product['product_id']; ?>"><?php echo $product['name']; ?> -
-                        ₹<?php echo $product['price']; ?></span>
+                <div class="blog-reference">
+                    <strong>blog:</strong> <span id="<?php echo $blog['blog_id']; ?>"><?php echo $blog['name']; ?> -
+                        ₹<?php echo $blog['price']; ?></span>
                 </div>
             </div>
 
@@ -440,6 +353,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             </div>
         </div>
     </div>
+
+    <?php include 'globalfooter.php'; ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -484,14 +399,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             }
 
             // Form submission validation
-            document.getElementById('review-form').addEventListener('submit', function (e) {
+            document.getElementById('comment-form').addEventListener('submit', function (e) {
                 const comment = commentTextarea.value.trim();
-
-                if (currentRating === 0) {
-                    e.preventDefault();
-                    alert('Please select a rating!');
-                    return false;
-                }
 
                 if (comment === '') {
                     e.preventDefault();
@@ -505,7 +414,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             likeButton.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation(); // Prevent triggering other click events
-                const productId = this.dataset.productId;
+                const blogId = this.dataset.blogId;
                 const likeCountSpan = this.querySelector('.like-count');
 
                 fetch('', {
@@ -513,7 +422,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: `action=toggle_like&product_id=${productId}`
+                    body: `action=toggle_like&blog_id=${blogId}`
                 })
                     .then(response => response.json())
                     .then(data => {
@@ -645,7 +554,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                 if (quantity < 1) quantity = 1;
                 if (quantity > 10) quantity = 10;
                 document.getElementById('quantity').textContent = quantity;
-                const basePrice = <?php echo $product['price']; ?>;
+                const basePrice = <?php echo $blog['price']; ?>;
                 const totalPrice = basePrice * quantity;
                 document.querySelector('.price').textContent = `₹${totalPrice.toFixed(2)}`;
             }

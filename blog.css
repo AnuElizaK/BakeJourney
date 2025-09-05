@@ -111,7 +111,7 @@ h2 {
 
 .filter-btn:hover:not(.active) {
     background: #fee996;
-    color: #484c54;
+    color: #d97706;
     transform: translateY(-2px);
 }
 
@@ -366,8 +366,12 @@ h2 {
         padding: 10px;
     }
 
-    .header h1 {
+    .header h2 {
         font-size: 2rem;
+    }
+
+    .header p {
+        font-size: 1rem;
     }
 
     .blog-grid {

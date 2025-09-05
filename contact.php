@@ -53,6 +53,7 @@ header("Pragma: no-cache");
             align-items: center;
             justify-content: center;
             padding: 14px 36px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             font-size: 1.125rem;
             font-weight: 600;
             border-radius: 50px;
