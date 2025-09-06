@@ -836,3 +836,30 @@ h2 {
 .delete-btn-modern:active {
   transform: translateY(0);
 }
+
+/* cart button */
+.cart-button {
+    background: linear-gradient(135deg, #fcd34d, #d97706);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.cart-button:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.cart-button.added {
+    background: white;
+    border: 2px solid #f59e0b;
+    color: #f59e0b;
+}

@@ -212,22 +212,6 @@ h2 {
     transform: translateY(-2px);
 }
 
-.filter-btn.l-btn {
-    background: #ff9393;  
-     color: #ffffff;
-}
-
-.filter-btn.l-btn:hover:not(.active) {
-    background: #ffcbcb; 
-    color: #ef4444;
-    transform: translateY(-2px);
-}
-
-.filter-btn.l-btn.active {
-    background: #ef4444;
-    color: white;
-}
-
 .products {
     padding: 50px 0;
     background: linear-gradient(#fff1bb, #ffffff);

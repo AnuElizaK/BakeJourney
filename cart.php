@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $stmt = $conn->prepare("DELETE FROM cart WHERE cart_id = ?");
     $stmt->bind_param("i", $cart_id);
     $stmt->execute();
-    header("Location: cart.php");
+    header("Location: cart.php"."#cartcontent");
     exit;
   } else {
     $quantity = intval($_POST['quantity']);
@@ -42,10 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
   }
 }
 
-// Handle add to cart from products page
+// Handle add to cart 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
   $product_id = intval($_POST['product_id']);
   $quantity = intval($_POST['quantity']);
+  $return_to = isset($_POST['return_to']) ? $_POST['return_to'] : 'products.php';
 
   // Check if product is already in cart
   $stmt = $conn->prepare("SELECT * FROM cart WHERE user_id = ? AND product_id = ?");
@@ -66,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
     $stmt->execute();
   }
 
-  header("Location: products.php");
+  header("Location: $return_to");
   exit;
 }
 
@@ -173,11 +174,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
       <div class="order-grid">
         <!-- Product Selection -->
         <div class="content-card">
-          <div class="card-header">
+          <div class="card-header" id="cartcontent">
             <h2>Your Cart</h2>
             <p class="card-description">View your items and change their quantities</p>
           </div>
-          <div class="card-content">
+          <div class="card-content" >
             <?php if (empty($cart_items)) { ?>
               <h2 class="cart-empty-title">Oops! Your cart's feeling a little lonely.🥺</h2>
               <p class="cart-empty-message">It's currently as empty as a cookie jar after midnight. Why not sprinkle in

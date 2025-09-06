@@ -36,11 +36,9 @@ while ($like_item = $like_result->fetch_assoc()) {
   $liked_products[] = $like_item['product_id'];
 }
 
+//fetch details of all products
 $stmt = $conn->prepare("
-  SELECT *,
-  (SELECT COUNT(*) 
-          FROM product_likes pl 
-          WHERE pl.product_id = p.product_id) AS like_count
+  SELECT *
   FROM products p
   JOIN bakers b ON p.baker_id = b.baker_id
   JOIN users u ON b.user_id = u.user_id
@@ -128,7 +126,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           <button onclick="filterProducts('candy')" class="filter-btn">Candy</button>
           <button onclick="filterProducts('pudding')" class="filter-btn">Pudding</button>
           <button onclick="filterProducts('pies tarts')" class="filter-btn">Pies & Tarts</button>
-          <button onclick="filterProducts('liked')" class="filter-btn l-btn">Liked Products</button>
+
         </div>
       </div>
 
@@ -224,17 +222,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
       // Update active button
       buttons.forEach(btn => {
         btn.classList.remove('active');
-        const btnText = btn.textContent.toLowerCase().replace(/ & /g, ' ');
-        if (btnText === category || (category === 'all' && btnText === 'all products') || (category === 'liked' && btnText === 'liked products')) {
+        if (btn.textContent.toLowerCase().replace(/ & /g, ' ') === category || (category === 'all' && btn.textContent === 'All Products')) {
           btn.classList.add('active');
         }
       });
 
-      // Filter products
+      // Products Filters
       products.forEach(product => {
-        if (category === 'all' || 
-            (category === 'liked' && product.dataset.liked === 'true') ||
-            (category !== 'liked' && product.dataset.category === category)) {
+        if (category === 'all' || product.dataset.category === category) {
           product.style.display = 'block';
           product.classList.add('fade-in');
           visibleCount++;
@@ -242,8 +237,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           product.style.display = 'none';
         }
       });
-
-      noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
+      if (noProducts) {
+        noProducts.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
     }
 
     // Product Search
@@ -285,6 +281,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
               this.classList.toggle('liked', data.liked);
               // Update data-liked attribute dynamically
               this.closest('.product-card').dataset.liked = data.liked ? 'true' : 'false';
+              
             } else {
               alert('Error: ' + data.error);
             }

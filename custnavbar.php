@@ -392,7 +392,7 @@ $has_cart_items = $cart_count > 0;
           <a href="customerdashboard.php" class="nav-link">Home</a>
           <a href="products.php" class="nav-link">Products</a>
           <a href="bakers.php" class="nav-link">Find Your Baker</a>
-          <a href="services.php" class="nav-link">Services</a>
+          <a href="likedprod.php" class="nav-link">Liked Products</a>
           <a href="contact.php" class="nav-link">Contact Us</a>
           <a href="blog.php" class="nav-link">Blog</a>
           <a href="customerorders.php" class="nav-link">Orders</a>

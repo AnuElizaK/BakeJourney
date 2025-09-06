@@ -277,14 +277,21 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <div class="product-actions">
                 <div class="price">₹<?php echo htmlspecialchars($product['price']); ?></div>
                 <?php if ($is_in_cart): ?>
-                    <button class="btn btn-primary">Added to Cart</button>
-                <?php else: ?>
-                    <form action="cart.php" method="POST">
-                        <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
-                        <input type="hidden" name="quantity" value="1">
-                        <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
-                    </form>
-                <?php endif; ?>
+                <!-- Show "Added to Cart" button if product is in cart -->
+                <button class="cart-button added" disabled>
+                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">
+                  Added to Cart
+                </button>
+              <?php else: ?>
+                <form method="POST" action="cart.php">
+                  <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
+                  <input type="hidden" name="return_to" value="productinfopage.php?product_id=<?php echo htmlspecialchars($product['product_id']); ?>">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" name="add_to_cart" class="cart-button">
+                    <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to Cart
+                  </button>
+                </form>
+              <?php endif; ?>
                 <button onclick="messageModal()" class="btn btn-secondary">Message Baker</button>
             </div>
         </div>
