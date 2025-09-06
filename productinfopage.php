@@ -449,63 +449,43 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const commentTextarea = document.getElementById('comment');
-            const ratingInput = document.getElementById('rating-input');
-            const stars = document.querySelectorAll('.star');
-            let currentRating = 0;
+        document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-rating .star');
+    const ratingInput = document.getElementById('rating-input');
+    const form = document.getElementById('review-form');
+    const commentTextarea = document.getElementById('comment');
 
-            // Auto-resize textarea
-            commentTextarea.addEventListener('input', function () {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    // Highlight stars on click
+    stars.forEach((star, index) => {
+        star.addEventListener('click', function() {
+            // Update hidden rating input
+            ratingInput.value = index + 1;
+
+            // Highlight selected stars
+            stars.forEach((s, i) => {
+                s.style.color = i <= index ? '#f59e0b' : '#d1d5db';
             });
+        });
+    });
 
-            // Star rating functionality
-            stars.forEach((star, index) => {
-                star.addEventListener('click', () => {
-                    currentRating = index + 1;
-                    ratingInput.value = currentRating;
-                    updateStars();
-                });
+    // Validate form on submit
+    form.addEventListener('submit', function(event) {
+        const rating = ratingInput.value;
+        const reviewText = commentTextarea.value.trim();
 
-                star.addEventListener('mouseover', () => {
-                    highlightStars(index + 1);
-                });
-            });
+        if (!rating || rating === '0') {
+            event.preventDefault();
+            alert('Please select a star rating.');
+            return;
+        }
 
-            document.querySelector('.star-rating').addEventListener('mouseleave', () => {
-                updateStars();
-            });
-
-            function highlightStars(rating) {
-                stars.forEach((star, index) => {
-                    star.classList.toggle('active', index < rating);
-                });
-            }
-
-            function updateStars() {
-                stars.forEach((star, index) => {
-                    star.classList.toggle('active', index < currentRating);
-                });
-            }
-
-            // Form submission validation
-            document.getElementById('review-form').addEventListener('submit', function (e) {
-                const comment = commentTextarea.value.trim();
-
-                if (currentRating === 0) {
-                    e.preventDefault();
-                    alert('Please select a rating!');
-                    return false;
-                }
-
-                if (comment === '') {
-                    e.preventDefault();
-                    alert('Please write a comment!');
-                    return false;
-                }
-            });
+        if (!reviewText) {
+            event.preventDefault();
+            alert('Please enter a review comment.');
+            return;
+        }
+    });
+});
 
             // Like button functionality
             const likeButton = document.querySelector('.like-btn');
@@ -669,7 +649,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                     }
                 });
             });
-        });
+        
     </script>
 </body>
 

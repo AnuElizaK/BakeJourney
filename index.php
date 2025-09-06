@@ -4,7 +4,7 @@ include 'db.php';
 
 // Fetch baker details
 $stmt = $conn->prepare("
-  SELECT u.user_id, u.full_name, u.profile_image, b.brand_name, b.specialty, b.rating, b.no_of_reviews, b.experience
+  SELECT u.user_id, u.full_name, u.profile_image, b.brand_name, b.specialty, b.experience
   FROM users u
   JOIN bakers b ON u.user_id = b.user_id
   Limit 3
@@ -136,7 +136,7 @@ $blogResult = $blogStmt->get_result();
               <h3><?php echo htmlspecialchars($baker['full_name']); ?></h3>
               <p style="color: #888;"><?php echo htmlspecialchars($baker['brand_name']); ?></p>
               <div class="baker-rating">
-                <div class="stars">
+                <!-- <div class="stars">
                   <?php
                   $stars = floor($baker['rating']);
                   for ($i = 0; $i < $stars; $i++)
@@ -144,10 +144,10 @@ $blogResult = $blogStmt->get_result();
                   for ($i = $stars; $i < 5; $i++)
                     echo "<span class=\"star\">☆</span>";
                   ?>
-                </div>
-                <span
+                </div> -->
+                <!-- <span
                   class="rating-number"><?php echo number_format($baker['rating'], 1); ?>&nbsp;(<?php echo htmlspecialchars($baker['no_of_reviews']); ?>
-                  Reviews)</span>
+                  Reviews)</span> -->
               </div>
               <p class="baker-specialty">Specialty: <?php echo htmlspecialchars($baker['specialty']); ?></p>
               <div class="baker-stats">

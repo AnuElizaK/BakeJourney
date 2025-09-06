@@ -24,8 +24,6 @@ CREATE TABLE IF NOT EXISTS bakers (
   order_lead_time VARCHAR(100) NULL,
   availability VARCHAR(100) NULL,
   custom_orders VARCHAR(100) NOT NULL,  
-  rating decimal, 
-  no_of_reviews int,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
@@ -136,4 +134,15 @@ CREATE TABLE blog_comments (
     comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (blog_id) REFERENCES blog(blog_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS baker_reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    baker_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating FLOAT NOT NULL CHECK (rating >= 0 AND rating <= 5),
+    review_text TEXT NULL,
+    review_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (baker_id) REFERENCES bakers(baker_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
