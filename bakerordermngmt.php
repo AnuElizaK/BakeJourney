@@ -146,7 +146,7 @@ while ($order = $orders_result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Management - Baker Dashboard</title>
+    <title>Order Management | BakeJourney</title>
     <link rel="stylesheet" href="bakerordermngmt.css">
 </head>
 
@@ -464,6 +464,8 @@ while ($order = $orders_result->fetch_assoc()) {
             </div>
         </div>
     </main>
+
+    <?php include 'globalfooter.php'; ?>
 
     <script>
         function showTab(tabName) {

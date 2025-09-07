@@ -16,6 +16,8 @@
         .footer {
             background: #1f2a38;
             color: white;
+            border-top-left-radius: 50px;
+            border-top-right-radius: 50px;
             padding: 60px 0 30px;
             padding-top: 40px;
         }

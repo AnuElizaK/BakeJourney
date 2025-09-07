@@ -80,7 +80,7 @@ h3 {
     background: #ffffff;
     border: 1.5px solid #d1d5db;
     padding: 20px 20px;
-    border-radius: 0.75rem;
+    border-radius: 50px;
 }
 
 .add-action {
@@ -132,18 +132,15 @@ h3 {
 
 /* Filter Tabs */
 .filter-section {
-    background: #ffffff;
-    border: 1.5px solid #d1d5db;
-    padding: 15px 20px;
     border-radius: 0.75rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .search-input {
     width: 100%;
     padding: 12px 45px;
     background: transparent url("media/search.png") no-repeat 10px center;
-    border: 1.5px solid #d1d5db;
+    border: 1.5px solid #c6c8ca;
     border-radius: 50px;
     font-size: 1rem;
     outline: none;
@@ -153,7 +150,7 @@ h3 {
 }
 
 .search-input:hover {
-    border-color: #8b919c;
+    border-color: #6b7280;
 }
 
 .search-input:focus {
@@ -192,7 +189,6 @@ h3 {
     background: #fee996;
     color: #d97706;
     transform: translateY(-2px);
-
 }
 
 /* Products Grid */
@@ -748,6 +744,10 @@ h3 {
         text-align: center;
     }
 
+    .add-container {
+        border-radius: 15px;
+    }
+
     .filter-tabs {
         justify-content: center;
     }
@@ -773,10 +773,12 @@ h3 {
     }
 
     .filter-tabs {
-        flex-direction: column;
+        flex-direction: row;
     }
 
     .filter-btn {
+        font-size: 0.7rem;
+        padding: 10px 12px;
         text-align: center;
     }
 }

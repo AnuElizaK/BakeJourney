@@ -32,6 +32,7 @@ header("Pragma: no-cache");
             font-family: 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             padding-top: 80px;
+            background: linear-gradient(#fee996 5%, #b8c1ce 60%);
             color: #1f2a38;
         }
 
@@ -126,7 +127,6 @@ header("Pragma: no-cache");
         /* Contact Section */
         .contact {
             padding: 50px 0;
-            background: linear-gradient(#fee996, #b8c1ce);
         }
 
         .contact-content {

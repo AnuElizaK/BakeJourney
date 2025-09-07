@@ -193,6 +193,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
                 <button onclick="filterProducts('pastries')" class="filter-btn">Pastries</button>
                 <button onclick="filterProducts('cookies')" class="filter-btn">Cookies</button>
                 <button onclick="filterProducts('crackers')" class="filter-btn">Crackers</button>
+                <button onclick="filterProducts('desserts')" class="filter-btn">Desserts</button>
                 <button onclick="filterProducts('candy')" class="filter-btn">Candy</button>
                 <button onclick="filterProducts('pudding')" class="filter-btn">Pudding</button>
                 <button onclick="filterProducts('piestarts')" class="filter-btn">Pies & Tarts</button>
@@ -351,6 +352,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
                         <option value="cookies">Cookies</option>
                         <option value="brownies">Brownies</option>
                         <option value="crackers">Crackers</option>
+                        <option value="desserts">Desserts</option>
                         <option value="candy">Candy</option>
                         <option value="pudding">Pudding</option>
                         <option value="piestarts">Pies & Tarts</option>
@@ -417,6 +419,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
                         <option value="cookies">Cookies</option>
                         <option value="brownies">Brownies</option>
                         <option value="crackers">Crackers</option>
+                        <option value="desserts">Desserts</option>
                         <option value="candy">Candy</option>
                         <option value="pudding">Pudding</option>
                         <option value="piestarts">Pies & Tarts</option>

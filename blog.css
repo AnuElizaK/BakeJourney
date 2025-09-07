@@ -66,11 +66,11 @@ h2 {
     width: 100%;
     padding: 12px 45px;
     background: transparent url("media/search.png") no-repeat 10px center;
-    border: 1.5px solid #9ca3af;
+    border: 1.5px solid #c6c8ca;
     border-radius: 50px;
     font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .blog-search-input:hover {

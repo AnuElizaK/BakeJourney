@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
     <meta name="author" content="BakeJourney" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@bakejourney" />
-    <link rel="stylesheet" href="customerdashboard.css">
     <style>
         * {
             margin: 0;
@@ -73,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
             font-family: 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             padding-top: 80px;
+            background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
             color: #1f2a38;
         }
 
@@ -92,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 14px 36px;
-            font-size: 1.125rem;
+            padding: 8px 16px;
+            font-size: 14px;
             font-weight: 600;
             border-radius: 50px;
             border: none;
@@ -165,7 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         /* Products Section */
         .products {
             padding: 50px 0;
-            background: linear-gradient(#ffffff, #b8c1ce);
         }
 
         .products-grid {
@@ -176,11 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
 
         @media (min-width: 1024px) {
             .products-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
         .product-card {
+            position: relative;
             background: white;
             border-radius: 20px;
             overflow: hidden;
@@ -211,11 +211,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         }
 
         .product-content {
-            padding: 30px;
+            padding: 10px 20px 20px; 
         }
 
         .product-content h3 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #1f2a38;
             margin-bottom: 20px;
             font-weight: 600;
@@ -223,6 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
 
         .product-content p {
             color: #6b7280;
+            font-size: 0.8rem;
             margin-bottom: 20px;
             line-height: 1.6;
         }
@@ -235,6 +236,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
 
             .section-header p {
                 font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1030px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -277,18 +284,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         /* Three-dot menu */
         .menu-container {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            right: 20px;
             z-index: 10;
         }
 
         .three-dot-menu {
-            background: none;
+            background: #ffffff;
+            border-radius: 50px;
             border: none;
             cursor: pointer;
-            font-size: 1.5rem;
-            color:black;
-            padding: 5px 10px;
+            align-items: center;
+            font-size: 1.3rem;
+            color: black;
+            padding: 5px 15px;
         }
 
         .menu-content {
@@ -313,15 +322,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         .menu-content button {
             width: 100%;
             text-align: left;
-            padding: 10px 15px;
+            padding: 10px 5px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             font-size: 1rem;
-            color:red;
+            color: #ef4444;
             background: none;
             border: none;
             cursor: pointer;
         }
-
-        
     </style>
 </head>
 
@@ -344,7 +352,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
                         <div class="product-card"
                             onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'">
                             <div class="menu-container">
-                                <button class="three-dot-menu" onclick="event.stopPropagation(); toggleMenu(<?php echo $product['product_id']; ?>)">⋮</button>
+                                <button class="three-dot-menu"
+                                    onclick="event.stopPropagation(); toggleMenu(<?php echo $product['product_id']; ?>)">⋮</button>
                                 <div class="menu-content" id="menu-<?php echo $product['product_id']; ?>">
                                     <form method="POST" action="likedprod.php">
                                         <input type="hidden" name="product_id" value="<?php echo $product['product_id']; ?>">
@@ -408,7 +417,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
 
     <?php include 'globalfooter.php'; ?>
 
-     <script>
+    <script>
         function toggleMenu(productId) {
             event.preventDefault();
             const menu = document.getElementById(`menu-${productId}`);
@@ -422,7 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         }
 
         // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!event.target.classList.contains('three-dot-menu')) {
                 document.querySelectorAll('.menu-content').forEach(menu => {
                     menu.classList.remove('show');

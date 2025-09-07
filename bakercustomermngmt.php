@@ -465,5 +465,7 @@
             }
         </script>
     </main>
+
+    <?php include 'globalfooter.php'; ?>
 </body>
 </html>

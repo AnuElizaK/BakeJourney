@@ -48,6 +48,12 @@ h2,
   transform: translateY(0);
 }
 
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 .nav-content {
   display: flex;
   align-items: center;
@@ -79,6 +85,7 @@ h2,
 .nav-link {
   color: #374151;
   text-decoration: none;
+  font-size: 14px;
   font-weight: 500;
   padding: 8px 0;
   position: relative;
@@ -91,7 +98,7 @@ h2,
   bottom: 0;
   left: 0;
   width: 0;
-  height: 2px;
+  height: 1.5px;
   background: #f59e0b;
   transition: width 0.3s ease;
 }
@@ -1167,13 +1174,13 @@ h2,
 }
 
 .service-content {
-  padding: 30px;
+  padding: 30px 40px 40px;
 }
 
 .service-content h3 {
+  font-family: 'Puanto', 'Segoe UI', Roboto, sans-serif;
   font-size: 1.5rem;
   color: #1f2a38;
-  margin-bottom: 20px;
   font-weight: 600;
 }
 
@@ -1185,7 +1192,6 @@ h2,
 
 .service-features {
   list-style: none;
-  margin-bottom: 30px;
 }
 
 .service-features li {
@@ -1271,27 +1277,27 @@ h2,
   text-transform: uppercase;
   letter-spacing: 0.5px;
   background: #d1d5db;
-    color: #6b7280;
+  color: #6b7280;
 }
 
 .category-badge.tips {
-    background: #c8ffe5;
-    color: #006c4a;
+  background: #c8ffe5;
+  color: #006c4a;
 }
 
 .category-badge.recipes {
-    background: #fff3c3;
-    color: #d97706;
+  background: #fff3c3;
+  color: #d97706;
 }
 
 .category-badge.stories {
-    background: #cdecff;
-    color: #016492;
+  background: #cdecff;
+  color: #016492;
 }
 
 .category-badge.announcements {
-    background: #ffe9e9;
-    color: #ef4444;
+  background: #ffe9e9;
+  color: #ef4444;
 }
 
 .post-author {

@@ -29,9 +29,9 @@ if ($user_id) {
     }
 
     .bakernav-container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 20px;
     }
 
     .navbar {
@@ -78,6 +78,7 @@ if ($user_id) {
     .nav-link {
       color: #374151;
       text-decoration: none;
+      font-size: 14px;
       font-weight: 500;
       padding: 8px 0;
       position: relative;
@@ -90,7 +91,7 @@ if ($user_id) {
       bottom: 0;
       left: 0;
       width: 0;
-      height: 2px;
+      height: 1.5px;
       background: #f59e0b;
       transition: width 0.3s ease;
     }

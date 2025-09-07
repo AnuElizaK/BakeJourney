@@ -78,7 +78,8 @@ $bResult = $bkrStmt->get_result();
 
       <div class="products-grid">
         <?php while ($product = $pResult->fetch_assoc()): ?>
-          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>" onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'">
+          <div class="product-card" data-category="<?= htmlspecialchars($product['category']) ?>"
+            onclick="window.location.href='productinfopage.php?product_id=<?= $product['product_id']; ?>'">
             <div class="product-image">
               <img
                 src="<?= !empty($product['image']) ? 'uploads/' . htmlspecialchars($product['image']) : 'media/pastry.png' ?>"
@@ -164,6 +165,166 @@ $bResult = $bkrStmt->get_result();
     </div>
   </section>
 
+  <!-- Services Section -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header">
+        <h2>Services From Our Bakers</h2>
+        <p>From daily fresh baking to custom celebrations, we're here to make every moment sweeter.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-image">
+            <img
+              src="https://images.unsplash.com/photo-1490644120458-f5e5c71d2ab0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Home Delivery">
+          </div>
+          <div class="service-content">
+            <h3>Home Delivery</h3>
+            <p>From the kitchen straight to your doorstep.</p>
+            <ul class="service-features">
+              <li>Available from 500+ bakers</li>
+              <li>Freshly made</li>
+              <li>Your treat, your location</li>
+              <li>Safe, contactless delivery</li>
+            </ul>
+            <button class="btn btn-primary" onclick="openDialog('homeDelivery')">Learn More</button>
+          </div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-image">
+            <img
+              src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Custom Cakes">
+          </div>
+          <div class="service-content">
+            <h3>Custom Orders</h3>
+            <p>Personalized treats for all your special moments.</p>
+            <ul class="service-features">
+              <li>Custom designs</li>
+              <li>Countless flavors</li>
+              <li>Dietary accommodations</li>
+              <li>Delivery available</li>
+            </ul>
+            <button class="btn btn-primary" onclick="openDialog('customCakes')">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Home Delivery Dialog -->
+  <div class="dialog-overlay" id="homeDeliveryDialog">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title">Home Delivery</h2>
+        <button class="close-btn" onclick="closeDialog('homeDeliveryDialog')">&times;</button>
+      </div>
+      <div class="dialog-content">
+        <p>Experience the convenience of fresh, artisanal baked goods delivered right to your doorstep. Our extensive
+          network of professional bakers ensures you get the highest quality treats without leaving your home.</p>
+
+        <h3>How It Works</h3>
+        <ul>
+          <li>Browse our selection of bakers and their specialties</li>
+          <li>Place your order through our easy-to-use platform</li>
+          <li>Your chosen baker prepares your order fresh</li>
+          <li>Safe, contactless delivery to your specified location</li>
+        </ul>
+
+        <h3>Coverage & Availability</h3>
+        <ul>
+          <li><strong>500+ Partner Bakers:</strong> Extensive network across multiple cities</li>
+          <li><strong>Daily Fresh Baking:</strong> Orders prepared the same day for maximum freshness</li>
+          <li><strong>Flexible Locations:</strong> Deliver to your home, office, or any preferred address</li>
+          <li><strong>Multiple Time Slots:</strong> Choose delivery times that work with your schedule</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>Safety First:</strong> All our delivery partners follow strict hygiene protocols and offer contactless
+          delivery options to ensure your safety and peace of mind.
+        </div>
+
+        <h3>What You Can Order</h3>
+        <ul>
+          <li>Fresh bread and pastries</li>
+          <li>Custom birthday and celebration cakes</li>
+          <li>Seasonal specialties and holiday treats</li>
+          <li>Corporate catering orders</li>
+          <li>Wedding and event desserts</li>
+        </ul>
+
+        <div class="highlight-box">
+        <strong>Note:</strong> While our bakers strive to deliver to as many locations as possible, certain remote or restricted areas may not 
+        be reachable. It is also important to note that not all bakers may offer delivery services, so please check individual baker profiles 
+        for specific delivery options and areas served.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Cakes Dialog -->
+  <div class="dialog-overlay" id="customCakesDialog">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title">Custom Orders</h2>
+        <button class="close-btn" onclick="closeDialog('customCakesDialog')">&times;</button>
+      </div>
+      <div class="dialog-content">
+        <p>Turn your special moments into unforgettable memories with customized orders. Our talented bakers will work
+          with you to create the perfect treat that matches your vision, taste preferences, and dietary needs.</p>
+
+        <h3>Personalization Options</h3>
+        <ul>
+          <li><strong>Custom Designs:</strong> From elegant minimalism to elaborate themed creations</li>
+          <li><strong>Personal Messages:</strong> Custom text, names, and special dedications</li>
+          <li><strong>Photo Printing:</strong> Edible photo transfers for truly personal touch</li>
+          <li><strong>Theme Matching:</strong> Colors and designs to match your event or celebration</li>
+        </ul>
+
+        <h3>Flavor Varieties</h3>
+        <ul>
+          <li>Classic favorites: Vanilla, chocolate, strawberry, red velvet</li>
+          <li>Gourmet options: Salted caramel, lemon lavender, chocolate raspberry</li>
+          <li>Seasonal specialties: Pumpkin spice, peppermint, fresh fruit combinations</li>
+          <li>Unique creations: Matcha, coconut lime, coffee tiramisu</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>Dietary Accommodations:</strong> We cater to all dietary needs including gluten-free, vegan,
+          sugar-free, keto-friendly, and allergy-sensitive options without compromising on taste or design.
+        </div>
+
+        <h3>Perfect For</h3>
+        <ul>
+          <li>Birthday celebrations of all ages</li>
+          <li>Wedding and anniversary cakes</li>
+          <li>Corporate events and milestones</li>
+          <li>Graduation and achievement celebrations</li>
+          <li>Holiday and seasonal gatherings</li>
+          <li>Baby showers and gender reveals</li>
+        </ul>
+
+        <h3>Ordering Process</h3>
+        <ul>
+          <li>Consultation to discuss your vision and requirements</li>
+          <li>Design mockup and flavor selection</li>
+          <li>Confirmation of details and delivery arrangements</li>
+          <li>Fresh preparation 24-48 hours before your event</li>
+          <li>Professional delivery and setup (when requested)</li>
+        </ul>
+
+        <div class="highlight-box">
+          <strong>Note:</strong> While our bakers strive to accommodate all requests, certain complex designs or last-minute orders may
+          require additional lead time. We recommend booking your custom orders at least two weeks in advance to
+          ensure availability and the best possible outcome.
+        </div>
+      </div>
+    </div>
+  </div>
+
   <?php include 'globalfooter.php'; ?>
 
   <script>
@@ -237,6 +398,31 @@ $bResult = $bkrStmt->get_result();
         noBakers.style.display = visibleCount === 0 ? 'block' : 'none';
       }
     });
+
+    function openDialog(serviceType) {
+      const dialogId = serviceType + 'Dialog';
+      const dialog = document.getElementById(dialogId);
+      if (dialog) {
+        dialog.classList.add('show');
+        document.body.style.overflow = 'hidden';
+
+        // Add click listener specifically to this dialog
+        dialog.onclick = function (e) {
+          if (e.target === dialog) {
+            closeDialog(dialogId);
+          }
+        };
+      }
+    }
+
+    function closeDialog(dialogId) {
+      const dialog = document.getElementById(dialogId);
+      if (dialog) {
+        dialog.classList.remove('show');
+        document.body.style.overflow = '';
+        dialog.onclick = null; // Remove the click listener
+      }
+    }
 
   </script>
 </body>

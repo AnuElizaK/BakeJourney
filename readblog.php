@@ -88,8 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_comment'])) {
     $user_id = $_SESSION['user_id'];
     $comments = $_POST['comments'];
 
-    if ($social >= 1 && $social <= 5 && !empty($comments)) {
-        $stmt = $conn->prepare("INSERT INTO blog_comments (blog_id, user_id, comment) VALUES (?, ?, ?)");
+    if (!empty($comments)) {
+        $stmt = $conn->prepare("INSERT INTO blog_comments (blog_id, user_id, comment_text) VALUES (?, ?, ?)");
         $stmt->bind_param("iis", $blog_id, $user_id, $comments);
         $stmt->execute();
         header("Location: readblog.php?blog_id=" . $blog_id . "#comments");
@@ -276,7 +276,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             </div>
                         </div>
                         <div class="comment-text">
-                            <?php echo nl2br(htmlspecialchars($rev['comments'])); ?>
+                            <?php echo nl2br(htmlspecialchars($rev['comment_text'])); ?>
                         </div>
                     </div>
                 <?php endwhile; ?>

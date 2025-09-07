@@ -43,7 +43,8 @@ $blogResult = $blogStmt->get_result();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BakeJourney - Home Baker's Marketplace</title>
+  <title>BakeJourney | Home Baker's Marketplace</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <meta name="description"
     content="BakeJourney - Handcrafted with love, baked to perfection. Fresh breads, pastries, and custom cakes made daily with the finest ingredients." />
   <meta name="author" content="BakeJourney" />
@@ -59,7 +60,7 @@ $blogResult = $blogStmt->get_result();
 <body>
   <!-- Sticky Pre-login Navigation Bar -->
   <nav class="navbar" id="navbar">
-    <div class="container">
+    <div class="nav-container">
       <div class="nav-content">
         <div class="nav-brand">
           <a href="index.php"><img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40"
@@ -364,7 +365,6 @@ $blogResult = $blogStmt->get_result();
               <li>Your treat, your location</li>
               <li>Safe, contactless delivery</li>
             </ul>
-            <button class="btn btn-primary">Learn More</button>
           </div>
         </div>
 
@@ -383,7 +383,6 @@ $blogResult = $blogStmt->get_result();
               <li>Dietary accommodations</li>
               <li>Delivery available</li>
             </ul>
-            <button class="btn btn-primary">Learn More</button>
           </div>
         </div>
       </div>

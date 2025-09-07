@@ -44,9 +44,9 @@ $has_cart_items = $cart_count > 0;
     }
 
     .custnav-container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 20px;
     }
 
     .navbar {
@@ -93,6 +93,7 @@ $has_cart_items = $cart_count > 0;
     .nav-link {
       color: #374151;
       text-decoration: none;
+      font-size: 14px;
       font-weight: 500;
       padding: 8px 0;
       position: relative;
@@ -105,7 +106,7 @@ $has_cart_items = $cart_count > 0;
       bottom: 0;
       left: 0;
       width: 0;
-      height: 2px;
+      height: 1.5px;
       background: #f59e0b;
       transition: width 0.3s ease;
     }
