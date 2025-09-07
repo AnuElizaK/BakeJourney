@@ -753,11 +753,16 @@ h2 {
     color: white;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 50px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.post-btn:hover {
+    background: linear-gradient(45deg, #f59e0b, #d97706);
 }
 
 /* Like Button */

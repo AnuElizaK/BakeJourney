@@ -123,6 +123,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
           <button onclick="filterProducts('pastries')" class="filter-btn">Pastries</button>
           <button onclick="filterProducts('cookies')" class="filter-btn">Cookies</button>
           <button onclick="filterProducts('crackers')" class="filter-btn">Crackers</button>
+          <button onclick="filterProducts('desserts')" class="filter-btn">Desserts</button>
           <button onclick="filterProducts('candy')" class="filter-btn">Candy</button>
           <button onclick="filterProducts('pudding')" class="filter-btn">Pudding</button>
           <button onclick="filterProducts('pies tarts')" class="filter-btn">Pies & Tarts</button>

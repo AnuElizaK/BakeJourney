@@ -69,18 +69,26 @@ $comment_stmt->bind_param("i", $blog_id);
 $comment_stmt->execute();
 $comments = $comment_stmt->get_result();
 
-// Get total likes and comments count
+// Get total like count
 $social_stmt = $conn->prepare("
-    SELECT COUNT(*) as total_likes, COUNT(*) as total_comments
+    SELECT COUNT(*) as total_likes
     FROM blog_likes bgl
-    JOIN blog_comments bc ON bgl.blog_id = bc.blog_id
-    JOIN blog bg ON bgl.blog_id = bg.blog_id || bc.blog_id
-    WHERE bgl.blog_id = ? OR bc.blog_id = ?
+    WHERE bgl.blog_id = ?
 ");
-$social_stmt->bind_param("ii", $blog_id, $blog_id);
+$social_stmt->bind_param("i", $blog_id);
 $social_stmt->execute();
 $social_result = $social_stmt->get_result()->fetch_assoc();
 $total_likes = round($social_result['total_likes'], 1);
+
+// Get total likes and comments count
+$social_stmt = $conn->prepare("
+    SELECT COUNT(*) as total_comments
+    FROM blog_comments bc
+    WHERE bc.blog_id = ?
+");
+$social_stmt->bind_param("i", $blog_id);
+$social_stmt->execute();
+$social_result = $social_stmt->get_result()->fetch_assoc();
 $total_comments = $social_result['total_comments'];
 
 // Handle comments submission

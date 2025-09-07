@@ -336,6 +336,11 @@ h2 {
         font-size: 1rem;
     }
 
+    .filter-btn {
+        font-size: 0.8rem;
+        padding: 9px 12px;
+    }
+
     .products-grid {
         gap: 20px;
     }
