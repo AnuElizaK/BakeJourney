@@ -770,8 +770,8 @@ h2 {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
+    background: rgb(255, 255, 255);
+    border: 3px solid #ffffff;
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -796,7 +796,7 @@ h2 {
 }
 
 .like-btn:hover {
-    background: #fef3c7;
+    border: 3px solid #ef4444;
     transform: scale(1.1);
 }
 
@@ -846,12 +846,12 @@ h2 {
 .cart-button {
     background: linear-gradient(135deg, #fcd34d, #d97706);
     color: white;
-    padding: 8px 16px;
+    padding: 12px 32px;
     border: none;
     cursor: pointer;
     font-family: 'Segoe UI', Roboto, sans-serif;
     border-radius: 25px;
-    font-size: 0.875rem;
+    font-size: 16px;
     font-weight: 600;
     transition: all 0.4s ease;
     box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);

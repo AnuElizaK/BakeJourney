@@ -31,8 +31,6 @@ if ($result->num_rows === 0) {
 
 $baker = $result->fetch_assoc();
 
-
-
 // Fetch products by user_id (baker_id)
 $stmt = $conn->prepare("SELECT * FROM products WHERE baker_id = ?");
 $stmt->bind_param("i", $baker_id);
@@ -126,6 +124,7 @@ function generateStars($rating, $maxStars = 5)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($baker['full_name']); ?> - Baker Profile | BakeJourney</title>
     <link rel="stylesheet" href="bakerinfopage.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 </head>
 
 <!-- Sticky Navigation Bar -->
@@ -159,8 +158,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <span class="stat-label">Reviews</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number"><?= htmlspecialchars($baker['experience']); ?></span>
-                            <span class="stat-label">Years</span>
+                            <span class="stat-number"><?= htmlspecialchars($baker['experience']); ?>+</span>
+                            <span class="stat-label">Years Experience</span>
                         </div>
                     </div>
                     <div class="rating-section">
@@ -178,31 +177,34 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                 📍<?= htmlspecialchars($baker['district']); ?>, <?= htmlspecialchars($baker['state']); ?>
             </div>
             <div class="contact-details">
-            <h3>Contact & Order Details</h3>
+            <h3>Contact & Business Details</h3>
             <div class="detail-item">
-                <span class="detail-icon">📞</span>
+                <span class="detail-icon material-symbols-rounded">phone</span>
                 <p class="detail-text"><?= htmlspecialchars($baker['phone'] ?: 'Not provided'); ?></p>
             </div>
             <div class="detail-item">
-                <span class="detail-icon">✉️</span>
+                <span class="detail-icon material-symbols-rounded">email</span>
                 <p class="detail-text"><?= htmlspecialchars($baker['email'] ?: 'Not provided'); ?></p>
             </div>
             <div class="detail-item">
-                <span class="detail-icon">⏰</span>
-                <p class="detail-text">Order Lead Time: <?= htmlspecialchars($baker['order_lead_time'] ?: 'Not specified'); ?></p>
+                <span class="detail-icon material-symbols-rounded">access_time</span>
+                <p class="detail-text">Order Lead Time:</p>
+                <span class="detail-info"><p><?= htmlspecialchars($baker['order_lead_time'] ?: 'Not specified'); ?></p></span>
             </div>
             <div class="detail-item">
-                <span class="detail-icon">🕒</span>
-                <p class="detail-text">Availability: <?= htmlspecialchars($baker['availability'] ?: 'Not specified'); ?></p>
+                <span class="detail-icon material-symbols-rounded">calendar_today</span>
+                <p class="detail-text">Availability:</p>
+                <span class="detail-info"><p><?= htmlspecialchars($baker['availability'] ?: 'Not specified'); ?></p></span>
             </div>
             <div class="detail-item">
-                <span class="detail-icon">🎂</span>
-                <p class="detail-text">Custom Orders: <?= htmlspecialchars($baker['custom_orders']); ?></p>
+                <span class="detail-icon material-symbols-rounded">cake</span>
+                <p class="detail-text">Custom Orders:</p>
+                <span class="detail-info"><p><?= htmlspecialchars($baker['custom_orders']); ?></p></span>
             </div>
         </div>
         <div class="profile-actions">
             <?php if (in_array($baker['custom_orders'], ['Takes custom orders', 'Takes limited custom orders'])): ?>
-                <a href="#" class="btn btn-primary">Request Customer Order</a>
+                <a href="#" class="btn btn-primary">Request Custom Order</a>
             <?php endif; ?>
             <a href="#menu" class="btn btn-secondary">View Menu</a>
         </div>

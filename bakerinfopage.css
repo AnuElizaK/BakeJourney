@@ -76,7 +76,7 @@ h2 {
 .profile-brand {
     color: #f59e0b;
     font-weight: 500;
-    font-size: 1.4rem; 
+    font-size: 1.4rem;
 }
 
 .profile-specialty {
@@ -147,38 +147,45 @@ h2 {
 }
 
 /* Contact Details Section */
-    .contact-details {
-        background:linear-gradient(135deg, #ffffff, #fee996);
-        border-radius: 10px;
-        padding: 5px;
-        margin: 20px 0;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
+.contact-details {
+    background: #f3f3f3;
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
 
-    .contact-details h3 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #1f2a38;
-        margin-bottom: 15px;
-    }
+.contact-details h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1f2a38;
+    margin-bottom: 15px;
+}
 
-    .detail-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.1rem;
-        color: #6b7280;
-        margin-bottom: 10px;
-    }
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
 
-    .detail-icon {
-        font-size: 1.2rem;
-        color: #f59e0b;
-    }
+.detail-icon {
+    font-size: 1.1rem;
+    color: #f59e0b;
+}
 
-    .detail-text {
-        color: #1f2a38;
-    }
+.detail-text {
+    color: #1f2a38;
+}
+
+.detail-info {
+    color: #d97706;
+    font-weight: 600;
+    background-color: #fee996;
+    padding: 0 10px;
+    border-radius: 5px;
+}
 
 .btn {
     padding: 0.75rem 2rem;
@@ -422,6 +429,22 @@ h2 {
         font-size: 1rem;
     }
 
+    .rating-section {
+        justify-content: center;
+    }
+
+    .contact-details {
+        padding: 20px;
+    }
+
+    .detail-item {
+        font-size: 0.8rem;
+    }
+
+    .detail-info {
+        border-radius: 5px;
+    }
+
     .profile-actions {
         flex-direction: row;
     }
@@ -475,7 +498,6 @@ h2 {
     }
 
     .rating-text {
-        font-size: 0.7rem;
         text-align: right;
     }
 
@@ -621,11 +643,16 @@ h2 {
     color: white;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 50px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+.post-btn:hover {
+    background: linear-gradient(45deg, #f59e0b, #d97706);
 }
 
 /* delete button */
