@@ -13,12 +13,12 @@ header("Pragma: no-cache");
 
 $user_id = $_SESSION['user_id'];
 if ($user_id) {
-  // Get user information
-  $user_info_stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
-  $user_info_stmt->bind_param("i", $user_id);
-  $user_info_stmt->execute();
-  $user_info_result = $user_info_stmt->get_result();
-  $user_info = $user_info_result->fetch_assoc();
+    // Get user information
+    $user_info_stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
+    $user_info_stmt->bind_param("i", $user_id);
+    $user_info_stmt->execute();
+    $user_info_result = $user_info_stmt->get_result();
+    $user_info = $user_info_result->fetch_assoc();
 }
 
 if (!isset($_GET['product_id'])) {
@@ -277,21 +277,24 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <div class="product-actions">
                 <div class="price">₹<?php echo htmlspecialchars($product['price']); ?></div>
                 <?php if ($is_in_cart): ?>
-                <!-- Show "Added to Cart" button if product is in cart -->
-                <button class="cart-button added" disabled>
-                  <img src="media/cart2yellow.png" alt="Added" style="width: 20px; height: 20px; vertical-align: top;">
-                  Added to Cart
-                </button>
-              <?php else: ?>
-                <form method="POST" action="cart.php">
-                  <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
-                  <input type="hidden" name="return_to" value="productinfopage.php?product_id=<?php echo htmlspecialchars($product['product_id']); ?>">
-                  <input type="hidden" name="quantity" value="1">
-                  <button type="submit" name="add_to_cart" class="cart-button">
-                    <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;"> Add to Cart
-                  </button>
-                </form>
-              <?php endif; ?>
+                    <!-- Show "Added to Cart" button if product is in cart -->
+                    <button class="cart-button added" disabled>
+                        <img src="media/cart2yellow.png" alt="Added"
+                            style="width: 20px; height: 20px; vertical-align: top;">
+                        Added to Cart
+                    </button>
+                <?php else: ?>
+                    <form method="POST" action="cart.php">
+                        <input type="hidden" name="product_id" value="<?= $product['product_id']; ?>">
+                        <input type="hidden" name="return_to"
+                            value="productinfopage.php?product_id=<?php echo htmlspecialchars($product['product_id']); ?>">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" name="add_to_cart" class="cart-button">
+                            <img src="media/cart2.png" alt="Cart" style="width: 20px; height: 20px; vertical-align: top;">
+                            Add to Cart
+                        </button>
+                    </form>
+                <?php endif; ?>
                 <button onclick="messageModal()" class="btn btn-secondary">Message Baker</button>
             </div>
         </div>
@@ -325,44 +328,46 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <?php if ($reviews->num_rows > 0): ?>
                 <?php while ($rev = $reviews->fetch_assoc()): ?>
                     <div class="review-item">
-
-                    <!-- to delete a comment by the user -->
-                   <?php $logged_in_user_id = $_SESSION['user_id'];
-                   if ($rev['customer_id'] == $logged_in_user_id):?>                        
-                        <form  method="post" style="margin-top: 12px;">
-                          <input type="hidden" name="review_id" value="<?= $rev['review_id'] ?>">
-                          <button type="submit" name="delete_comment" value="delete_comment" class="delete-btn-modern" onclick="return confirm('Are you sure you want to delete this comment?');">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                              stroke-width="2">
-                              <polyline points="3,6 5,6 21,6"></polyline>
-                              <path d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
-                              </path>
-                              <line x1="10" y1="11" x2="10" y2="17"></line>
-                              <line x1="14" y1="11" x2="14" y2="17"></line>
-                            </svg>                           
-                          </button>
-                        </form>
-                         <?php endif; ?>
-
                         <div class="review-header">
                             <div class="reviewer-info">
-                                <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/baker.png' ?>"
+                                <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/profile.png' ?>"
                                     alt="<?php echo htmlspecialchars($rev['full_name']); ?>" class="reviewer-avatar">
                                 <div>
                                     <div class="reviewer-name"><?php echo htmlspecialchars($rev['full_name']); ?></div>
-                                    <div class="review-date"><?php echo timeAgo($rev['review_date']); ?></div>
+                                    <div class="review-data">
+                                        <div class="review-date"><?php echo timeAgo($rev['review_date']); ?></div>
+                                        <div class="review-stars">
+                                            <span class="stars"><?php echo generateStars($rev['rating']); ?></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="review-stars">
-                                <span class="stars"><?php echo generateStars($rev['rating']); ?></span>
-                            </div>
+                            <!-- to delete a comment by the user -->
+                            <?php $logged_in_user_id = $_SESSION['user_id'];
+                            if ($rev['customer_id'] == $logged_in_user_id): ?>
+                                <form method="post" style="margin-top: 12px;">
+                                    <input type="hidden" name="review_id" value="<?= $rev['review_id'] ?>">
+                                    <button type="submit" name="delete_comment" value="delete_comment" class="delete-btn-modern"
+                                        onclick="return confirm('Are you sure you want to delete this comment?');">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <polyline points="3,6 5,6 21,6"></polyline>
+                                            <path
+                                                d="M19,6V20a2,2 0 0,1 -2,2H7a2,2 0,0,1 -2,-2V6M8,6V4a2,2 0,0,1 2,-2h4a2,2 0,0,1 2,2V6">
+                                            </path>
+                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                        </svg>
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                         <div class="review-text">
                             <?php echo nl2br(htmlspecialchars($rev['comments'])); ?>
                         </div>
                     </div>
 
-                    
+
                 <?php endwhile; ?>
             <?php else: ?>
                 <p>No reviews yet. Be the first to leave one!</p>
@@ -388,7 +393,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                                             required>
                                         <span class="star">★</span>
                                     </label>
-                                <?php endfor; ?>    
+                                <?php endfor; ?>
                             </div>
                             <button type="submit" name="submit_review" class="post-btn">Post</button>
                         </div>
@@ -449,207 +454,207 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('.star-rating .star');
-    const ratingInput = document.getElementById('rating-input');
-    const form = document.getElementById('review-form');
-    const commentTextarea = document.getElementById('comment');
+        document.addEventListener('DOMContentLoaded', function () {
+            const stars = document.querySelectorAll('.star-rating .star');
+            const ratingInput = document.getElementById('rating-input');
+            const form = document.getElementById('review-form');
+            const commentTextarea = document.getElementById('comment');
 
-    // Highlight stars on click
-    stars.forEach((star, index) => {
-        star.addEventListener('click', function() {
-            // Update hidden rating input
-            ratingInput.value = index + 1;
+            // Highlight stars on click
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function () {
+                    // Update hidden rating input
+                    ratingInput.value = index + 1;
 
-            // Highlight selected stars
-            stars.forEach((s, i) => {
-                s.style.color = i <= index ? '#f59e0b' : '#d1d5db';
+                    // Highlight selected stars
+                    stars.forEach((s, i) => {
+                        s.style.color = i <= index ? '#f59e0b' : '#d1d5db';
+                    });
+                });
+            });
+
+            // Validate form on submit
+            form.addEventListener('submit', function (event) {
+                const rating = ratingInput.value;
+                const reviewText = commentTextarea.value.trim();
+
+                if (!rating || rating === '0') {
+                    event.preventDefault();
+                    alert('Please select a star rating.');
+                    return;
+                }
+
+                if (!reviewText) {
+                    event.preventDefault();
+                    alert('Please enter a review comment.');
+                    return;
+                }
             });
         });
-    });
 
-    // Validate form on submit
-    form.addEventListener('submit', function(event) {
-        const rating = ratingInput.value;
-        const reviewText = commentTextarea.value.trim();
+        // Like button functionality
+        const likeButton = document.querySelector('.like-btn');
+        likeButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent triggering other click events
+            const productId = this.dataset.productId;
+            const likeCountSpan = this.querySelector('.like-count');
 
-        if (!rating || rating === '0') {
-            event.preventDefault();
-            alert('Please select a star rating.');
-            return;
-        }
-
-        if (!reviewText) {
-            event.preventDefault();
-            alert('Please enter a review comment.');
-            return;
-        }
-    });
-});
-
-            // Like button functionality
-            const likeButton = document.querySelector('.like-btn');
-            likeButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation(); // Prevent triggering other click events
-                const productId = this.dataset.productId;
-                const likeCountSpan = this.querySelector('.like-count');
-
-                fetch('', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=toggle_like&product_id=${productId}`
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=toggle_like&product_id=${productId}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.classList.toggle('liked', data.liked);
+                        likeCountSpan.textContent = data.like_count;
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            this.classList.toggle('liked', data.liked);
-                            likeCountSpan.textContent = data.like_count;
-                        } else {
-                            alert('Error: ' + data.error);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while processing your request.');
-                    });
-            });
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your request.');
+                });
+        });
 
-            // Chat functionality
-            let chatMessages = [];
-            let bakerResponses = [
-                "Absolutely! I'd be happy to prepare that for you. When would you need it?",
-                "That's one of my specialties! I use traditional techniques and organic ingredients.",
-                "I can definitely customize that order. What modifications would you like?",
-                "Perfect! I typically need 24-48 hours notice for fresh orders. Does that work for you?",
-                "Great choice! That's been very popular. I can have it ready by tomorrow afternoon.",
-                "I appreciate your interest! Feel free to ask any questions about ingredients or preparation.",
-                "Wonderful! I'll make sure it's perfectly fresh for you. Any dietary restrictions I should know about?",
-                "Thank you! I take pride in using only the finest ingredients. When would you like to place the order?"
-            ];
+        // Chat functionality
+        let chatMessages = [];
+        let bakerResponses = [
+            "Absolutely! I'd be happy to prepare that for you. When would you need it?",
+            "That's one of my specialties! I use traditional techniques and organic ingredients.",
+            "I can definitely customize that order. What modifications would you like?",
+            "Perfect! I typically need 24-48 hours notice for fresh orders. Does that work for you?",
+            "Great choice! That's been very popular. I can have it ready by tomorrow afternoon.",
+            "I appreciate your interest! Feel free to ask any questions about ingredients or preparation.",
+            "Wonderful! I'll make sure it's perfectly fresh for you. Any dietary restrictions I should know about?",
+            "Thank you! I take pride in using only the finest ingredients. When would you like to place the order?"
+        ];
 
-            function messageModal() {
-                const modal = document.getElementById('chatModal');
-                modal.classList.add('active');
+        function messageModal() {
+            const modal = document.getElementById('chatModal');
+            modal.classList.add('active');
+            setTimeout(() => {
+                document.getElementById('chatInput').focus();
+            }, 300);
+            setTimeout(() => {
+                document.getElementById('bakerStatus').textContent = 'Online now';
+            }, 1000);
+        }
+
+        function closeChatModal() {
+            const modal = document.getElementById('chatModal');
+            modal.classList.remove('active');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage(message, 'sent');
+            input.value = '';
+            adjustTextareaHeight(input);
+
+            setTimeout(() => {
+                showTypingIndicator();
                 setTimeout(() => {
-                    document.getElementById('chatInput').focus();
-                }, 300);
-                setTimeout(() => {
-                    document.getElementById('bakerStatus').textContent = 'Online now';
-                }, 1000);
-            }
+                    hideTypingIndicator();
+                    const response = bakerResponses[Math.floor(Math.random() * bakerResponses.length)];
+                    addMessage(response, 'received');
+                }, 1500 + Math.random() * 2000);
+            }, 500);
+        }
 
-            function closeChatModal() {
-                const modal = document.getElementById('chatModal');
-                modal.classList.remove('active');
-            }
-
-            function sendMessage() {
-                const input = document.getElementById('chatInput');
-                const message = input.value.trim();
-
-                if (!message) return;
-
-                addMessage(message, 'sent');
-                input.value = '';
-                adjustTextareaHeight(input);
-
-                setTimeout(() => {
-                    showTypingIndicator();
-                    setTimeout(() => {
-                        hideTypingIndicator();
-                        const response = bakerResponses[Math.floor(Math.random() * bakerResponses.length)];
-                        addMessage(response, 'received');
-                    }, 1500 + Math.random() * 2000);
-                }, 500);
-            }
-
-            function addMessage(text, type) {
-                const messagesContainer = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}`;
-                const now = new Date();
-                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                messageDiv.innerHTML = `
+        function addMessage(text, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageDiv.innerHTML = `
                     <div>${text}</div>
                     <div class="message-time">${timeString}</div>
                 `;
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            const messagesContainer = document.getElementById('chatMessages');
+            indicator.style.display = 'block';
+            messagesContainer.appendChild(indicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.style.display = 'none';
+        }
+
+        function adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+        }
+
+        document.getElementById('chatInput').addEventListener('input', function () {
+            adjustTextareaHeight(this);
+        });
+
+        document.getElementById('chatInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
+        });
 
-            function showTypingIndicator() {
-                const indicator = document.getElementById('typingIndicator');
-                const messagesContainer = document.getElementById('chatMessages');
-                indicator.style.display = 'block';
-                messagesContainer.appendChild(indicator);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        document.getElementById('chatModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeChatModal();
             }
+        });
 
-            function hideTypingIndicator() {
-                const indicator = document.getElementById('typingIndicator');
-                indicator.style.display = 'none';
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeChatModal();
             }
+        });
 
-            function adjustTextareaHeight(textarea) {
-                textarea.style.height = 'auto';
-                textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
-            }
+        document.querySelector('.chat-container').addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
 
-            document.getElementById('chatInput').addEventListener('input', function () {
-                adjustTextareaHeight(this);
-            });
+        let quantity = 1;
 
-            document.getElementById('chatInput').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+        function changeQuantity(change) {
+            quantity += change;
+            if (quantity < 1) quantity = 1;
+            if (quantity > 10) quantity = 10;
+            document.getElementById('quantity').textContent = quantity;
+            const basePrice = <?php echo $product['price']; ?>;
+            const totalPrice = basePrice * quantity;
+            document.querySelector('.price').textContent = `₹${totalPrice.toFixed(2)}`;
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
             });
+        });
 
-            document.getElementById('chatModal').addEventListener('click', function (e) {
-                if (e.target === this) {
-                    closeChatModal();
-                }
-            });
-
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    closeChatModal();
-                }
-            });
-
-            document.querySelector('.chat-container').addEventListener('click', function (e) {
-                e.stopPropagation();
-            });
-
-            let quantity = 1;
-
-            function changeQuantity(change) {
-                quantity += change;
-                if (quantity < 1) quantity = 1;
-                if (quantity > 10) quantity = 10;
-                document.getElementById('quantity').textContent = quantity;
-                const basePrice = <?php echo $product['price']; ?>;
-                const totalPrice = basePrice * quantity;
-                document.querySelector('.price').textContent = `₹${totalPrice.toFixed(2)}`;
-            }
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        
     </script>
 </body>
 
