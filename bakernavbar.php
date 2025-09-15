@@ -316,7 +316,7 @@ if ($user_id) {
         <div class="nav-links">
           <a href="bakerdashboard.php" class="nav-link" onclick="toggleSelect(this)">Home</a>
           <a href="bakerproductmngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Products</a>
-          <a href="bakercustomermngmt.php" class="nav-link" onclick="toggleSelect(this)">Your Customers</a>
+          <a href="customorder.php" class="nav-link" onclick="toggleSelect(this)">Custom Orders</a>
           <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
           <a href="bakernotifications.php" class="nav-link" onclick="toggleSelect(this)">Notifications</a>
           <a href="bakerblog.php" class="nav-link" onclick="toggleSelect(this)">Blog</a>

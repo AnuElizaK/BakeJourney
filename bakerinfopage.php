@@ -10,6 +10,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
+
 if (!isset($_GET['baker_id'])) {
     echo "Baker not found.";
     exit;
@@ -31,7 +32,64 @@ if ($result->num_rows === 0) {
 
 $baker = $result->fetch_assoc();
 
-// Fetch products by user_id (baker_id)
+// Handle message sending
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message']) && isset($_SESSION['user_id'])) {
+    // Fetch the baker's user_id from the bakers table
+    $stmt = $conn->prepare("SELECT user_id FROM bakers WHERE baker_id = ?");
+    $stmt->bind_param("i", $_GET['baker_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $baker = $result->fetch_assoc();
+    $receiver_id = $baker['user_id']; // Use the baker's user_id as receiver_id
+
+    $message = trim($_POST['message'] ?? '');
+    $attachment = null;
+
+    if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'uploads/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+        $attachment_name = time() . '_' . basename($_FILES['attachment']['name']);
+        $attachment_path = $upload_dir . $attachment_name;
+        if (move_uploaded_file($_FILES['attachment']['tmp_name'], $attachment_path)) {
+            $attachment = $attachment_name;
+        }
+    }
+
+    if ($message || $attachment) {
+        $stmt = $conn->prepare("INSERT INTO messages (sender_id, receiver_id, message, attachment) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("iiss", $_SESSION['user_id'], $receiver_id, $message, $attachment);
+        $stmt->execute();
+    }
+    header("Location: bakerinfopage.php?baker_id=" . $_GET['baker_id'] . "&chat=open#chatForm");
+    exit;
+}
+
+
+
+// Fetch messages if chat is open
+$messages = [];
+if (isset($_GET['chat']) && $_GET['chat'] === 'open' && isset($_SESSION['user_id'])) {
+    // Fetch the baker's user_id from the bakers table
+    $stmt = $conn->prepare("SELECT user_id FROM bakers WHERE baker_id = ?");
+    $stmt->bind_param("i", $baker_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $baker_user = $result->fetch_assoc();
+    $baker_user_id = $baker_user['user_id']; // Use the baker's user_id
+
+    // Fetch messages between the logged-in user and the baker
+    $stmt = $conn->prepare("
+        SELECT message_id, sender_id, receiver_id, message, attachment, sent_at 
+        FROM messages 
+        WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) 
+        ORDER BY sent_at ASC
+    ");
+    $stmt->bind_param("iiii", $_SESSION['user_id'], $baker_user_id, $baker_user_id, $_SESSION['user_id']);
+    $stmt->execute();
+    $messages = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+// Fetch products by baker_id
 $stmt = $conn->prepare("SELECT * FROM products WHERE baker_id = ?");
 $stmt->bind_param("i", $baker_id);
 $stmt->execute();
@@ -122,7 +180,7 @@ function generateStars($rating, $maxStars = 5)
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($baker['full_name']); ?> - Baker Profile | BakeJourney</title>
+    <title><?= htmlspecialchars($baker['full_name']); ?> | BakeJourney</title>
     <link rel="stylesheet" href="bakerinfopage.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 </head>
@@ -202,15 +260,67 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                 <span class="detail-info"><p><?= htmlspecialchars($baker['custom_orders']); ?></p></span>
             </div>
         </div>
-        <div class="profile-actions">
-            <?php if (in_array($baker['custom_orders'], ['Takes custom orders', 'Takes limited custom orders'])): ?>
-                <a href="#" class="btn btn-primary">Request Custom Order</a>
-            <?php endif; ?>
-            <a href="#menu" class="btn btn-secondary">View Menu</a>
-        </div>
+         <div class="profile-actions">
+                <?php if (in_array($baker['custom_orders'], ['Takes custom orders', 'Takes limited custom orders']) && $_SESSION['role'] === 'customer' || $_SESSION['role'] === 'baker' && $_SESSION['user_id'] === $baker_id): ?>
+                    <a href="bakerinfopage.php?baker_id=<?= $baker_id ?>&chat=open#chatModal" class="btn btn-primary" id="chatBtn">
+                        <?= $_SESSION['role'] === 'baker' ? 'View Messages' : 'Request Custom Order' ?>
+                    </a>
+                <?php endif; ?>
+                <a href="#menu" class="btn btn-secondary">View Menu</a>
+            </div>
         </section>
 
-        <!-- Gallery Section -->
+        <!-- Chat Modal -->
+            <div id="chatModal" class="chat-modal" style="<?= isset($_GET['chat']) && $_GET['chat'] === 'open' ? 'display: flex;' : '' ?>">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <img src="<?= !empty($baker['profile_image']) ? 'uploads/' . htmlspecialchars($baker['profile_image']) : 'media/baker.png' ?>"
+                             alt="<?= htmlspecialchars($baker['full_name']); ?>" class="baker-avatar">
+                        <div class="baker-chat-info">
+                            <h4><?= htmlspecialchars($baker['brand_name'] ?: $baker['full_name']) ?></h4>
+                            
+                        </div>
+                        <a href="bakerinfopage.php?baker_id=<?= $baker_id ?>" class="chat-close" style="text-decoration: none;">&times;</a>
+                    </div>
+                    <div class="chat-messages">
+                        <?php if (empty($messages)): ?>
+                            <div class="message received">
+                                <div>Hi! 👋 Thanks for your interest in my products. How can I help you today?</div>
+                                <div class="message-time"><?= date(' H:i') ?></div>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($messages as $msg): ?>
+                                <div class="message <?= $msg['sender_id'] === $_SESSION['user_id'] ? 'sent' : 'received' ?>">
+                                    <div><?= htmlspecialchars($msg['message']) ?></div>
+                                    <?php if ($msg['attachment']): ?>
+                                        <div><img src="uploads/<?= htmlspecialchars($msg['attachment']) ?>" alt="Attachment" style="max-width: 200px;"></div>
+                                    <?php endif; ?>
+                                    <div class="message-time"><?= date('H:i', strtotime($msg['sent_at'])) ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <form method="POST" enctype="multipart/form-data" class="chat-input-container" id="chatForm">
+                        <input type="hidden" name="baker_id" value="<?= $baker_id ?>">
+                        <input type="hidden" name="receiver_id" value="<?= $baker_id ?>">
+                        <textarea id="chatInput" name="message" class="chat-input" placeholder="Type a message..." rows="1"></textarea>
+                        <div id="imagePreview" class="image-preview"></div>
+                        <input type="file" id="attachmentInput" name="attachment" accept="image/*" style="display: none;">
+                        
+                        <button type="button" class="attach-button" onclick="document.getElementById('attachmentInput').click()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.19 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                            </svg>
+                        </button>
+                        <button type="submit" name="send_message" class="send-button">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         <section class="gallery-section" id="menu">
             <?php if (!empty($products)): ?>
                 <div class="gallery-header">
@@ -323,45 +433,82 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
     </main>
     <?php include 'globalfooter.php'; ?>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('.star-rating .star');
-    const ratingInput = document.getElementById('rating-input');
-    const form = document.getElementById('review-form');
-    const commentTextarea = document.getElementById('comment');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star-rating .star');
+            const ratingInput = document.getElementById('rating-input');
+            const form = document.getElementById('review-form');
+            const commentTextarea = document.getElementById('comment');
+            const chatInput = document.getElementById('chatInput');
+            const attachmentInput = document.getElementById('attachmentInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const chatForm = document.querySelector('.chat-input-container');
 
-    // Highlight stars on click
-    stars.forEach((star, index) => {
-        star.addEventListener('click', function() {
-            // Update hidden rating input
-            ratingInput.value = index + 1;
-
-            // Highlight selected stars
-            stars.forEach((s, i) => {
-                s.style.color = i <= index ? '#f59e0b' : '#d1d5db';
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function() {
+                    ratingInput.value = index + 1;
+                    stars.forEach((s, i) => {
+                        s.style.color = i <= index ? '#f59e0b' : '#d1d5db';
+                    });
+                });
             });
+
+            form.addEventListener('submit', function(event) {
+                const rating = ratingInput.value;
+                const reviewText = commentTextarea.value.trim();
+                if (!rating || rating === '0') {
+                    event.preventDefault();
+                    alert('Please select a star rating.');
+                    return;
+                }
+                if (!reviewText) {
+                    event.preventDefault();
+                    alert('Please enter a review comment.');
+                    return;
+                }
+            });
+
+            // Auto-resize textarea
+            if (chatInput) {
+                chatInput.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+
+            // Auto-open modal if chat is active
+            <?php if (isset($_GET['chat']) && $_GET['chat'] === 'open'): ?>
+                document.getElementById('chatModal').classList.add('active');
+                document.getElementById('chatInput').focus();
+                const chatMessages = document.querySelector('.chat-messages');
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            <?php endif; ?>
         });
-    });
 
-    // Validate form on submit
-    form.addEventListener('submit', function(event) {
-        const rating = ratingInput.value;
-        const reviewText = commentTextarea.value.trim();
+        // Image preview for attachment
+            if (attachmentInput && imagePreview) {
+                attachmentInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="max-width: 100px; max-height: 100px; margin-top: 5px;">`;
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        imagePreview.innerHTML = '';
+                    }
+                });
+            }
 
-        if (!rating || rating === '0') {
-            event.preventDefault();
-            alert('Please select a star rating.');
-            return;
-        }
+            // Clear preview on form submission
+            if (chatForm) {
+                chatForm.addEventListener('submit', function() {
+                    imagePreview.innerHTML = '';
+                    attachmentInput.value = '';
+                });
+            }
 
-        if (!reviewText) {
-            event.preventDefault();
-            alert('Please enter a review comment.');
-            return;
-        }
-    });
-});
-</script>
+    </script>
 </body>
-
 </html>
