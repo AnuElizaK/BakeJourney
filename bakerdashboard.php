@@ -20,41 +20,6 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
 <?php include 'bakernavbar.php'; ?>
 
 <body>
-  <!-- Backup Header -->
-  <!--
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <div class="brand">
-            <div class="brand-icon">
-              <img src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
-            </div>
-            <div>
-              <h1 class="brand-title">BakeJourney</h1>
-              <p class="brand-subtitle">Welcome back, ?*<?php echo htmlspecialchars($_SESSION['name']); ?>!</p>
-            </div>
-          </div>
-          
-          <div class="header-actions">
-            <button class="btn">
-              <img src="media/alert.gif" alt="notifications" width="25" height="25">Notifications
-              <span class="notification-badge">3</span>
-            </button>
-            <button class="btn">
-              <img src="media/settings.png" alt="settings" width="25" height="25">Settings
-            </button>
-            <button class="btn" onclick="window.location.href='bakerprofile.php'">
-              <img src="media/profile.png" alt="profile" width="25" height="25">Profile
-            </button>
-            <button class="btn" onclick="window.location.href='signout.php'">
-              <img src="media/sign-out.png" alt="sign out" width="25" height="25">Sign Out
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-    -->
-
   <!-- Hero Section -->
   <section class="bhero" id="home">
     <div class="bhero-overlay"></div>

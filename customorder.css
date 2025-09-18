@@ -1,15 +1,15 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.6;
-  padding-top: 80px;
-  background: linear-gradient(#fff1bb, #ffffff, #b8c1ce);
-  color: #1f2a38;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    padding-top: 80px;
+    background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
+    color: #1f2a38;
 }
 
 h1,
@@ -17,109 +17,125 @@ h2,
 .baker-cta-title,
 .nav-title,
 .contact-form-title {
-  font-family: 'Puanto', Roboto, sans-serif;
+    font-family: 'Puanto', Roboto, sans-serif;
 }
 
 .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .messages-section {
-            padding: 20px;
-        }
-        .messages-section h1 {
-            font-size: 1.8rem;
-            color: #1f2a38;
-            margin-bottom: 20px;
-        }
-        .accordion {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .accordion-item {
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .accordion-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #f8fafc;
-            cursor: pointer;
-            width: 100%;
-            border: none;
-            text-align: left;
-            font-size: 1rem;
-            color: #1f2a38;
-        }
-        .accordion-header:hover {
-            background: #e5e7eb;
-        }
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-         .accordion-icon {
-            font-size: 1.2rem;
-            color: #6b7280;
-        }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: #fff;
-            padding: 0 15px;
-        }
-        .accordion-content.active {
-            padding: 15px;
-        }
-        .customer-details {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .detail-icon {
-            color: #6b7280;
-            font-size: 1.2rem;
-        }
-        .detail-item p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: #1f2a38;
-        }
+.messages-section {
+    padding: 20px;
+}
 
-         .customer-info {
-            display: flex;
-            align-items: center;
-        }
-        .customer-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .customer-info h4 {
-            margin: 0;
-            font-size: 1.1rem;
-            color: #1f2a38;
-        }
-        .latest-message {
-            margin: 0;
-            font-size: 0.9rem;
-            color: #6b7280;
-            max-width: 300px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .accordion-time {
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-        
+.messages-section h1 {
+    font-size: 1.8rem;
+    color: #1f2a38;
+    margin-bottom: 20px;
+}
+
+.accordion {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f8fafc;
+    cursor: pointer;
+    width: 100%;
+    border: none;
+    text-align: left;
+    font-size: 1rem;
+    color: #1f2a38;
+}
+
+.accordion-header:hover {
+    background: #e5e7eb;
+}
+
+.accordion-icon {
+    font-size: 1.2rem;
+    color: #6b7280;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #fff;
+    padding: 0 15px;
+}
+
+.accordion-content.active {
+    padding: 15px;
+}
+
+.customer-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-icon {
+    color: #6b7280;
+    font-size: 1.2rem;
+}
+
+.detail-item p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #1f2a38;
+}
+
+.customer-info {
+    display: flex;
+    align-items: center;
+}
+
+.customer-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.customer-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #1f2a38;
+}
+
+.latest-message {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accordion-time {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
 
 /* Chat Modal Styles */
 .chat-modal {
@@ -399,7 +415,8 @@ h2,
     border-radius: 3px;
 }
 
-.send-button, .attach-button {
+.send-button,
+.attach-button {
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -416,9 +433,9 @@ h2,
 }
 
 .image-preview {
-            margin-top: 5px;
-            max-width: 100%;
-        }
+    margin-top: 5px;
+    max-width: 100%;
+}
 
 @media (max-width: 480px) {
     .chat-container {
@@ -428,6 +445,7 @@ h2,
         border-radius: 0;
     }
 }
+
 .baker-avatar {
     background-color: #ffffff;
     width: 50px;

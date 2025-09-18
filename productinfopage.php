@@ -192,7 +192,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
     header("Location: productinfopage.php?product_id=" . $product_id . "#reviews");
     exit;
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -203,7 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_comment'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($product['name']); ?> - BakeJourney</title>
     <link rel="stylesheet" href="productinfopage.css">
-
 </head>
 
 <!-- Sticky Navigation Bar -->
@@ -657,5 +655,5 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
 
     </script>
 </body>
-
+<?php include 'globalfooter.php'; ?>
 </html>

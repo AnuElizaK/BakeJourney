@@ -13,12 +13,12 @@ header("Pragma: no-cache");
 
 $user_id = $_SESSION['user_id'];
 if ($user_id) {
-  // Get user information
-  $user_info_stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
-  $user_info_stmt->bind_param("i", $user_id);
-  $user_info_stmt->execute();
-  $user_info_result = $user_info_stmt->get_result();
-  $user_info = $user_info_result->fetch_assoc();
+    // Get user information
+    $user_info_stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
+    $user_info_stmt->bind_param("i", $user_id);
+    $user_info_stmt->execute();
+    $user_info_result = $user_info_stmt->get_result();
+    $user_info = $user_info_result->fetch_assoc();
 }
 
 if (!isset($_GET['blog_id'])) {
@@ -223,8 +223,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
 
                 <div class="blog-info">
                     <h1 class="blog-title"><?php echo htmlspecialchars($blog['blog_title']); ?></h1>
-                    <span class="blog-category <?= strtolower($blog['category']) ?>"><?php echo htmlspecialchars('Category • ' .$blog['category']); ?>
-                    </span>
+                    <div>
+                        <span
+                            class="blog-category <?= strtolower($blog['category']) ?>"><?php echo htmlspecialchars('Category • ' . $blog['category']); ?>
+                        </span>
+                    </div>
 
                     <div class="blog-meta">
                         <div class="meta-item">

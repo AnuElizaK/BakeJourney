@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
   <link rel="stylesheet" href="cart.css" />
 </head>
 
-<?php include 'custnavbar.php'; ?>
+<?php include 'custnavbar.php'; ?> 
 
 <body>
   <!-- Main Content -->

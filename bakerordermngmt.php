@@ -149,9 +149,8 @@ while ($order = $orders_result->fetch_assoc()) {
     <title>Order Management | BakeJourney</title>
     <link rel="stylesheet" href="bakerordermngmt.css">
 </head>
-
+<?php include 'bakernavbar.php'; ?>
 <body>
-    <?php include 'bakernavbar.php'; ?>
 
     <!-- Main Content -->
     <main class="main-content">

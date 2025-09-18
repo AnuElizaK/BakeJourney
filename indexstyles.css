@@ -25,7 +25,7 @@ h2,
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -679,14 +679,13 @@ h2,
   font-size: 0.9rem;
   gap: 12px;
   padding: 24px;
-  background: linear-gradient(135deg, #fbfdff, #e0f0ff);
+  background: linear-gradient(135deg, #fbfdff, #cbddef);
   border-radius: 20px;
   transition: all 0.3s ease;
 }
 
 .feature:hover {
-  background: linear-gradient(135deg, #fef3c7, #fee996);
-  transform: translateY(-4px);
+  transform: translateY(-8px);
 }
 
 .feature-icon {
@@ -1447,7 +1446,7 @@ h2,
 
 @media (max-width: 768px) {
   .container {
-    padding: 10px;
+    padding: 0 24px;
   }
 
   .header h1 {
@@ -1924,12 +1923,45 @@ form textarea {
     font-size: 0.9rem;
   }
 
+  .about-content {
+    gap: 20px;
+  }
+
   .about-text h2 {
     font-size: 2rem;
   }
 
   .about-text p {
     font-size: 1rem;
+  }
+
+  .values-grid {
+    gap: 20px;
+  }
+
+  .value-item {
+    margin: 0 50px;
+  }
+
+  .value-item p {
+    font-size: 0.875rem;
+  }
+
+  .value-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .experience-badge {
+    padding: 15px;
+  }
+
+  .experience-number {
+    font-size: 1.7rem;
+  }
+
+  .experience-text {
+    font-size: 0.7rem;
   }
 
   .profile-info h1 {
