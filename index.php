@@ -27,7 +27,9 @@ $productResult = $productStmt->get_result();
 
 // Fetch blog posts
 $blogStmt = $conn->prepare("
-  SELECT bg.blog_id, bg.blog_title, bg.content, bg.blog_image, bg.category, u.full_name
+  SELECT bg.blog_id, bg.blog_title, bg.content, bg.blog_image, bg.category, u.full_name,
+  (SELECT COUNT(*) FROM blog_likes bl WHERE bl.blog_id = bg.blog_id) AS like_count,
+  (SELECT COUNT(*) FROM blog_comments bc WHERE bc.blog_id = bg.blog_id) AS comment_count
   FROM blog bg
   JOIN users u ON bg.user_id = u.user_id
   ORDER BY RAND()
@@ -35,6 +37,36 @@ $blogStmt = $conn->prepare("
 ");
 $blogStmt->execute();
 $blogResult = $blogStmt->get_result();
+
+$alertMessage = ""; // default no message
+$alertType = "";    // success or error
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
+    // Collect form data safely
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    // Basic validation
+    if ($name && $email && $subject && $message) {
+        $stmt = $conn->prepare("INSERT INTO feedback (name, email, subject, message) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $name, $email, $subject, $message);
+
+        if ($stmt->execute()) {
+            $alertMessage = "✅ Thank you for your feedback!";
+            $alertType = "success";
+        } else {
+            $alertMessage = "❌ Failed to send feedback. Please try again.";
+            $alertType = "error";
+        }
+        $stmt->close();
+    } else {
+        $alertMessage = "⚠ Please fill all fields.";
+        $alertType = "warning";
+    }
+    
+}
 ?>
 
 <!DOCTYPE html>
@@ -330,7 +362,7 @@ $blogResult = $blogStmt->get_result();
 
         <div class="about-image">
           <img
-            src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            src="https://images.unsplash.com/photo-1630507103234-00d3e621cae2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Baker at work">
           <div class="experience-badge">
             <div class="experience-number">10,000+</div>
@@ -436,7 +468,7 @@ $blogResult = $blogStmt->get_result();
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
-                    <span class="like-count">24</span>
+                    <span class="like-count"><?= $blog['like_count'] ?></span>
                   </button>
 
                   <button class="action-btn comment-btn" onclick="window.location.href='login.php'"
@@ -445,7 +477,7 @@ $blogResult = $blogStmt->get_result();
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    <span>8</span>
+                    <span><?= $blog['comment_count'] ?></span>
                   </button>
 
                   <button class="action-btn share-btn" onclick="sharePost(this)">
@@ -461,21 +493,6 @@ $blogResult = $blogStmt->get_result();
                 </div>
                 <button class="read-more-btn" onclick="window.location.href='login.php'" title="Log in to read more">Read
                   More</button>
-              </div>
-            </div>
-            <div class="comment-section">
-              <div class="comment">
-                <div class="comment-author">Sarah B.</div>
-                <div class="comment-text">So excited for the new messaging feature! This will help me connect better with
-                  my customers.</div>
-              </div>
-              <div class="comment">
-                <div class="comment-author">Mike's Artisan Breads</div>
-                <div class="comment-text">Can't wait to try the order tracking improvements!</div>
-              </div>
-              <div class="comment-form">
-                <input type="text" class="comment-input" placeholder="Add a comment...">
-                <button class="comment-submit">Post</button>
               </div>
             </div>
           </article>
@@ -523,21 +540,29 @@ $blogResult = $blogStmt->get_result();
               <p>Need something special? Custom cakes and large orders require 48 hours advance notice. Call us to discuss your requirements!</p>
             </div>
           </div>-->
+<div class="contact-form">
+    <div class="form-card" id="feedback_card">
+        <h3 class="contact-form-title">Send us a Message</h3>
 
-        <div class="contact-form">
-          <div class="form-card">
-            <h3 class="contact-form-title">Send us a Message</h3>
-            <form onsubmit="showSubmittedAlert(event)">
-              <div class="form-row">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Email Address" required>
-              </div>
-              <input class="form-row" type="text" placeholder="Subject" required>
-              <textarea class="form-row" placeholder="Your message..." rows="5" required></textarea>
-              <button type="submit" class="btn btn-primary btn-full">Send Message</button>
-            </form>
-          </div>
-        </div>
+        <!-- Inline Alert -->
+        <?php if (!empty($alertMessage)): ?>
+            <div class="alert-box alert-<?= htmlspecialchars($alertType) ?>">
+                <?= htmlspecialchars($alertMessage) ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" id="feedbackForm">
+            <div class="form-row">
+                <input type="text" placeholder="Your Name" name="name" required>              
+                <input type="email" placeholder="Email Address" name="email" required>        
+            </div>
+            <input class="form-row" type="text" placeholder="Subject" name="subject" required>             
+            <textarea class="form-row" placeholder="Your message..." rows="5" name="message" required></textarea>
+            <button type="submit" class="btn btn-primary btn-full" name="send_feedback">Send Message</button>
+        </form>
+    </div>
+</div>
+        
       </div>
     </div>
   </section>
@@ -666,11 +691,11 @@ $blogResult = $blogStmt->get_result();
     window.addEventListener('DOMContentLoaded', highlightCurrentSection);
 
     // Alert on form submission
-    function showSubmittedAlert(event) {
-      event.preventDefault();
-      alert("Thank you for your message! We'll get back to you soon.");
-      event.target.reset();
-    }
+    // function showSubmittedAlert(event) {
+    //   event.preventDefault();
+    //   alert("Thank you for your message! We'll get back to you soon.");
+    //   event.target.reset();
+    // }
 
     // Blog post share functionality
     function sharePost(btn) {

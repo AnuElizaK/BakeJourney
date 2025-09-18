@@ -123,8 +123,8 @@ CREATE TABLE blog_likes (
     user_id INT NOT NULL, 
     liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
     UNIQUE KEY (blog_id, user_id), 
-    FOREIGN KEY (blog_id) REFERENCES blog(blog_id), 
-    FOREIGN KEY (user_id) REFERENCES users(user_id) 
+    FOREIGN KEY (blog_id) REFERENCES blog(blog_id) ON DELETE CASCADE, 
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE blog_comments (
@@ -133,8 +133,8 @@ CREATE TABLE blog_comments (
     user_id INT NOT NULL,
     comment_text TEXT,
     comment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (blog_id) REFERENCES blog(blog_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (blog_id) REFERENCES blog(blog_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS baker_reviews (
@@ -146,4 +146,13 @@ CREATE TABLE IF NOT EXISTS baker_reviews (
     review_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (baker_id) REFERENCES bakers(baker_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE feedback (
+    feedback_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    subject VARCHAR(200) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
