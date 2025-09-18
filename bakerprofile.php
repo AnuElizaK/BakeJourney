@@ -16,10 +16,10 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT full_name, email, phone, district, state, bio, brand_name, specialty, rating, no_of_reviews, address, profile_image,
-  experience, order_lead_time, availability, custom_orders
-  FROM users, bakers
-  WHERE users.user_id = bakers.user_id AND users.user_id = ?"
+  "SELECT u.*, b.*, AVG(br.rating) as rating, COUNT(br.review_id) as no_of_reviews
+  FROM users u, bakers b
+  LEFT JOIN baker_reviews br ON b.baker_id = br.baker_id
+  WHERE u.user_id = b.user_id AND u.user_id = ?"
 );
 $stmt->bind_param("i", $user_id);
 $stmt->execute();

@@ -39,7 +39,7 @@
           </div>
           <div class="form-group">
             <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+            <input type="tel" id="phone" maxlength="10" name="phone" placeholder="Enter your phone number" required>
             <div id="phoneError" class="error"></div>
           </div>
         </div>
@@ -222,8 +222,8 @@
       if (value === "") {
         error.textContent = "";
         isValid.phone = false;
-      } else if (value.length !== 10 || value.length < 10) {
-        error.textContent = "Please enter a valid 10-digit phone number";
+      } else if (!/^[6-9]\d{9}$/.test(value)) {
+        error.textContent = "Phone number should be a valid 10-digit phone number starting with 6,7,8,9";
         isValid.phone = false;
       } else {
         error.textContent = "";
@@ -252,11 +252,14 @@
     // Password validation
     document.getElementById("password").oninput = function () {
       const error = document.getElementById("passwordError");
-
       const value = this.value;
 
-      if (value.length < 8) {
-        error.textContent = "Password must be at least 8 characters long";
+      // Regex: at least one lowercase, one uppercase, one number, one special char, min 8 chars
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      if (!passwordPattern.test(value)) {
+        error.textContent =
+          "Password must be at least 8 chars, include uppercase, lowercase, number & special char(@ $ ! % * ? &)";
         isValid.password = false;
       } else {
         error.textContent = "";
@@ -264,6 +267,7 @@
       }
       validateConfirmPassword();
     };
+
 
     // Confirm Password validation
     document.getElementById("confirmPassword").oninput = validateConfirmPassword;

@@ -42,30 +42,30 @@ $alertMessage = ""; // default no message
 $alertType = "";    // success or error
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
-    // Collect form data safely
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $subject = trim($_POST['subject'] ?? '');
-    $message = trim($_POST['message'] ?? '');
+  // Collect form data safely
+  $name = trim($_POST['name'] ?? '');
+  $email = trim($_POST['email'] ?? '');
+  $subject = trim($_POST['subject'] ?? '');
+  $message = trim($_POST['message'] ?? '');
 
-    // Basic validation
-    if ($name && $email && $subject && $message) {
-        $stmt = $conn->prepare("INSERT INTO feedback (name, email, subject, message) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $name, $email, $subject, $message);
+  // Basic validation
+  if ($name && $email && $subject && $message) {
+    $stmt = $conn->prepare("INSERT INTO feedback (name, email, subject, message) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $name, $email, $subject, $message);
 
-        if ($stmt->execute()) {
-            $alertMessage = "✅ Thank you for your feedback!";
-            $alertType = "success";
-        } else {
-            $alertMessage = "❌ Failed to send feedback. Please try again.";
-            $alertType = "error";
-        }
-        $stmt->close();
+    if ($stmt->execute()) {
+      $alertMessage = "Thank you for your feedback!";
+      $alertType = "success";
     } else {
-        $alertMessage = "⚠ Please fill all fields.";
-        $alertType = "warning";
+      $alertMessage = "Failed to send feedback. Please try again.";
+      $alertType = "error";
     }
-    
+    $stmt->close();
+  } else {
+    $alertMessage = "⚠ Please fill all fields.";
+    $alertType = "warning";
+  }
+
 }
 ?>
 
@@ -121,14 +121,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
   </nav>
 
   <!-- Hero Section -->
+
+
   <section class="hero" id="home">
+
+
     <div class="hero-overlay"></div>
     <div class="hero-content">
+      <!-- Inline Alert -->
+      <div>
+        <?php if (!empty($alertMessage)): ?>
+          <div class="alert-box alert-<?= htmlspecialchars($alertType) ?>" id="feedbackAlert">
+            <?= htmlspecialchars($alertMessage) ?>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+          </div>
+        <?php endif; ?>
+      </div>
+
       <div class="hero-icon">
         <img src="media/Logo.png" alt="BakeJourney Logo" width="80" height="80" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-image">
       </div>
-
       <h1 class="hero-title">
         BakeJourney
         <span class="hero-subtitle">The Home Baker's Marketplace</span>
@@ -440,7 +453,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
             </div>
             <div class="post-content">
               <div class="post-meta">
-                <span class="category-badge <?= strtolower($blog['category']) ?>"><?= htmlspecialchars($blog['category']) ?></span>
+                <span
+                  class="category-badge <?= strtolower($blog['category']) ?>"><?= htmlspecialchars($blog['category']) ?></span>
                 <span class="post-author">
                   <p class="author" onclick="window.location.href='login.php'" title="Visit the author">
                     By <?= htmlspecialchars($blog['full_name']) ?>
@@ -540,29 +554,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
               <p>Need something special? Custom cakes and large orders require 48 hours advance notice. Call us to discuss your requirements!</p>
             </div>
           </div>-->
-<div class="contact-form">
-    <div class="form-card" id="feedback_card">
-        <h3 class="contact-form-title">Send us a Message</h3>
+        <div class="contact-form">
+          <div class="form-card" id="feedback_card">
+            <h3 class="contact-form-title">Send us a Message</h3>
 
-        <!-- Inline Alert -->
-        <?php if (!empty($alertMessage)): ?>
-            <div class="alert-box alert-<?= htmlspecialchars($alertType) ?>">
-                <?= htmlspecialchars($alertMessage) ?>
-            </div>
-        <?php endif; ?>
+            <form method="POST" id="feedbackForm">
+              <div class="form-row">
+                <input type="text" placeholder="Your Name" name="name" required>
+                <input type="email" placeholder="Email Address" name="email" required>
+              </div>
+              <input class="form-row" type="text" placeholder="Subject" name="subject" required>
+              <textarea class="form-row" placeholder="Your message..." rows="5" name="message" required></textarea>
+              <button type="submit" class="btn btn-primary btn-full" name="send_feedback">Send Message</button>
+            </form>
+          </div>
+        </div>
 
-        <form method="POST" id="feedbackForm">
-            <div class="form-row">
-                <input type="text" placeholder="Your Name" name="name" required>              
-                <input type="email" placeholder="Email Address" name="email" required>        
-            </div>
-            <input class="form-row" type="text" placeholder="Subject" name="subject" required>             
-            <textarea class="form-row" placeholder="Your message..." rows="5" name="message" required></textarea>
-            <button type="submit" class="btn btn-primary btn-full" name="send_feedback">Send Message</button>
-        </form>
-    </div>
-</div>
-        
       </div>
     </div>
   </section>
@@ -690,12 +697,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
     window.addEventListener('scroll', highlightCurrentSection);
     window.addEventListener('DOMContentLoaded', highlightCurrentSection);
 
-    // Alert on form submission
-    // function showSubmittedAlert(event) {
-    //   event.preventDefault();
-    //   alert("Thank you for your message! We'll get back to you soon.");
-    //   event.target.reset();
-    // }
+    // Auto-hide alert after 5 seconds
+    document.addEventListener("DOMContentLoaded", function () {
+      const alertBox = document.getElementById("feedbackAlert");
+      if (alertBox) {
+        setTimeout(() => {
+          alertBox.classList.add("fade-out");
+          setTimeout(() => alertBox.remove(), 1000); // remove after fade animation
+        }, 5000);
+      }
+    });
+
 
     // Blog post share functionality
     function sharePost(btn) {

@@ -266,8 +266,8 @@
       if (value === "") {
         error.textContent = "";
         isValid.phone = false;
-      } else if (value.length !== 10 || value.length < 10) {
-        error.textContent = "Please enter a valid 10-digit phone number";
+      } else if (!/^[6-9]\d{9}$/.test(value)){
+        error.textContent = "Phone number should be a valid 10-digit phone number starting with 6,7,8,9";
         isValid.phone = false;
       } else {
         error.textContent = "";
@@ -295,19 +295,23 @@
 
     // Password validation
     document.getElementById("password").oninput = function () {
-      const error = document.getElementById("passwordError");
+  const error = document.getElementById("passwordError");
+  const value = this.value;
+  // Regex: at least one lowercase, one uppercase, one number, one special char, min 8 chars
+  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-      const value = this.value;
+  if (!passwordPattern.test(value)) {
+    error.textContent =
+      "Password must be at least 8 chars, include uppercase, lowercase, number & special char";
+    isValid.password = false;
+  } else {
+    error.textContent = "";
+    isValid.password = true;
+  }
 
-      if (value.length < 8) {
-        error.textContent = "Password must be at least 8 characters long";
-        isValid.password = false;
-      } else {
-        error.textContent = "";
-        isValid.password = true;
-      }
-      validateConfirmPassword();
-    };
+  validateConfirmPassword();
+};
+
 
     // Confirm Password validation
     document.getElementById("confirmPassword").oninput = validateConfirmPassword;

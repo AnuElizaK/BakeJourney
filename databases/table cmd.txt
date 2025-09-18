@@ -51,7 +51,7 @@ CREATE TABLE orders (
     delivery_address text NOT NULL,
     delivery_date DATETIME NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (baker_id) REFERENCES bakers(baker_id)    
+    FOREIGN KEY (baker_id) REFERENCES bakers(baker_id)  on DELETE CASCADE 
 );
 
 CREATE TABLE order_items (
@@ -61,7 +61,7 @@ CREATE TABLE order_items (
     quantity INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(product_id) 
+    FOREIGN KEY (product_id) REFERENCES products(product_id) on DELETE CASCADE
 );
 
 CREATE TABLE cart (
@@ -93,8 +93,8 @@ CREATE TABLE reviews (
     rating INT CHECK(rating BETWEEN 1 AND 5),
     comments TEXT,
     review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (customer_id) REFERENCES users(user_id)
+    FOREIGN KEY (product_id) REFERENCES products(product_id) on DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES users(user_id) on DELETE CASCADE
 );
 
 CREATE TABLE product_likes (
@@ -103,8 +103,8 @@ CREATE TABLE product_likes (
     customer_id INT NOT NULL,
     liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY (product_id, customer_id), -- prevents duplicate likes
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (customer_id) REFERENCES users(user_id)
+    FOREIGN KEY (product_id) REFERENCES products(product_id) on DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES users(user_id) on DELETE CASCADE
 );
 
 CREATE TABLE blog ( 

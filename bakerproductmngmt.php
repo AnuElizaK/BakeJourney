@@ -62,7 +62,7 @@ if ($result->num_rows > 0) {
 }
 
 // Handle like/unlike action
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['action'] === 'toggle_like') {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) === 'toggle_like') {
     header('Content-Type: application/json');
 
     $product_id = intval($_POST['product_id']);

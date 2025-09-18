@@ -567,9 +567,9 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
     if ($stmt->execute()) {
       // Update session name so it's reflected immediately
       $_SESSION['name'] = $updated_name;
-      echo "<script>showAlert('Success!', '✅ Profile updated successfully!', 'success'); window.location.href = 'customerprofile.php';</script>";
+      echo "<script>alert('✅ Profile updated successfully!'); window.location.href = 'customerprofile.php';</script>";
     } else {
-      echo "<script>showAlert('Error', '❌ Failed to update profile. Please try again.', 'error');</script>";
+      echo "<script>alert('❌ Failed to update profile. Please try again.');</script>";
     }
     $stmt->close();
   }

@@ -628,18 +628,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             e.stopPropagation();
         });
 
-        let quantity = 1;
-
-        function changeQuantity(change) {
-            quantity += change;
-            if (quantity < 1) quantity = 1;
-            if (quantity > 10) quantity = 10;
-            document.getElementById('quantity').textContent = quantity;
-            const basePrice = <?php echo $product['price']; ?>;
-            const totalPrice = basePrice * quantity;
-            document.querySelector('.price').textContent = `₹${totalPrice.toFixed(2)}`;
-        }
-
+        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -656,4 +645,5 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
     </script>
 </body>
 <?php include 'globalfooter.php'; ?>
+
 </html>

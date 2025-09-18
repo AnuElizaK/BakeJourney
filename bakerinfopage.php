@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message']) && is
         if (move_uploaded_file($_FILES['attachment']['tmp_name'], $attachment_path)) {
             $attachment = $attachment_name;
         }
+
     }
 
     if ($message || $attachment) {
@@ -315,8 +316,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                     <input type="hidden" name="receiver_id" value="<?= $baker_id ?>">
                     <textarea id="chatInput" name="message" class="chat-input" placeholder="Type a message..."
                         rows="1"></textarea>
+                        
                     <div id="imagePreview" class="image-preview"></div>
-
                     <input type="file" id="attachmentInput" name="attachment" accept="image/*" style="display: none;">
                     <button type="button" class="attach-button"
                         onclick="document.getElementById('attachmentInput').click()">
@@ -448,7 +449,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             </form>
         </section>
     </main>
-    
+
     <?php include 'globalfooter.php'; ?>
 
     <script>
@@ -507,23 +508,39 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
         if (attachmentInput && imagePreview) {
             attachmentInput.addEventListener('change', function () {
                 const file = this.files[0];
+                imagePreview.innerHTML = ''; // Clear previous preview
                 if (file && file.type.startsWith('image/')) {
+                    // Optional: Validate file size (e.g., max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('File is too large. Maximum size is 5MB.');
+                        this.value = ''; // Clear input for invalid file
+                        return;
+                    }
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         imagePreview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="max-width: 100px; max-height: 100px; margin-top: 5px;">`;
                     };
+                    reader.onerror = function () {
+                        alert('Error reading file. Please try again.');
+                        attachmentInput.value = ''; // Clear input on error
+                    };
                     reader.readAsDataURL(file);
-                } else {
-                    imagePreview.innerHTML = '';
                 }
             });
         }
 
-        // Clear preview on form submission
+        // Clear preview after successful submission (optional)
         if (chatForm) {
-            chatForm.addEventListener('submit', function () {
-                imagePreview.innerHTML = '';
-                attachmentInput.value = '';
+            chatForm.addEventListener('submit', function (event) {
+                // Optional: Validate that at least a message or file is provided
+                const message = document.getElementById('chatInput').value.trim();
+                if (!message && !attachmentInput.files.length) {
+                    event.preventDefault(); // Prevent submission if both are empty
+                    alert('Please enter a message or select a file.');
+                    return;
+                }
+                // Do NOT clear attachmentInput.value here to ensure file is sent
+                imagePreview.innerHTML = ''; // Clear preview to reset UI
             });
         }
 

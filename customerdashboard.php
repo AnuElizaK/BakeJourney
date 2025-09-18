@@ -22,10 +22,13 @@ $prdStmt->execute();
 $pResult = $prdStmt->get_result();
 
 // Fetch 8 bakers from the database
+// LEFT JOIN to include bakers with no reviews
 $bkrStmt = $conn->prepare("
-  SELECT *
+  SELECT *,AVG(br.rating) as rating
   FROM users u
   JOIN bakers b ON u.user_id = b.user_id
+  LEFT JOIN baker_reviews br ON b.baker_id = br.baker_id 
+  GROUP BY b.baker_id
   LIMIT 8
 ");
 $bkrStmt->execute();
