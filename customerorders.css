@@ -195,7 +195,7 @@ h2 {
 }
 
 .status-accepted {
-    background-color: #d4edda;
+    background-color: #c8ffdc;
     color: #155724;
 }
 
@@ -225,7 +225,7 @@ h2 {
 .payable-amount {
     border-bottom: 1px solid #d1d5db;
     padding-bottom: 10px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #28a745;
 }
 

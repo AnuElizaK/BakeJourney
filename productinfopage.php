@@ -249,7 +249,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <div class="meta-label">Hours Prep</div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-value"><?php echo htmlspecialchars($product['weight']); ?></div>
+                            <div class="meta-value"><?php echo htmlspecialchars($product['weight'].' kg'); ?></div>
                             <div class="meta-label">Weight</div>
                         </div>
                     </div>

@@ -218,14 +218,8 @@ h2 {
 
 .products-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 40px;
-}
-
-@media (min-width: 768px) {
-    .products-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
 }
 
 .product-card {
@@ -342,6 +336,7 @@ h2 {
     }
 
     .products-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 20px;
     }
 
@@ -351,5 +346,11 @@ h2 {
 
     .product-content {
         padding: 24px;
+    }
+}
+
+@media (max-width: 430px) {
+    .products-grid {
+        grid-template-columns: 1fr;
     }
 }

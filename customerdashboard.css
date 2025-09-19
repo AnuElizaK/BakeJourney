@@ -222,14 +222,8 @@ h2,
 
 .products-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 40px;
-}
-
-@media (min-width: 768px) {
-  .products-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .product-card {
@@ -325,14 +319,8 @@ h2,
 
 .bakers-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 40px;
-}
-
-@media (min-width: 768px) {
-  .bakers-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .baker-card {
@@ -724,6 +712,15 @@ h2,
     font-size: 1rem;
   }
 
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .bakers-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .about-text h2 {
     font-size: 2rem;
   }
@@ -753,10 +750,6 @@ h2,
   .profile-image img {
     width: 220px;
     height: 220px;
-  }
-
-  .products-grid {
-    gap: 20px;
   }
 
   .product-card {
@@ -807,5 +800,15 @@ h2,
 
   .contact-form h3 {
     font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bakers-grid {
+    grid-template-columns: 1fr;
   }
 }

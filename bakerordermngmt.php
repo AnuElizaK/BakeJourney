@@ -170,7 +170,7 @@ while ($order = $orders_result->fetch_assoc()) {
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>Pending Requests</h3>
+                <h3>Pending</h3>
                 <div class="number"><?php echo $pending_count; ?></div>
             </div>
             <div class="stat-card">
@@ -213,7 +213,7 @@ while ($order = $orders_result->fetch_assoc()) {
                             <div>
                                 <span class="order-status status-pending">New Request</span>
                                 <span class="payment-status payment-<?php echo $order['payment_status']; ?>">
-                                    Payment: <?php echo ucfirst($order['payment_status']); ?>
+                                    Payment <?php echo ucfirst($order['payment_status']); ?>
                                 </span>
                             </div>
                         </div>
@@ -236,13 +236,13 @@ while ($order = $orders_result->fetch_assoc()) {
                             <?php endforeach; ?>
                         </div>
 
-                        <div class="order-actions" style="margin-top: 16px; text-align: center;">
-                            <form method="POST" style="display:inline; margin-right: 8px;">
+                        <div class="order-actions" style="margin: 16px 0; text-align: center;">
+                            <form method="POST" style="display:inline;">
                                 <input type="hidden" name="order_id" value="<?php echo $order['order_id']; ?>">
                                 <input type="hidden" name="order_status" value="accepted">
                                 <button type="submit" class="btn btn-success btn-sm" 
                                         onclick="return confirm('Accept this entire order?')">
-                                    ✅ Accept Order
+                                    Accept
                                 </button>
                             </form>
                             <form method="POST" style="display:inline;">
@@ -250,7 +250,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                 <input type="hidden" name="order_status" value="cancelled">
                                 <button type="submit" class="btn btn-danger btn-sm"
                                         onclick="return confirm('Reject this order? This cannot be undone.')">
-                                    ❌ Reject Order
+                                    Reject
                                 </button>
                             </form>
                         </div>
@@ -309,7 +309,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                     <?= $order['order_status'] === 'shipped' ? 'Shipped' : 'In Progress' ?>
                                 </span>
                                 <span class="payment-status payment-<?php echo $order['payment_status']; ?>">
-                                    Payment: <?php echo ucfirst($order['payment_status']); ?>
+                                    Payment <?php echo ucfirst($order['payment_status']); ?>
                                 </span>
                             </div>
                         </div>
@@ -340,7 +340,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                     <input type="hidden" name="order_status" value="shipped">
                                     <button type="submit" class="btn btn-primary btn-sm"
                                             onclick="return confirm('Mark this order as shipped?')">
-                                        🚚 Mark as Shipped
+                                        Mark as Shipped
                                     </button>
                                 </form>
                             <?php endif; ?>
@@ -351,7 +351,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                     <input type="hidden" name="order_status" value="delivered">
                                     <button type="submit" class="btn btn-success btn-sm"
                                             onclick="return confirm('Mark this order as delivered?')">
-                                        ✅ Mark as Delivered
+                                        Mark as Delivered
                                     </button>
                                 </form>
                             <?php endif; ?>
@@ -406,7 +406,7 @@ while ($order = $orders_result->fetch_assoc()) {
                             <div>
                                 <span class="order-status status-<?php echo $order['order_status']; ?>"><?php echo $order['order_status']; ?></span>
                                 <span class="payment-status payment-<?php echo $order['payment_status']; ?>">
-                                    Payment: <?php echo ucfirst($order['payment_status']); ?>
+                                    Payment <?php echo ucfirst($order['payment_status']); ?>
                                 </span>
                             </div>
                         </div>

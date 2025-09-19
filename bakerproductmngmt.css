@@ -753,7 +753,7 @@ h3 {
     }
 
     .products-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .modal-content {
@@ -780,6 +780,10 @@ h3 {
         font-size: 0.7rem;
         padding: 10px 12px;
         text-align: center;
+    }
+
+    .products-grid {
+        grid-template-columns: 1fr;
     }
 }
 

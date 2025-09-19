@@ -320,6 +320,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'add_comment') {
                         placeholder="Type your content..."></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label">Reading Time (in minutes)</label>
+                    <input type="number" class="form-input read-time" name="reading_time" placeholder="How long to finish reading?" required>
+                </div>
+
                 <!-- Image upload field handled by blog-cropper.js -->
                 <?php if (isset($_SESSION['uploaded_blog_image'])): ?>
                     <div style="margin:10px 0; color:green;">Image uploaded:

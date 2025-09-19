@@ -427,9 +427,9 @@ while ($row = $result->fetch_assoc()) {
                                 </div>
 
                                 <div class="delivery-info">
-                                    <div><strong>Delivery Address:</strong>
+                                    <div style="font-size: 0.9rem;"><strong>Delivery Address:</strong>
                                         <?= htmlspecialchars($order['delivery_address'] ?? 'Not specified') ?></div>
-                                    <div><strong>Expected Delivery:</strong>
+                                    <div style="font-size: 0.9rem;"><strong>Expected Delivery:</strong>
                                         <?= date('d M Y, h:i A', strtotime($order['delivery_date'])) ?></div>
                                 </div>
                             </div>

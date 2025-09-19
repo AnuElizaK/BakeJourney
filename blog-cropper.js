@@ -24,10 +24,10 @@ document.addEventListener('DOMContentLoaded', function () {
   `;
 
   // To make image upload modal appear below the content textarea
-  const textareas = modalForm.querySelectorAll('textarea');
+  const inputs = modalForm.querySelectorAll('input');
   let insertAfterElem = null;
-  if (textareas.length > 0) {
-    insertAfterElem = textareas[textareas.length - 1];
+  if (inputs.length > 0) {
+    insertAfterElem = inputs[inputs.length - 1];
   }
   if (insertAfterElem && insertAfterElem.parentNode) {
     insertAfterElem.insertAdjacentHTML('afterend', imageUpload);

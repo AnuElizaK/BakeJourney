@@ -152,16 +152,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
     }
 }
 
-// Function to generate star HTML
-// function generateStars($social, $maxStars = 5)
-// {
-//     $stars = '';
-//     for ($i = 1; $i <= $maxStars; $i++) {
-//         $stars .= ($i <= $social) ? '★' : '☆';
-//     }
-//     return $stars;
-// }
-
 // Function to format relative time
 function timeAgo($datetime)
 {
@@ -235,7 +225,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <div class="meta-label">Comments</div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-value">1 minute</div>
+                            <div class="meta-value"><?php echo htmlspecialchars(number_format($blog['read_time'], 1) . ' minutes'); ?></div>
                             <div class="meta-label">Read</div>
                         </div>
                     </div>

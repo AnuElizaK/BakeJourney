@@ -378,8 +378,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
             src="https://images.unsplash.com/photo-1630507103234-00d3e621cae2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Baker at work">
           <div class="experience-badge">
-            <div class="experience-number">10,000+</div>
-            <div class="experience-text">bakers strong</div>
+            <div class="experience-number">1000+</div>
+            <div class="experience-text">products to choose from,</div>
+            <div class="experience-text">made by the best</div>
           </div>
         </div>
       </div>
