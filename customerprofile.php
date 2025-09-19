@@ -35,6 +35,22 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $orders = $result->fetch_all(MYSQLI_ASSOC);
+
+// Fetch total orders
+$stmt = $conn->prepare("SELECT COUNT(*) AS total_orders FROM orders WHERE customer_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_orders = $result->fetch_assoc()['total_orders'] ?? 0;
+
+// Fetch total spent (sum of total_amount for successful payments)
+$stmt = $conn->prepare("SELECT COALESCE(SUM(total_amount), 0) AS total_spent 
+                        FROM orders 
+                        WHERE customer_id = ? AND payment_status = 'success'");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_spent = $result->fetch_assoc()['total_spent'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -122,21 +138,22 @@ $orders = $result->fetch_all(MYSQLI_ASSOC);
         <p class="profile-contact"><?php echo htmlspecialchars($_SESSION['email']); ?> <br>
           Joined at <?php echo htmlspecialchars($_SESSION['created_at']); ?>
         </p>
-        <p> </p>
+        
         <div class="profile-stats">
           <div class="stat-card">
-            <span class="stat-number">12</span>
+            <span class="stat-number"><?= $total_orders ?></span>
             <span class="stat-label">Total Orders</span>
           </div>
-          <div class="stat-card following" onclick="window.location.href='customerfollowinglist.php'">
+          <div class="stat-card following">
             <span class="stat-number">3</span>
             <span class="stat-label">Bakers You Follow</span>
           </div>
           <div class="stat-card">
-            <span class="stat-number">$245</span>
+            <span class="stat-number">₹<?= number_format($total_spent, 2) ?></span>
             <span class="stat-label">Total Spent</span>
           </div>
         </div>
+
       </div>
 
       <!-- Personal Information -->

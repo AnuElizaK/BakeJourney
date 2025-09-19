@@ -75,7 +75,7 @@ if (isset($_GET['chat']) && $_GET['chat'] === 'open' && isset($_GET['chat_user_i
     $messages = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     // Fetch selected customer details
-    $stmt = $conn->prepare("SELECT full_name, profile_image FROM users WHERE user_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $chat_user_id);
     $stmt->execute();
     $selected_customer = $stmt->get_result()->fetch_assoc();
@@ -149,7 +149,7 @@ function timeAgo($datetime)
                             <img src="<?= !empty($selected_customer['profile_image']) ? 'uploads/' . htmlspecialchars($selected_customer['profile_image']) : 'media/profile.png' ?>"
                                 alt="<?= htmlspecialchars($selected_customer['full_name']) ?>" class="baker-avatar">
                             <div class="baker-chat-info">
-                                <h4><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
+                               <h4 class="customer-name" onclick="toggleCustomerInfo()"><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
                             </div>
                             <a href="customorder.php" class="chat-close" style="text-decoration: none;">&times;</a>
                         </div>
@@ -197,12 +197,48 @@ function timeAgo($datetime)
                         </form>
                     </div>
                 </div>
+
+                <!-- Customer Info Modal -->
+<div id="customerInfoModal" class="customer-info-modal" style="display: none;">
+    <div class="customer-info-container">
+        <div class="customer-info-header">
+            <h3>Customer Info</h3>
+            <button onclick="toggleCustomerInfo()" class="info-close">&times;</button>
+        </div>
+        <div class="customer-info-content">
+            <img src="<?= !empty($selected_customer['profile_image']) ? 'Uploads/' . htmlspecialchars($selected_customer['profile_image']) : 'media/profile.png' ?>"
+                 alt="<?= htmlspecialchars($selected_customer['full_name']) ?>" class="customer-info-avatar">
+            <h4><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
+            <?php if (!empty($selected_customer['email'])): ?>
+                <p><strong>Email:</strong> <?= htmlspecialchars($selected_customer['email']) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($selected_customer['phone'])): ?>
+                <p><strong>Phone:</strong> <?= htmlspecialchars($selected_customer['phone']) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($selected_customer['bio'])): ?>
+                <p><strong>Bio:</strong> <?= htmlspecialchars($selected_customer['bio']) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($selected_customer['state'])): ?>
+                <p><strong>State:</strong> <?= htmlspecialchars($selected_customer['state']) ?></p>
+            <?php endif; ?>
+            <?php if (!empty($selected_customer['district'])): ?>
+                <p><strong>District:</strong> <?= htmlspecialchars($selected_customer['district']) ?></p>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
             <?php endif; ?>
         </section>
     </main>
     <?php include 'globalfooter.php'; ?>
 
     <script>
+         function toggleCustomerInfo() {
+        const modal = document.getElementById('customerInfoModal');
+        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+    }
+
+
         document.addEventListener('DOMContentLoaded', function () {
             const chatInput = document.getElementById('chatInput');
             const attachmentInput = document.getElementById('attachmentInput');

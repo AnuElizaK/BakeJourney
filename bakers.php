@@ -13,10 +13,11 @@ header("Pragma: no-cache");
 
 
 $stmt = $conn->prepare("
-  SELECT *
-  FROM users u
-  JOIN bakers b ON u.user_id = b.user_id
-  
+SELECT u.*, b.*, AVG(br.rating) AS rating
+FROM users u
+JOIN bakers b ON u.user_id = b.user_id
+LEFT JOIN baker_reviews br ON b.baker_id = br.baker_id
+GROUP BY b.baker_id, u.user_id  
 ");
 $stmt->execute();
 $result = $stmt->get_result();
