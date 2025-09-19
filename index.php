@@ -121,11 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
   </nav>
 
   <!-- Hero Section -->
-
-
   <section class="hero" id="home">
-
-
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <!-- Inline Alert -->
@@ -373,10 +369,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
           </div>
         </div>
 
-        <div class="about-image">
-          <img
-            src="https://images.unsplash.com/photo-1630507103234-00d3e621cae2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="Baker at work">
+        <div class="about-video">
+          <video autoplay muted loop>
+            <source src="media/donuts.mp4" type="video/mp4">
+          </video>
           <div class="experience-badge">
             <div class="experience-number">1000+</div>
             <div class="experience-text">products to choose from,</div>
@@ -558,7 +554,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
         <div class="contact-form">
           <div class="form-card" id="feedback_card">
             <h3 class="contact-form-title">Send us a Message</h3>
-
             <form method="POST" id="feedbackForm">
               <div class="form-row">
                 <input type="text" placeholder="Your Name" name="name" required>
@@ -570,7 +565,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
             </form>
           </div>
         </div>
-
       </div>
     </div>
   </section>

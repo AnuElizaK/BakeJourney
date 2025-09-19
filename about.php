@@ -133,14 +133,15 @@ header("Pragma: no-cache");
             line-height: 1.6;
         }
 
-        .about-image {
+        .about-video {
             position: relative;
         }
 
-        .about-image img {
+        .about-video video {
             border-radius: 24px;
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
             width: 100%;
+            height: 100%;
         }
 
         .experience-badge {
@@ -294,9 +295,10 @@ header("Pragma: no-cache");
                     </div>
                 </div>
 
-                <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1630507103234-00d3e621cae2?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                        alt="Baker at work">
+                <div class="about-video">
+                    <video autoplay muted loop>
+                        <source src="media/donuts.mp4" type="video/mp4">
+                    </video>
                     <div class="experience-badge">
                         <div class="experience-number">1000+</div>
                         <div class="experience-text">products to choose from,</div>

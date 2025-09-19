@@ -135,19 +135,36 @@ if ($user_id) {
       box-shadow: 0 6px 16px rgba(217, 119, 6, 0.4);
     }
 
+    .profile-link {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(to right, #e5e7eb, transparent);
+      border-radius: 50px;
+      gap: 5px;
+      padding: 3px 8px 3px 3px;
+      transition: all 0.3s ease;
+    }
+
+    .profile-link:hover {
+      cursor: pointer;
+      background: linear-gradient(to right, #fef3c7, transparent);
+      transform: translateY(-2px);
+    }
+
     .baker-avatar {
       width: 40px;
       height: 40px;
       background: transparent;
+      border: 1.5px solid #f59e0b;
       border-radius: 50%;
       object-fit: cover;
       transition: all 0.3s ease;
     }
 
-    .baker-avatar:hover {
-      cursor: pointer;
-      transform: scale(1.1);
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    .baker-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #374151;
     }
 
     /* Mobile Menu Toggle */
@@ -300,6 +317,10 @@ if ($user_id) {
         width: 30px;
         height: 30px;
       }
+
+      .baker-name {
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
@@ -320,10 +341,14 @@ if ($user_id) {
           <a href="bakerordermngmt.php" class="nav-link" onclick="toggleSelect(this)">Orders</a>
           <a href="bakerblog.php" class="nav-link" onclick="toggleSelect(this)">Blog</a>
           <a href="contact.php" class="nav-link" onclick="toggleSelect(this)">Contact Us</a>
-          <img onclick="window.location.href='bakerprofile.php'"
-            src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
-            alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" 
-            title="Visit Your Profile" class="baker-avatar">
+
+          <!-- Baker avatar and profile link -->
+          <div class="profile-link" onclick="window.location.href='bakerprofile.php'" title="Visit Your Profile">
+            <img
+              src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
+              alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" class="baker-avatar">
+            <span class="baker-name"><?php echo htmlspecialchars($user_info['full_name']); ?></span>
+          </div>
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 

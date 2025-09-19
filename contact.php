@@ -1,5 +1,6 @@
 <?php
 session_start();
+include 'db.php';
 if (!isset($_SESSION['email'])) {
     header("Location: index.php"); // Redirect to login if not authorized
     exit();
@@ -9,6 +10,31 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
+    // Collect form data safely
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    // Basic validation
+    if ($name && $email && $subject && $message) {
+        $stmt = $conn->prepare("INSERT INTO feedback (name, email, subject, message) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $name, $email, $subject, $message);
+
+        if ($stmt->execute()) {
+            $alertMessage = "Thank you for your feedback!";
+            $alertType = "success";
+        } else {
+            $alertMessage = "Failed to send feedback. Please try again.";
+            $alertType = "error";
+        }
+        $stmt->close();
+    } else {
+        $alertMessage = "⚠ Please fill all fields.";
+        $alertType = "warning";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -176,6 +202,7 @@ header("Pragma: no-cache");
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 1rem;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             transition: all 0.3s ease;
             background: #fafafa;
         }
@@ -190,8 +217,55 @@ header("Pragma: no-cache");
 
         form textarea {
             resize: vertical;
-            font-family: 'Segoe UI', Roboto, sans-serif;
             min-height: 140px;
+        }
+
+        /* feedback alert */
+        .alert-box {
+            padding: 12px 20px;
+            margin: 12px 0;
+            border-radius: 50px;
+            font-weight: 600;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            position: relative;
+        }
+
+        .alert-success {
+            background: #e6f9e6;
+            border: 1px solid #00b300;
+            color: #006600;
+        }
+
+        .alert-error {
+            background: #ffe6e6;
+            border: 1px solid #ff1a1a;
+            color: #800000;
+        }
+
+        .alert-warning {
+            background: #fff4e6;
+            border: 1px solid #ff9900;
+            color: #804d00;
+        }
+
+        .fade-out {
+            opacity: 0;
+        }
+
+        .alert-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .alert-close:hover {
+            color: #000;
         }
 
         /* Responsive Design */
@@ -199,6 +273,7 @@ header("Pragma: no-cache");
             .body {
                 padding-top: 70px;
             }
+
             .section-header h2 {
                 font-size: 2rem;
             }
@@ -226,6 +301,16 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <div class="section-header">
                 <h2>Get In Touch</h2>
                 <p>Got any questions or complaints? We'd love to hear from you!</p>
+            </div>
+
+            <!-- Inline Alert -->
+            <div>
+                <?php if (!empty($alertMessage)): ?>
+                    <div class="alert-box alert-<?= htmlspecialchars($alertType) ?>" id="feedbackAlert">
+                        <?= htmlspecialchars($alertMessage) ?>
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="contact-content">
@@ -259,14 +344,16 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                 <div class="contact-form">
                     <div class="form-card">
                         <h3 class="contact-form-title">Send us a Message</h3>
-                        <form>
+                        <form method="POST" id="feedbackForm">
                             <div class="form-row">
-                                <input type="text" placeholder="Your Name" required>
-                                <input type="email" placeholder="Email Address" required>
+                                <input type="text" placeholder="Your Name" name="name" required>
+                                <input type="email" placeholder="Email Address" name="email" required>
                             </div>
-                            <input class="form-row" type="text" placeholder="Subject" required>
-                            <textarea class="form-row" placeholder="Your message..." rows="5" required></textarea>
-                            <button type="submit" class="btn btn-primary btn-full">Send Message</button>
+                            <input class="form-row" type="text" placeholder="Subject" name="subject" required>
+                            <textarea class="form-row" placeholder="Your message..." rows="5" name="message"
+                                required></textarea>
+                            <button type="submit" class="btn btn-primary btn-full" name="send_feedback">Send
+                                Message</button>
                         </form>
                     </div>
                 </div>
@@ -276,4 +363,16 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
 
     <?php include 'globalfooter.php'; ?>
 
+    <script>
+        // Auto-hide alert after 5 seconds
+        document.addEventListener("DOMContentLoaded", function () {
+            const alertBox = document.getElementById("feedbackAlert");
+            if (alertBox) {
+                setTimeout(() => {
+                    alertBox.classList.add("fade-out");
+                    setTimeout(() => alertBox.remove(), 1000); // remove after fade animation
+                }, 5000);
+            }
+        });
+    </script>
 </body>

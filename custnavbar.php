@@ -189,19 +189,36 @@ $has_cart_items = $cart_count > 0;
       }
     }
 
+    .profile-link {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(to right, #e5e7eb, transparent);
+      border-radius: 50px;
+      gap: 5px;
+      padding: 4px 8px 4px 4px;
+      transition: all 0.3s ease;
+    }
+
+    .profile-link:hover {
+      cursor: pointer;
+      background: linear-gradient(to right, #fef3c7, transparent);
+      transform: translateY(-2px);
+    }
+
     .user-avatar {
       width: 40px;
       height: 40px;
       background: transparent;
+      border: 1.5px solid #f59e0b;
       border-radius: 50%;
       object-fit: cover;
       transition: all 0.3s ease;
     }
 
-    .user-avatar:hover {
-      cursor: pointer;
-      transform: scale(1.1);
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    .user-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #374151;
     }
 
     /* Mobile Menu Toggle */
@@ -376,6 +393,10 @@ $has_cart_items = $cart_count > 0;
         width: 30px;
         height: 30px;
       }
+
+      .user-name {
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
@@ -407,10 +428,12 @@ $has_cart_items = $cart_count > 0;
           </div>
 
           <!-- User avatar and profile link -->
-          <img onclick="window.location.href='customerprofile.php'"
-            src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
-            alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" title="Visit Your Profile"
-            class="user-avatar">
+          <div class="profile-link" onclick="window.location.href='customerprofile.php'" title="Visit Your Profile">
+            <img
+              src="<?= !empty($user_info['profile_image']) ? 'uploads/' . htmlspecialchars($user_info['profile_image']) : 'media/profile.png' ?>"
+              alt="<?php echo htmlspecialchars($user_info['full_name']); ?>" class="user-avatar">
+            <span class="user-name"><?php echo htmlspecialchars($user_info['full_name']); ?></span>
+          </div>
           <a href="signout.php" class="nav-link nav-cta">Sign Out</a>
         </div>
 
