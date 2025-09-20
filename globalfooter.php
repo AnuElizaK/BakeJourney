@@ -90,13 +90,21 @@
         .footer-attributions a {
             color: #d1d5db;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .footer-links a:hover,
         .footer-social a:hover,
         .footer-attributions a:hover {
             color: #f59e0b;
+        }
+
+        .footer-social img {
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover img {
+            transform: scale(1.2);
         }
 
         .footer-bottom {

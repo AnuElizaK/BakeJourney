@@ -220,6 +220,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
             min-height: 140px;
         }
 
+        /* Meet the Team */
+        .meet-the-team {
+            padding: 50px 0;
+        }
+
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 1px solid #f59e0b;
+            background: transparent;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2a38;
+            font-size: 12px;
+        }
+
+        .profile-photo img {
+            width: 85%;
+            height: 85%;
+            object-fit: cover;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 10px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fee996 100%);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .team-member:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .team-member:hover .profile-photo img {
+            transform: scale(1.2);
+            filter: sepia(0.5) brightness(0.9);
+        }
+
+        .border-div {
+            border-radius: 10px;
+            padding: 30px 10px;
+            border: 1px solid #f59e0b;
+        }
+
+        .member-name {
+            font-family: 'Puanto', Roboto, sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-bottom: 1px solid #f59e0b;
+        }
+
+        .member-role {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .member-role.sub {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #6b7280;
+            margin: 2px 0 20px;
+        }
+
+        .member-contact {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+            margin-top: 4px 0;
+        }
+
+        .social-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.3);
+        }
+
         /* feedback alert */
         .alert-box {
             padding: 12px 20px;
@@ -268,6 +373,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
             color: #000;
         }
 
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fcd34d, #f59e0b, #d97706);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .body {
@@ -314,33 +433,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             </div>
 
             <div class="contact-content">
-                <!--<div class="contact-info">
-            <h3>Visit Our Bakery</h3>
-            
-            <div class="info-section">
-              <h4>Address</h4>
-              <p>123 Baker Street<br>Sweet Valley, SV 12345</p>
-            </div>
-            
-            <div class="info-section">
-              <h4>Hours</h4>
-              <p>Monday - Friday: 6:00 AM - 7:00 PM<br>
-                 Saturday: 7:00 AM - 8:00 PM<br>
-                 Sunday: 8:00 AM - 6:00 PM</p>
-            </div>
-            
-            <div class="info-section">
-              <h4>Contact</h4>
-              <p>Phone: (555) 123-BAKE<br>
-                 Email: hello@sweetdreamsbakery.com</p>
-            </div>
-
-            <div class="special-orders">
-              <h4>Special Orders</h4>
-              <p>Need something special? Custom cakes and large orders require 48 hours advance notice. Call us to discuss your requirements!</p>
-            </div>
-          </div>-->
-
                 <div class="contact-form">
                     <div class="form-card">
                         <h3 class="contact-form-title">Send us a Message</h3>
@@ -355,6 +447,46 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <button type="submit" class="btn btn-primary btn-full" name="send_feedback">Send
                                 Message</button>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Meet the Team -->
+                <div class="meet-the-team">
+                    <div class="section-header">
+                        <h2>Meet the Team</h2>
+                        <p>Want to know who's the behind the curtain? Get to know us or reach out for inquiries.</p>
+                    </div>
+                    <div class="team-members">
+                        <div class="team-member">
+                            <div class="border-div">
+                                <div class="profile-photo"><img src="media/acsahr.jpg" alt="Acsah Rojan"></div>
+                                <p class="member-name">Acsah Rojan</p>
+                                <p class="member-role">Co-Founder</p>
+                                <p class="member-role sub">Backend Developer • QA Officer</p>
+                                <p class="member-contact">+91 xxxxx 66284</p>
+                                <p class="member-contact">acsah.r@example.com</p>
+                                <div class="social-links">
+                                    <a href="#"><img src="media/instagram.svg" alt="Instagram" title="Visit Acsah on Instagram"></a>
+                                    <a href="#"><img src="media/linkedin.svg" alt="LinkedIn" title="Visit Acsah on LinkedIn"></a>
+                                    <a href="#"><img src="media/github.svg" alt="GitHub" title="Visit Acsah on GitHub"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="team-member">
+                            <div class="border-div">
+                                <div class="profile-photo"><img src="media/anuek.png" alt="Anu Elizebath K."></div>
+                                <p class="member-name">Anu Elizebath K.</p>
+                                <p class="member-role">Co-Founder</p>
+                                <p class="member-role sub">Frontend Developer • UI/UX Designer</p>
+                                <p class="member-contact">+91 xxxxx 51778</p>
+                                <p class="member-contact">anu.ek@example.com</p>
+                                <div class="social-links">
+                                    <a href="#"><img src="media/instagram.svg" alt="Instagram" title="Visit Anu on Instagram"></a>
+                                    <a href="#"><img src="media/linkedin.svg" alt="LinkedIn" title="Visit Anu on LinkedIn"></a>
+                                    <a href="#"><img src="media/github.svg" alt="GitHub" title="Visit Anu on GitHub"></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

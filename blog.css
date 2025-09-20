@@ -129,7 +129,6 @@ h2 {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     position: relative;
-    cursor: pointer;
 }
 
 .blog-post:hover {
@@ -203,6 +202,7 @@ h2 {
 .author {
     color: #6b7280;
     transition: color 0.3s ease;
+    cursor: pointer;
 }
 
 .author:hover {
