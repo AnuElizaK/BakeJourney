@@ -1455,9 +1455,14 @@ form textarea {
 }
 
 .footer-links a,
-.footer-social a,
-.footer-attributions a {
+.footer-social a {
   color: #d1d5db;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-attributions a {
+  color: #fee996;
   text-decoration: none;
   transition: color 0.3s ease;
 }
@@ -1466,6 +1471,14 @@ form textarea {
 .footer-social a:hover,
 .footer-attributions a:hover {
   color: #f59e0b;
+}
+
+.footer-social img {
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover img {
+  transform: scale(1.2);
 }
 
 .footer-bottom {

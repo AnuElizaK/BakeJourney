@@ -152,7 +152,7 @@ function timeAgo($datetime)
     $time = time() - strtotime($datetime);
 
     if ($time < 60)
-        return 'just now';
+        return 'Just now';
     if ($time < 3600)
         return floor($time / 60) . ' minutes ago';
     if ($time < 86400)

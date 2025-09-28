@@ -618,8 +618,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
           <h3 class="attributions">Attributions</h3>
           <ul>
             <li>Icons by <a href="https://icons8.com">Icons8</a> & <a href="https://www.flaticon.com/">Flaticon</a></li>
-            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a>
-            </li>
+            <li>Images by <a href="https://unsplash.com/">Unsplash</a> & <a href="https://www.pexels.com/">Pexels</a></li>
             <li>Fonts by <a href="https://fonts.google.com/">Google Fonts</a></li>
             <li>Illustrations by <a href="https://storyset.com/">Storyset</a></li>
             <li>Branding font (Puanto) by <a href="https://creativemarket.com/pasha.larin">Larin Type Co.</a></li>

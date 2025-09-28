@@ -9,7 +9,11 @@
             padding: 0 24px;
         }
 
-        .footer-title, .footer-subtitle, .quick-links, .follow-us, .attributions {
+        .footer-title,
+        .footer-subtitle,
+        .quick-links,
+        .follow-us,
+        .attributions {
             font-family: 'Puanto', Roboto, sans-serif;
         }
 
@@ -86,11 +90,16 @@
         }
 
         .footer-links a,
-        .footer-social a,
-        .footer-attributions a {
+        .footer-social a {
             color: #d1d5db;
             text-decoration: none;
             transition: all 0.3s ease;
+        }
+
+        .footer-attributions a {
+            color: #fee996;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
 
         .footer-links a:hover,
@@ -206,8 +215,8 @@
                         <li><a href="about.php">About Us</a></li>
                         <li><a href="services.php">Services</a></li>
                         <li><a href="contact.php">Contact</a></li>
-                        <li><a href="sitemap.php">Sitemap</a></li>
-                        <li><a href="privacypolicy.php">Privacy Policy</a></li>
+                        <li><a href="pagenotready.php">Sitemap</a></li>
+                        <li><a href="pagenotready.php">Privacy Policy</a></li>
                         <?php
                         if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             echo '<li><a href="blog.php">Blog</a></li>';

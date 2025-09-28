@@ -1,3 +1,5 @@
+<!-- This page for future implementation (do not delete) -->
+
 <?php include 'bakernavbar.php';?>
 
 <!DOCTYPE html>

@@ -85,7 +85,7 @@ function timeAgo($datetime)
 {
     $time = time() - strtotime($datetime);
     if ($time < 60)
-        return 'just now';
+        return 'Just now';
     if ($time < 3600)
         return floor($time / 60) . ' minutes ago';
     if ($time < 86400)
@@ -127,14 +127,17 @@ function timeAgo($datetime)
                                     <img src="<?= !empty($customer['profile_image']) ? 'Uploads/' . htmlspecialchars($customer['profile_image']) : 'media/profile.png' ?>"
                                         alt="<?= htmlspecialchars($customer['full_name']) ?>" class="customer-avatar">
                                     <div>
-                                        <h4><?= htmlspecialchars($customer['full_name']) ?></h4>
+                                        <div class="customer-name-time">
+                                            <h4><?= htmlspecialchars($customer['full_name']) ?></h4>
+                                            <span
+                                                class="accordion-time"><?= $customer['latest_sent_at'] ? timeAgo($customer['latest_sent_at']) : '' ?>
+                                            </span>
+                                        </div>
                                         <p class="latest-message">
-                                            <?= htmlspecialchars(substr($customer['latest_message'] ?? 'No messages yet', 0, 50)) . (strlen($customer['latest_message'] ?? '') > 50 ? '...' : '') ?>
+                                            <?= htmlspecialchars(substr($customer['latest_message'] ?? 'No messages yet', 0, 30)) . (strlen($customer['latest_message'] ?? '') > 50 ? '...' : '') ?>
                                         </p>
                                     </div>
                                 </div>
-                                <span
-                                    class="accordion-time"><?= $customer['latest_sent_at'] ? timeAgo($customer['latest_sent_at']) : '' ?></span>
                             </button>
                         </div>
                     <?php endforeach; ?>
@@ -151,7 +154,7 @@ function timeAgo($datetime)
                             <div class="baker-chat-info">
                                <h4 class="customer-name" onclick="toggleCustomerInfo()"><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
                             </div>
-                            <a href="customorder.php" class="chat-close" style="text-decoration: none;">&times;</a>
+                            <button class="chat-close"><a href="customorder.php">&times;</a></button>
                         </div>
                         <div class="chat-messages" id="chatMessages">
                             <?php if (empty($messages)): ?>

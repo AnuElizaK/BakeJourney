@@ -44,6 +44,7 @@ h2,
 .hero-overlay {
   position: absolute;
   inset: 0;
+  /* background: linear-gradient(to bottom, #fef3c796, transparent 70%); */
   background-color: #ffb73a25;
 }
 

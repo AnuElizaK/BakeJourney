@@ -38,29 +38,33 @@ h2,
 
 .accordion {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .accordion-item {
-    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1rem;
 }
 
 .accordion-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    overflow: hidden;
     padding: 15px;
     background: #f8fafc;
     cursor: pointer;
     width: 100%;
-    border: none;
+    border: 1px solid #f59e0b;
+    border-radius: 16px;
     text-align: left;
     font-size: 1rem;
     color: #1f2a38;
+    transition: all 0.3s ease;
 }
 
 .accordion-header:hover {
-    background: #e5e7eb;
+    background: #e3ffde;
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .accordion-icon {
@@ -104,8 +108,9 @@ h2,
 }
 
 .customer-info {
+    font-family: 'Segoe UI', Roboto, sans-serif;;
     display: flex;
-    align-items: center;
+    align-items: top;
 }
 
 .customer-avatar {
@@ -118,7 +123,12 @@ h2,
 .customer-info h4 {
     margin: 0;
     font-size: 1.1rem;
+    font-weight: 600;
     color: #1f2a38;
+}
+
+.customer-name-time {
+    margin-bottom: 10px;
 }
 
 .latest-message {
@@ -203,7 +213,6 @@ h2,
     right: 15px;
     background: none;
     border: none;
-    color: white;
     font-size: 24px;
     cursor: pointer;
     padding: 0;
@@ -214,6 +223,11 @@ h2,
     justify-content: center;
     border-radius: 50%;
     transition: all 0.3s;
+}
+
+.chat-close a {
+    color: white;
+    text-decoration: none;
 }
 
 .chat-close:hover {

@@ -118,10 +118,16 @@ h2 {
 .payment-status {
     display: inline-block;
     padding: 4px 12px;
+    margin-left: 10px;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+.payment-pending {
+    background-color: #fff3c3;
+    color: #d97706;
 }
 
 .payment-success {

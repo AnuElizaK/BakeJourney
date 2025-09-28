@@ -112,7 +112,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               </svg>
               <span>Add New Product</span>
             </a>
-            <a href="#" class="action-btn">
+            <a href="pagenotready.php" class="action-btn">
               <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                 <line x1="16" y1="2" x2="16" y2="6" />
@@ -121,7 +121,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               </svg>
               <span>View Schedule</span>
             </a>
-            <a href="#" class="action-btn">
+            <a href="pagenotready.php" class="action-btn">
               <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
               </svg>
@@ -174,7 +174,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               </div>
             </div>
             <div style="margin-top: 34px;">
-              <button class="view-btn" style="width: 100%;">View All Orders</button>
+              <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerordermngmt.php'">View All Orders</button>
             </div>
           </div>
         </div>
@@ -193,15 +193,15 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               </div>
               <div class="profile-item">
                 <span class="profile-label">Bio (Description)</span>
-                <span class="profile-badge badge-complete">Complete</span>
+                <span class="profile-badge badge-incomplete">Incomplete</span>
               </div>
               <div class="profile-item">
                 <span class="profile-label">Product Gallery</span>
-                <span class="profile-badge badge-partial">5 photos</span>
+                <span class="profile-badge badge-partial">1 photo</span>
               </div>
               <div class="profile-item">
                 <span class="profile-label">Business Hours</span>
-                <span class="profile-badge badge-incomplete">Incomplete</span>
+                <span class="profile-badge badge-complete">Complete</span>
               </div>
               <div class="profile-item">
                 <span class="profile-label">Contact Information</span>
@@ -209,7 +209,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               </div>
             </div>
             <div style="margin-top: 24px;">
-              <button class="view-btn" style="width: 100%;">Update Profile</button>
+              <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerprofile.php'">Update Profile</button>
             </div>
           </div>
         </div>
