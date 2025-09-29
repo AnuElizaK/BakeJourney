@@ -214,7 +214,7 @@ $orders_result = $stmt->get_result();
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <span>Add New Product</span>
+              <span class="action-title">Add New Product</span>
             </a>
             <a href="pagenotready.php" class="action-btn">
               <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -223,13 +223,13 @@ $orders_result = $stmt->get_result();
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              <span>View Schedule</span>
+              <span class="action-title">View Schedule</span>
             </a>
             <a href="pagenotready.php" class="action-btn">
               <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
               </svg>
-              <span>Analytics</span>
+              <span class="action-title">Analytics</span>
             </a>
           </div>
         </div>
