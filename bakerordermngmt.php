@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id']) && isset(
     }
 }
 
-// Get all orders for this baker - FIXED FOR YOUR TABLE STRUCTURE
+// Get all orders for this baker
 $orders_query = "
     SELECT o.order_id, o.customer_id, o.order_date, o.total_amount,
            o.payment_status, o.order_status, o.delivery_date,
@@ -234,7 +234,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                              style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     </div>
                                     <div class="item-details">
-                                        <strong><?php echo htmlspecialchars($item['product_name']); ?></strong>
+                                        <strong style="font-family: 'Puanto', Roboto, sans-serif;"><?php echo htmlspecialchars($item['product_name']); ?></strong>
                                         <br>Qty: <?php echo $item['quantity']; ?> × ₹<?php echo number_format($item['price'], 2); ?>
                                         <br>Total: ₹<?php echo number_format($item['total'], 2); ?>
                                     </div>
@@ -330,7 +330,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                              style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     </div>
                                     <div class="item-details">
-                                        <strong><?php echo htmlspecialchars($item['product_name']); ?></strong>
+                                        <strong style="font-family: 'Puanto', Roboto, sans-serif;"><?php echo htmlspecialchars($item['product_name']); ?></strong>
                                         <span class="item-status status-accepted">Accepted</span>
                                         <br>Qty: <?php echo $item['quantity']; ?> × ₹<?php echo number_format($item['price'], 2); ?>
                                         <br>Total: ₹<?php echo number_format($item['total'], 2); ?>
@@ -427,7 +427,7 @@ while ($order = $orders_result->fetch_assoc()) {
                                              style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                     </div>
                                     <div class="item-details">
-                                        <strong><?php echo htmlspecialchars($item['product_name']); ?></strong>
+                                        <strong style="font-family: 'Puanto', Roboto, sans-serif;"><?php echo htmlspecialchars($item['product_name']); ?></strong>
                                         <span class="item-status status-<?php echo strtoupper($order['order_status']); ?>"><?php echo $order['order_status']; ?></span>
                                         <br>Qty: <?php echo $item['quantity']; ?> × ₹<?php echo number_format($item['price'], 2); ?>
                                         <br>Total: ₹<?php echo number_format($item['total'], 2); ?>

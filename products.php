@@ -185,9 +185,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
             <div class="product-content">
               <div class="product-header">
                 <h3><?= htmlspecialchars($product['name']) ?> <br>
-                  <small style="font-size:small;">By
-                    <a href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>"
-                       style="color:orange; text-decoration:none;">
+                  <small style="font-size: small;">By
+                    <a class="creator" href="bakerinfopage.php?baker_id=<?= $product['baker_id']; ?>">
                       <?= htmlspecialchars($product['brand_name'] ?: $product['full_name']) ?>
                     </a>
                   </small>

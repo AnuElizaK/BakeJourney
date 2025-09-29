@@ -326,6 +326,7 @@ h2 {
 }
 
 .item-name {
+    font-family: 'Puanto', Roboto, sans-serif;
     font-weight: 600;
     color: #1f2a38;
 }

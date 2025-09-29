@@ -88,19 +88,19 @@
  }
 
  .bhero-description {
-    border: 1px solid #ffffff7a;
-    border-radius: 50px;
-    padding: 15px 20px;
-    backdrop-filter: blur(5px);
-    font-size: 1rem;
-    color: #ffffffea;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    max-width: 50rem;
-    margin-left: auto;
-    margin-right: auto;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    line-height: 1.2;
+   border: 1px solid #ffffff7a;
+   border-radius: 50px;
+   padding: 15px 20px;
+   backdrop-filter: blur(5px);
+   font-size: 1rem;
+   color: #ffffffea;
+   margin-top: 10px;
+   margin-bottom: 5px;
+   max-width: 50rem;
+   margin-left: auto;
+   margin-right: auto;
+   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+   line-height: 1.2;
  }
 
  @media (max-width: 600px) {
@@ -243,10 +243,11 @@
    justify-content: center;
    padding: 12px 24px;
    border: none;
-   border-radius: 8px;
+   border-radius: 50px;
    background: linear-gradient(135deg, #fcd34d, #f59e0b);
    color: #ffffff;
    text-decoration: none;
+   font-family: 'Segoe UI', Roboto, sans-serif;
    font-size: 16px;
    font-weight: 600;
    cursor: pointer;
@@ -258,7 +259,6 @@
    background: linear-gradient(135deg, #f59e0b, #d97706);
    border-color: #f59e0b;
  }
-
 
  /* Main Content */
  .main {
@@ -325,6 +325,8 @@
 
  /* Content Cards */
  .content-card {
+   display: flex;
+   flex-direction: column;
    background: white;
    border-radius: 16px;
    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -354,6 +356,9 @@
  }
 
  .card-content {
+   display: flex;
+   flex-direction: column;
+   flex: 1;
    padding: 0 24px 24px 24px;
  }
 
@@ -424,6 +429,7 @@
    border: 1px solid #e5e7eb;
    border-radius: 12px;
    background: #fafafa;
+   cursor: pointer;
    transition: all 0.3s ease;
  }
 
@@ -458,23 +464,34 @@
  .status-badge {
    padding: 6px 12px;
    border-radius: 20px;
+   text-transform: capitalize;
    font-size: 0.75rem;
    font-weight: 600;
  }
 
- .status-ready {
-   background: #d1fae5;
-   color: #047857;
- }
-
- .status-progress {
-   background: #fef3c7;
+ .status-pending {
+   background: #fff3c3;
    color: #d97706;
  }
 
- .status-pending {
-   background: #f3f4f6;
-   color: #6b7280;
+ .status-accepted {
+   background: #c8ffe5;
+   color: #006c4a;
+ }
+
+ .status-shipped {
+   background: #f5cdff;
+   color: #7a0192;
+ }
+
+ .status-delivered {
+   background: #cdecff;
+   color: #016492;
+ }
+
+ .status-cancelled {
+   background: #ffe9e9;
+   color: #dc2626;
  }
 
  /* Profile Status */
@@ -509,17 +526,17 @@
  }
 
  .badge-complete {
-   background: #d1fae5;
-   color: #047857;
+   background: #c8ffe5;
+   color: #006c4a;
  }
 
  .badge-incomplete {
-   background: #fef2f2;
+   background: #ffe9e9;
    color: #dc2626;
  }
 
  .badge-partial {
-   background: #fef3c7;
+   background: #fff3c3;
    color: #d97706;
  }
 

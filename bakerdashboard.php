@@ -8,6 +8,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
 
 $baker_id = $_SESSION['user_id'];
 
+// Overall Stats
 $stmt = $conn->prepare("
     SELECT COUNT(*) AS total_orders 
     FROM orders 
@@ -48,6 +49,65 @@ $stmt->execute();
 $total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
 
 
+// Profile Status
+// Check Profile Photo
+$stmt = $conn->prepare("SELECT profile_image FROM users WHERE user_id = ?");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$profile_pic = $stmt->get_result()->fetch_assoc()['profile_image'];
+$has_profile_image = !empty($profile_pic) && $profile_pic !== 'default.jpg';
+
+// Check Bio (Description)
+$stmt = $conn->prepare("SELECT bio FROM users WHERE user_id = ?");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$bio = $stmt->get_result()->fetch_assoc()['bio'];
+$has_bio = !empty($bio) && strlen(trim($bio)) > 0;
+
+// Check Product Gallery (count products with images)
+$stmt = $conn->prepare("SELECT COUNT(*) as photo_count FROM products WHERE baker_id = ? AND image IS NOT NULL AND image != ''");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$product_photo_count = $stmt->get_result()->fetch_assoc()['photo_count'];
+
+// Check Business Information
+$stmt = $conn->prepare("SELECT experience, order_lead_time, availability, custom_orders FROM bakers WHERE user_id = ?");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$business_info = $stmt->get_result()->fetch_assoc();
+$has_business_info = 
+    !empty($business_info['experience']) && strlen(trim($business_info['experience'])) > 0 &&
+    !empty($business_info['order_lead_time']) && strlen(trim($business_info['order_lead_time'])) > 0 &&
+    !empty($business_info['availability']) && strlen(trim($business_info['availability'])) > 0 &&
+    !empty($business_info['custom_orders']) && strlen(trim($business_info['custom_orders'])) > 0;
+
+// Check Contact Information (only phone number as email is mandatory at signup)
+$stmt = $conn->prepare("SELECT phone FROM users WHERE user_id = ?");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$phone = $stmt->get_result()->fetch_assoc()['phone'];
+$has_contact_info = !empty($phone) && strlen(trim($phone)) > 0;
+
+
+// Orders preview
+$orders_fetch = "
+    SELECT o.order_id, o.order_status, o.delivery_date,
+           oi.quantity, 
+           p.name as prod_name,
+           u.full_name as cust_name
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    JOIN users u ON o.customer_id = u.user_id
+    WHERE o.baker_id = ?
+    ORDER BY o.order_date DESC
+    LIMIT 3
+";
+
+$stmt = $conn->prepare($orders_fetch);
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$orders_result = $stmt->get_result();
 
 ?>
 <!DOCTYPE html>
@@ -100,7 +160,7 @@ $total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
             </svg>
           </div>
           <div class="stat-value"><?= $orders_week ?></div>
-          <div class="stat-change">+12% from last week</div>
+          <div class="stat-change">+5% increase</div>
         </div>
 
         <div class="stat-card">
@@ -111,7 +171,7 @@ $total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
             </svg>
           </div>
           <div class="stat-value">₹<?= number_format($revenue, 2) ?></div>
-          <div class="stat-change">+8% from last week</div>
+          <div class="stat-change">+8% increase</div>
         </div>
 
         <div class="stat-card">
@@ -177,83 +237,86 @@ $total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
 
       <div class="sales-info">
         <!-- Recent Orders -->
-        <div class="content-card">
-          <div class="card-header">
-            <h3>Recent Orders</h3>
-            <p class="card-description">Your latest customer orders</p>
-          </div>
-          <div class="card-content">
-            <div class="orders-list">
-              <div class="order-item">
-                <div class="order-info">
-                  <h4>Emma Wilson</h4>
-                  <p class="order-details">Chocolate Chip Cookies • 2 dozen</p>
-                </div>
-                <div class="order-meta">
-                  <div class="order-due">Due: Today 2:00 PM</div>
-                  <span class="status-badge status-progress">In Progress</span>
-                </div>
+        <?php while ($order = $orders_result->fetch_assoc()): ?>
+          <div class="content-card">
+            <?php if ($order == null): ?>
+              <div id="no-orders-message"
+                style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+                No recent orders found.
               </div>
-
-              <div class="order-item">
-                <div class="order-info">
-                  <h4>Mike Johnson</h4>
-                  <p class="order-details">Birthday Cake • 1 cake</p>
-                </div>
-                <div class="order-meta">
-                  <div class="order-due">Due: Tomorrow 10:00 AM</div>
-                  <span class="status-badge status-pending">Pending</span>
-                </div>
+            <?php else: ?>
+              <div class="card-header">
+                <h3>Recent Orders</h3>
+                <p class="card-description">Your latest customer orders</p>
               </div>
-
-              <div class="order-item">
-                <div class="order-info">
-                  <h4>Lisa Park</h4>
-                  <p class="order-details">Sourdough Bread • 3 loaves</p>
+              <div class="card-content">
+                <div class="orders-list">
+                  <div class="order-item"
+                    onclick="window.location.href='bakerordermngmt.php?order_id=<?= $order['order_id']; ?>'">
+                    <div class="order-info">
+                      <h4><?= htmlspecialchars($order['cust_name']) ?></h4>
+                      <p class="order-details"><?= htmlspecialchars($order['prod_name']) ?> •
+                        (<?= htmlspecialchars($order['quantity']) ?>)
+                      </p>
+                    </div>
+                    <div class="order-meta">
+                      <div class="order-due">Due → <?= htmlspecialchars($order['delivery_date']) ?></div>
+                      <span
+                        class="status-badge status-<?= htmlspecialchars($order['order_status']) ?>"><?= htmlspecialchars($order['order_status']) ?></span>
+                    </div>
+                  </div>
                 </div>
-                <div class="order-meta">
-                  <div class="order-due">Due: Today 4:00 PM</div>
-                  <span class="status-badge status-ready">Ready</span>
+                <div style="margin-top: auto; padding-top: 34px;">
+                  <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerordermngmt.php'">View
+                    All Orders</button>
                 </div>
               </div>
             </div>
-            <div style="margin-top: 34px;">
-              <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerordermngmt.php'">View All Orders</button>
-            </div>
-          </div>
-        </div>
+          <?php endif; ?>
+        <?php endwhile; ?>
 
         <!-- Profile Status -->
         <div class="content-card">
           <div class="card-header">
             <h3>Profile Status</h3>
-            <p class="card-description">Complete your profile to attract more customers</p>
+            <p class="card-description">Keep your profile updated to attract more customers</p>
           </div>
           <div class="card-content">
             <div class="profile-items">
               <div class="profile-item">
                 <span class="profile-label">Profile Photo</span>
-                <span class="profile-badge badge-complete">Complete</span>
+                <span class="profile-badge <?= $has_profile_image ? 'badge-complete' : 'badge-incomplete' ?>">
+                  <?= $has_profile_image ? 'Complete' : 'Incomplete' ?>
+                </span>
               </div>
               <div class="profile-item">
                 <span class="profile-label">Bio (Description)</span>
-                <span class="profile-badge badge-incomplete">Incomplete</span>
+                <span class="profile-badge <?= $has_bio ? 'badge-complete' : 'badge-incomplete' ?>">
+                  <?= $has_bio ? 'Complete' : 'Incomplete' ?>
+                </span>
               </div>
               <div class="profile-item">
                 <span class="profile-label">Product Gallery</span>
-                <span class="profile-badge badge-partial">1 photo</span>
+                <span class="profile-badge <?= $product_photo_count > 0 ? 'badge-partial' : 'badge-incomplete' ?>">
+                  <?= $product_photo_count > 0 ? $product_photo_count . ' photo' . ($product_photo_count > 1 ? 's' : '') : 'Incomplete' ?>
+                </span>
               </div>
               <div class="profile-item">
-                <span class="profile-label">Business Hours</span>
-                <span class="profile-badge badge-complete">Complete</span>
+                <span class="profile-label">Business Information</span>
+                <span class="profile-badge <?= $has_business_info ? 'badge-complete' : 'badge-incomplete' ?>">
+                  <?= $has_business_info ? 'Complete' : 'Incomplete' ?>
+                </span>
               </div>
               <div class="profile-item">
                 <span class="profile-label">Contact Information</span>
-                <span class="profile-badge badge-complete">Complete</span>
+                <span class="profile-badge <?= $has_contact_info ? 'badge-complete' : 'badge-incomplete' ?>">
+                  <?= $has_contact_info ? 'Complete' : 'Incomplete' ?>
+                </span>
               </div>
             </div>
-            <div style="margin-top: 24px;">
-              <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerprofile.php'">Update Profile</button>
+            <div style="margin-top: auto; padding-top: 24px;">
+              <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerprofile.php'">Update
+                Profile</button>
             </div>
           </div>
         </div>
@@ -262,4 +325,5 @@ $total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
   </main>
   <?php include 'globalfooter.php'; ?>
 </body>
+
 </html>

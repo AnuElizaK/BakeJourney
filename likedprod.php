@@ -77,7 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         }
 
         h1,
-        h2 {
+        h2,
+        h3 {
             font-family: 'Puanto', Roboto, sans-serif;
         }
 

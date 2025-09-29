@@ -177,7 +177,7 @@ $comment_result = $comment_stmt->get_result();
                     <button class="filter-btn active" data-filter="all">All Posts</button>
                     <button class="filter-btn" data-filter="recipes">Recipes</button>
                     <button class="filter-btn" data-filter="stories">Stories</button>
-                    <button class="filter-btn" data-filter="tips">Tips & Tricks</button>
+                    <button class="filter-btn" data-filter="tips">Tips</button>
                     <button class="filter-btn" data-filter="announcements">Announcements</button>
                 </div>
             </div>
