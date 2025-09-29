@@ -406,7 +406,7 @@ $has_cart_items = $cart_count > 0;
     <div class="custnav-container">
       <div class="nav-content">
         <div class="nav-brand">
-          <img class="nav-logo" src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
+          <img class="nav-logo" src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40" onclick="window.location.href='customerdashboard.php'">
           <span onclick="window.location.href='customerdashboard.php'" class="nav-title">BakeJourney</span>
         </div>
 

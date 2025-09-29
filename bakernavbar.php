@@ -330,7 +330,7 @@ if ($user_id) {
     <div class="bakernav-container">
       <div class="nav-content">
         <div class="nav-brand">
-          <img class="nav-logo" src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40">
+          <img class="nav-logo" src="media/Logo.png" alt="BakeJourney Logo" width="40" height="40" onclick="window.location.href='bakerdashboard.php'">
           <span onclick="window.location.href='bakerdashboard.php'" class="nav-title">BakeJourney</span>
         </div>
 

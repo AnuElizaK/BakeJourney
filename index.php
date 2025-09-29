@@ -525,32 +525,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
       </div>
 
       <div class="contact-content">
-        <!--<div class="contact-info">
-            <h3>Visit Our Bakery</h3>
-            
-            <div class="info-section">
-              <h4>Address</h4>
-              <p>123 Baker Street<br>Sweet Valley, SV 12345</p>
-            </div>
-            
-            <div class="info-section">
-              <h4>Hours</h4>
-              <p>Monday - Friday: 6:00 AM - 7:00 PM<br>
-                 Saturday: 7:00 AM - 8:00 PM<br>
-                 Sunday: 8:00 AM - 6:00 PM</p>
-            </div>
-            
-            <div class="info-section">
-              <h4>Contact</h4>
-              <p>Phone: (555) 123-BAKE<br>
-                 Email: hello@sweetdreamsbakery.com</p>
-            </div>
-
-            <div class="special-orders">
-              <h4>Special Orders</h4>
-              <p>Need something special? Custom cakes and large orders require 48 hours advance notice. Call us to discuss your requirements!</p>
-            </div>
-          </div>-->
         <div class="contact-form">
           <div class="form-card" id="feedback_card">
             <h3 class="contact-form-title">Send us a Message</h3>

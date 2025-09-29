@@ -215,6 +215,18 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
 
 <body>
     <div class="container">
+          <!--alert message for add to cart-->
+            <div>
+                <?php if (isset($_SESSION['cart_message'])): ?>
+                    <div class="alert-box alert-success">
+                        <?= htmlspecialchars($_SESSION['cart_message']) ?>
+                        <a href="cart.php" style="color: #28a745; text-decoration: underline;">Go to cart</a>
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                    <?php unset($_SESSION['cart_message']); ?>
+                <?php endif; ?>
+            </div>
+
         <!-- Product Main Info -->
         <div class="product-card">
             <div class="product-header">

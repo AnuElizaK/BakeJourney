@@ -17,65 +17,111 @@ $customer_id = $_SESSION['user_id'];
 $error_message = '';
 $success_message = '';
 
-// Handle payment processing
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['process_payment'])) {
-        $order_id = intval($_POST['order_id']);
-        $payment_method = $_POST['payment_method'];
-        
-        // Validate order belongs to customer and is payable
-        $stmt = $conn->prepare("
-            SELECT o.*, b.brand_name, u.full_name as baker_name 
-            FROM orders o 
-            JOIN bakers b ON o.baker_id = b.baker_id 
-            JOIN users u ON b.user_id = u.user_id 
-            WHERE o.order_id = ? AND o.customer_id = ? AND o.order_status = 'accepted' AND o.payment_status = 'pending'
-        ");
-        $stmt->bind_param("ii", $order_id, $customer_id);
-        $stmt->execute();
-        $order = $stmt->get_result()->fetch_assoc();
-        
-        if (!$order) {
-            $error_message = "Invalid order or order not available for payment.";
-        } else {
-            // Simulate payment processing (replace with actual payment gateway integration)
-            $payment_success = true; // In real implementation, this would come from payment gateway response
-            
-            if ($payment_success) {
-                // Update payment status
-                $stmt = $conn->prepare("UPDATE orders SET payment_status = 'success' WHERE order_id = ?");
-                $stmt->bind_param("i", $order_id);
-                
-                if ($stmt->execute()) {
-                    // Optional: Insert payment record for tracking
-                    // $payment_id = 'PAY' . time() . rand(1000, 9999);
-                    // $stmt = $conn->prepare("
-                    //     INSERT INTO payments (order_id, payment_id, amount, payment_method, payment_status, payment_date) 
-                    //     VALUES (?, ?, ?, ?, 'success', NOW())
-                    // ");
-                    // $stmt->bind_param("isds", $order_id, $payment_id, $order['total_amount'], $payment_method);
-                    // $stmt->execute();
-                    
-                    $success_message = "Payment successful! Your order will be processed for delivery.";
-                    
-                    // Redirect to orders page after 3 seconds
-                    echo "<script>
-                        setTimeout(function() {
-                            window.location.href = 'customerorders.php';
-                        }, 3000);
-                    </script>";
-                } else {
-                    $error_message = "Payment processed but failed to update order status. Please contact support.";
-                }
+//Handle payment logic
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['process_payment'])) {
+    $order_id = intval($_POST['order_id']);
+    $payment_method = $_POST['payment_method'];
+
+    // Validate order belongs to customer and is payable
+    $stmt = $conn->prepare("
+        SELECT o.*, b.brand_name, u.full_name as baker_name, u.user_id as baker_user_id 
+        FROM orders o 
+        JOIN bakers b ON o.baker_id = b.baker_id 
+        JOIN users u ON b.user_id = u.user_id 
+        WHERE o.order_id = ? AND o.customer_id = ? AND o.order_status = 'accepted' AND o.payment_status = 'pending'
+    ");
+    $stmt->bind_param("ii", $order_id, $customer_id);
+    $stmt->execute();
+    $order = $stmt->get_result()->fetch_assoc();
+
+    if (!$order) {
+        $error_message = "Invalid order or order not available for payment.";
+    } else {
+        if ($payment_method === 'netbanking') {
+            $holder_name = $_POST['holder_name'] ?? '';
+            $cardno = $_POST['cardno'] ?? '';
+            $cvv = $_POST['cvv'] ?? '';
+            $exp_date = $_POST['exp_date'] ?? '';
+
+            // Check if card exists and belongs to logged-in customer
+            $stmt = $conn->prepare("
+                SELECT * FROM bank_accounts 
+                WHERE user_id = ? AND holder_name = ? AND cardno = ? AND cvv = ? AND exp_date = ?
+            ");
+            $stmt->bind_param("issss", $customer_id, $holder_name, $cardno, $cvv, $exp_date);
+            $stmt->execute();
+            $bank = $stmt->get_result()->fetch_assoc();
+
+            if (!$bank) {
+                $error_message = "Invalid card details.";
+            } elseif ($bank['balance'] < $order['total_amount']) {
+                $error_message = "Insufficient balance.";
             } else {
-                // Update payment status to failed
-                $stmt = $conn->prepare("UPDATE orders SET payment_status = 'failed' WHERE order_id = ?");
-                $stmt->bind_param("i", $order_id);
+                // Deduct from customer
+                $new_balance = $bank['balance'] - $order['total_amount'];
+                $stmt = $conn->prepare("UPDATE bank_accounts SET balance = ? WHERE id = ?");
+                $stmt->bind_param("di", $new_balance, $bank['id']);
                 $stmt->execute();
-                
-                $error_message = "Payment failed. Please try again or use a different payment method.";
+
+                // Credit baker
+                $baker_user_id = $order['baker_user_id'];
+                $baker_account = $conn->query("SELECT * FROM bank_accounts WHERE user_id = $baker_user_id")->fetch_assoc();
+                if ($baker_account) {
+                    $baker_new_balance = $baker_account['balance'] + $order['total_amount'];
+                    $stmt = $conn->prepare("UPDATE bank_accounts SET balance = ? WHERE id = ?");
+                    $stmt->bind_param("di", $baker_new_balance, $baker_account['id']);
+                    $stmt->execute();
+
+                    // Update order status
+                    $stmt = $conn->prepare("UPDATE orders SET payment_status = 'success' WHERE order_id = ?");
+                    $stmt->bind_param("i", $order_id);
+                    $stmt->execute();
+
+                    $success_message = "Payment successful! Your order will be processed.";
+                } else {
+                    $error_message = "Baker account not found. Please contact support.";
+                }
+            }
+        } else {
+            // Simulate balance deduction for other payment methods (UPI, card, wallet)
+            // Assume customer has a bank account for simulation
+            $stmt = $conn->prepare("SELECT * FROM bank_accounts WHERE user_id = ? LIMIT 1");
+            $stmt->bind_param("i", $customer_id);
+            $stmt->execute();
+            $bank = $stmt->get_result()->fetch_assoc();
+
+            if (!$bank) {
+                $error_message = "No bank account found for payment.";
+            } elseif ($bank['balance'] < $order['total_amount']) {
+                $error_message = "Insufficient balance.";
+            } else {
+                // Deduct from customer
+                $new_balance = $bank['balance'] - $order['total_amount'];
+                $stmt = $conn->prepare("UPDATE bank_accounts SET balance = ? WHERE id = ?");
+                $stmt->bind_param("di", $new_balance, $bank['id']);
+                $stmt->execute();
+
+                // Credit baker
+                $baker_user_id = $order['baker_user_id'];
+                $baker_account = $conn->query("SELECT * FROM bank_accounts WHERE user_id = $baker_user_id")->fetch_assoc();
+                if ($baker_account) {
+                    $baker_new_balance = $baker_account['balance'] + $order['total_amount'];
+                    $stmt = $conn->prepare("UPDATE bank_accounts SET balance = ? WHERE id = ?");
+                    $stmt->bind_param("di", $baker_new_balance, $baker_account['id']);
+                    $stmt->execute();
+
+                    // Update order status
+                    $stmt = $conn->prepare("UPDATE orders SET payment_status = 'success' WHERE order_id = ?");
+                    $stmt->bind_param("i", $order_id);
+                    $stmt->execute();
+
+                    $success_message = "Payment successful! Your order will be processed.";
+                } else {
+                    $error_message = "Baker account not found. Please contact support.";
+                }
             }
         }
+
     }
 }
 
@@ -379,6 +425,21 @@ if (!$order_details && !$success_message) {
             margin-bottom: 10px;
         }
 
+        #netbanking-form input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        #netbanking-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 500;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -420,8 +481,22 @@ if (!$order_details && !$success_message) {
             <?php if ($success_message): ?>
                 <div class="alert alert-success">
                     ✅ <?= htmlspecialchars($success_message) ?>
-                    <br><small>Redirecting to orders page...</small>
+                    <br><small>Redirecting to orders page in <span id="countdown">3</span> seconds...</small>
                 </div>
+
+                <script>
+        let seconds = 3;
+        const countdownEl = document.getElementById('countdown');
+
+        const interval = setInterval(() => {
+            seconds--;
+            countdownEl.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(interval);
+                window.location.href = 'customerorders.php';
+            }
+        }, 1000);
+    </script>
             <?php endif; ?>
 
             <?php if ($order_details && !$success_message): ?>
@@ -509,6 +584,29 @@ if (!$order_details && !$success_message) {
                             </label>
                         </div>
 
+                        <!-- Net Banking Form (Hidden by default) -->
+                        <div id="netbanking-form" style="display: none; margin-top: 20px; margin-bottom: 20px; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px;">
+                            <h4 style="color: #495057; margin-bottom: 15px;">Net Banking Details</h4>
+                            <div style="margin-bottom: 15px;">
+                                <label for="cardholder-name">Cardholder Name</label>
+                                <input type="text" id="cardholder-name" name="holder_name" placeholder="Enter cardholder name">
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label for="card-number">Card Number</label>
+                                <input type="text" id="card-number" name="cardno" placeholder="Enter card number" maxlength="16">
+                            </div>
+                            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                                <div style="flex: 1;">
+                                    <label for="expiry-date">Expiry Date(YYYY-MM-DD)</label>
+                                    <input type="text" id="expiry-date" name="exp_date" placeholder="YYYY-MM-DD">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label for="cvv">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="CVV" maxlength="3">
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" name="process_payment" class="btn btn-primary btn-large">
                             Pay ₹<?= number_format($order_details['total_amount'], 2) ?> Securely
                         </button>
@@ -523,7 +621,63 @@ if (!$order_details && !$success_message) {
     </div>
 
     <script>
-        // Add visual feedback for payment method selection
+        // Toggle net banking form visibility
+        document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
+            radio.addEventListener('change', function() {
+                const netbankingForm = document.getElementById('netbanking-form');
+                if (this.value === 'netbanking' && this.checked) {
+                    netbankingForm.style.display = 'block';
+                } else {
+                    netbankingForm.style.display = 'none';
+                }
+            });
+        });
+
+    
+// Client-side validation for net banking form
+document.querySelector('form').addEventListener('submit', function(e) {
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+    if (paymentMethod && paymentMethod.value === 'netbanking') {
+        const cardNumber = document.getElementById('card-number').value;
+        const cvv = document.getElementById('cvv').value;
+        const expiryDate = document.getElementById('expiry-date').value;
+        const holderName = document.getElementById('cardholder-name').value;
+
+        if (!holderName.trim()) {
+            e.preventDefault();
+            alert('Cardholder name is required.');
+            return;
+        }
+        if (!/^[0-9]{16}$/.test(cardNumber)) {
+            e.preventDefault();
+            alert('Card number must be 16 digits.');
+            return;
+        }
+        if (!/^[0-9]{3}$/.test(cvv)) {
+            e.preventDefault();
+            alert('CVV must be 3 digits.');
+            return;
+        }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(expiryDate)) {
+            e.preventDefault();
+            alert('Expiry date must be in YYYY-MM-DD format.');
+            return;
+        }
+        // Ensure expiry date is not in the past
+        const [year, month, day] = expiryDate.split('-');
+        const expDate = new Date(year, month - 1, day);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (expDate < today) {
+            e.preventDefault();
+            alert('Expiry date cannot be in the past.');
+            return;
+        }
+    }
+});
+
+
+// Add visual feedback for payment method selection
         document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 // Remove selected class from all methods
@@ -535,20 +689,6 @@ if (!$order_details && !$success_message) {
             });
         });
 
-        // Auto-redirect success message
-        <?php if ($success_message): ?>
-            let countdown = 3;
-            const countdownElement = document.querySelector('.alert-success small');
-            
-            const timer = setInterval(() => {
-                countdown--;
-                countdownElement.textContent = `Redirecting to orders page in ${countdown} seconds...`;
-                
-                if (countdown <= 0) {
-                    clearInterval(timer);
-                }
-            }, 1000);
-        <?php endif; ?>
     </script>
 </body>
 </html>

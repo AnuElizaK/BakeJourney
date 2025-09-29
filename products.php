@@ -106,6 +106,18 @@ if (isset($_POST['action']) && $_POST['action'] === 'toggle_like') {
   <section class="products" id="products">
     <div class="container">
       <div class="section-header">
+
+<!--alert message for add to cart-->
+
+        <?php if (isset($_SESSION['cart_message'])): ?>
+    <div class="alert-box alert-success">
+        <?= htmlspecialchars($_SESSION['cart_message']) ?>
+        <a href="cart.php" style="color: #28a745; text-decoration: underline;">Go to cart</a>
+         <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+    <?php unset($_SESSION['cart_message']); ?>
+<?php endif; ?>
+
         <h2>Explore All Products</h2>
         <p>Discover our most loved creations, baked fresh with only the finest ingredients.</p>
       </div>

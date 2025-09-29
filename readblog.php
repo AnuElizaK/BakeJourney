@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 
     try {
         // Check if user already liked this blog
-        $check_stmt = $conn->prepare("SELECT like_id FROM blog_likes WHERE blog_id = ? AND user_id = ?");
+        $check_stmt = $conn->prepare("SELECT b_like_id FROM blog_likes WHERE blog_id = ? AND user_id = ?");
         $check_stmt->bind_param("ii", $blog_id, $user_id);
         $check_stmt->execute();
         $check_result = $check_stmt->get_result();
@@ -409,6 +409,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                     return false;
                 }
             });
+       });
 
             // Like button functionality
             const likeButton = document.querySelector('.like-btn');
@@ -548,31 +549,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                 e.stopPropagation();
             });
 
-            let quantity = 1;
-
-            function changeQuantity(change) {
-                quantity += change;
-                if (quantity < 1) quantity = 1;
-                if (quantity > 10) quantity = 10;
-                document.getElementById('quantity').textContent = quantity;
-                const basePrice = <?php echo $blog['price']; ?>;
-                const totalPrice = basePrice * quantity;
-                document.querySelector('.price').textContent = `₹${totalPrice.toFixed(2)}`;
-            }
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        });
     </script>
 </body>
 

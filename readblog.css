@@ -781,7 +781,7 @@ h2 {
 }
 
 .like-btn:hover {
-    background: #fef3c7;
+    border: 3px solid #ef4444;
     transform: scale(1.1);
 }
 

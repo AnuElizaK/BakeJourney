@@ -50,14 +50,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id']) && isset(
                 default:
                     $message = 'Order updated successfully!';
             }
-            header("Location: bakerordermngmt.php?msg=" . urlencode($message));
+            header("Location: bakerordermngmt.php?msg=" . urlencode($message) . "#lastcard");
             exit();
         } else {
             header("Location: bakerordermngmt.php?error=Failed to update order");
             exit();
         }
     } else {
-        header("Location: bakerorders.php?error=Unauthorized order");
+        header("Location: bakerordermngmt.php?error=Unauthorized order");
         exit();
     }
 }
@@ -160,12 +160,7 @@ while ($order = $orders_result->fetch_assoc()) {
             <p>Track and manage all your orders in one place</p>
         </div>
 
-        <!-- Success/Error Messages -->
-        <?php if (isset($_GET['msg'])): ?>
-            <div class="success"><?php echo htmlspecialchars($_GET['msg']); ?></div>
-        <?php elseif (isset($_GET['error'])): ?>
-            <div class="error"><?php echo htmlspecialchars($_GET['error']); ?></div>
-        <?php endif; ?>
+       
 
         <!-- Stats -->
         <div class="stats-grid">
@@ -181,11 +176,22 @@ while ($order = $orders_result->fetch_assoc()) {
                 <h3>Completed</h3>
                 <div class="number"><?php echo $completed_count; ?></div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" id="lastcard">
                 <h3>Total Orders</h3>
                 <div class="number"><?php echo $total_count; ?></div>
             </div>
         </div>
+
+ <!-- Success/Error Messages -->
+        <?php if (isset($_GET['msg'])): ?>
+            <div class="success"><?php echo htmlspecialchars($_GET['msg']); ?>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        <?php elseif (isset($_GET['error'])): ?>
+            <div class="error"><?php echo htmlspecialchars($_GET['error']); ?>
+            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        <?php endif; ?>
 
         <!-- Tabs -->
         <div class="tabs">

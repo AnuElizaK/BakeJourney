@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
     $stmt->execute();
   }
 
+ $_SESSION['cart_message'] = "Item added to cart!";
   header("Location: $return_to");
   exit;
 }

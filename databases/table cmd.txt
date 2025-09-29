@@ -157,3 +157,16 @@ CREATE TABLE feedback (
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE bank_accounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,                   
+    accno VARCHAR(20) NOT NULL,             
+    ifsc VARCHAR(11) NOT NULL,
+    cardno VARCHAR(16) NOT NULL,           
+    holder_name VARCHAR(100) NOT NULL,     
+    cvv CHAR(3) NOT NULL,                  
+    exp_date DATE NOT NULL,                  
+    balance DECIMAL(15,2) DEFAULT 0.00,     
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

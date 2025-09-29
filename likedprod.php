@@ -140,6 +140,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
             transform: translateY(-2px);
         }
 
+        /* Alert Messages */
+        .alert-box {
+            padding: 2px 5px;
+            margin: 12px 0;
+            border-radius: 50px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: #e6f9e6;
+            border: 1px solid #00b300;
+            color: #006600;
+        }
+
+        .alert-close {
+            top: 6px;
+            right: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .alert-close:hover {
+            color: #000;
+        }
+
         /* Section Headers */
         .section-header {
             text-align: center;
@@ -211,7 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
         }
 
         .product-content {
-            padding: 10px 20px 20px; 
+            padding: 10px 20px 20px;
         }
 
         .product-content h3 {
@@ -343,6 +373,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
             <div class="section-header">
                 <h2>Your Liked Products</h2>
                 <p>Explore the products you've loved from our bakers.</p>
+            </div>
+
+            <!--alert message for add to cart-->
+            <div>
+                <?php if (isset($_SESSION['cart_message'])): ?>
+                    <div class="alert-box alert-success">
+                        <?= htmlspecialchars($_SESSION['cart_message']) ?>
+                        <a href="cart.php" style="color: #28a745; text-decoration: underline;">Go to cart</a>
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                    <?php unset($_SESSION['cart_message']); ?>
+                <?php endif; ?>
             </div>
 
             <div class="products-grid">

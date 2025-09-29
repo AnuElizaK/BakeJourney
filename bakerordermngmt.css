@@ -390,30 +390,20 @@ h2 {
     transform: translateY(-2px);
 }
 
-/* Custom Order Special Styling */
-.custom-order {
-    border-left: 4px solid #7c3aed;
+
+.alert-close {
+  position:inherit;
+  right: -230px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #666;
+  cursor: pointer;
+  background: none;
+  border: none;
 }
 
-.custom-order-note {
-    background: #f3e8ff;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    border-left: 3px solid #7c3aed;
-}
-
-.custom-order-note h5 {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #7c3aed;
-    margin-bottom: 0.5rem;
-}
-
-.custom-order-note p {
-    color: #6b7280;
-    font-size: 0.875rem;
-    line-height: 1.5;
+.alert-close:hover {
+  color: #000;
 }
 
 /* Responsive Design */
