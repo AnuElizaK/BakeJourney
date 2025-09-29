@@ -1,9 +1,53 @@
 <?php
 session_start();
+include 'db.php';
 if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
   header("Location: index.php"); // Redirect to login if not authorized
   exit();
 }
+
+$baker_id = $_SESSION['user_id'];
+
+$stmt = $conn->prepare("
+    SELECT COUNT(*) AS total_orders 
+    FROM orders 
+    WHERE baker_id = ? 
+      AND order_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$orders_week = $stmt->get_result()->fetch_assoc()['total_orders'];
+
+$stmt = $conn->prepare("
+    SELECT IFNULL(SUM(total_amount), 0) AS total_revenue 
+    FROM orders 
+    WHERE baker_id = ? AND payment_status = 'success'
+");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$revenue = $stmt->get_result()->fetch_assoc()['total_revenue'];
+
+$stmt = $conn->prepare("
+    SELECT IFNULL(ROUND(AVG(rating),1), 0) AS avg_rating, COUNT(*) AS total_reviews 
+    FROM baker_reviews
+    WHERE baker_id = ?
+");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$rating_data = $stmt->get_result()->fetch_assoc();
+$avg_rating = $rating_data['avg_rating'];
+$total_reviews = $rating_data['total_reviews'];
+
+$stmt = $conn->prepare("
+    SELECT COUNT(DISTINCT customer_id) AS total_customers
+    FROM orders 
+    WHERE baker_id = ?
+");
+$stmt->bind_param("i", $baker_id);
+$stmt->execute();
+$total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
+
+
 
 ?>
 <!DOCTYPE html>
@@ -55,7 +99,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
           </div>
-          <div class="stat-value">18</div>
+          <div class="stat-value"><?= $orders_week ?></div>
           <div class="stat-change">+12% from last week</div>
         </div>
 
@@ -66,7 +110,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
             </svg>
           </div>
-          <div class="stat-value">$485</div>
+          <div class="stat-value">₹<?= number_format($revenue, 2) ?></div>
           <div class="stat-change">+8% from last week</div>
         </div>
 
@@ -78,8 +122,8 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
                 points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
             </svg>
           </div>
-          <div class="stat-value">4.9</div>
-          <div class="stat-change">Based on 24 reviews</div>
+          <div class="stat-value"><?= $avg_rating ?></div>
+          <div class="stat-change">Based on <?= $total_reviews ?> reviews</div>
         </div>
 
         <div class="stat-card">
@@ -92,7 +136,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
           </div>
-          <div class="stat-value">12</div>
+          <div class="stat-value"><?= $total_customers ?></div>
           <div class="stat-change">+3 new this week</div>
         </div>
       </div>
