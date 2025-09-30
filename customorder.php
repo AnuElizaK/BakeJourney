@@ -115,32 +115,61 @@ function timeAgo($datetime)
     <main class="container">
         <section class="messages-section">
             <h1>Custom Order Messages</h1>
+
+            <div class="chat-list-info">
+                <!-- Message Search -->
+                <div class="search-section">
+                    <div class="search-box">
+                        <input type="search" placeholder="Search messages by content or sender name..."
+                            class="message-search-input">
+                    </div>
+                </div>
+
+                <!-- Total Chat Count -->
+                <div id="chat-count" class="chat-count"></div>
+            </div>
+
             <?php if (empty($customers)): ?>
                 <p>No messages from customers yet.</p>
             <?php else: ?>
                 <div class="accordion">
-                    <?php foreach ($customers as $customer): ?>
-                        <div class="accordion-item">
-                            <button class="accordion-header"
-                                onclick="window.location.href='customorder.php?chat_user_id=<?= $customer['user_id'] ?>&chat=open'">
-                                <div class="customer-info">
-                                    <img src="<?= !empty($customer['profile_image']) ? 'Uploads/' . htmlspecialchars($customer['profile_image']) : 'media/profile.png' ?>"
-                                        alt="<?= htmlspecialchars($customer['full_name']) ?>" class="customer-avatar">
-                                    <div>
-                                        <div class="customer-name-time">
-                                            <h4><?= htmlspecialchars($customer['full_name']) ?></h4>
-                                            <span
-                                                class="accordion-time"><?= $customer['latest_sent_at'] ? timeAgo($customer['latest_sent_at']) : '' ?>
-                                            </span>
+                    <?php if (!empty($customers)): ?>
+                        <?php foreach ($customers as $customer): ?>
+                            <?php
+                            // Fetching all messages exchanged with this customer (for search)
+                            $stmt = $conn->prepare("SELECT message FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)");
+                            $stmt->bind_param("iiii", $_SESSION['user_id'], $customer['user_id'], $customer['user_id'], $_SESSION['user_id']);
+                            $stmt->execute();
+                            $all_msgs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+                            $all_msgs_concat = strtolower(implode(' ', array_column($all_msgs, 'message')));
+                            ?>
+                            <div class="accordion-item">
+                                <button class="accordion-header"
+                                    data-all-messages="<?= htmlspecialchars($all_msgs_concat, ENT_QUOTES) ?>"
+                                    onclick="window.location.href='customorder.php?chat_user_id=<?= $customer['user_id'] ?>&chat=open'">
+                                    <div class="customer-info">
+                                        <img src="<?= !empty($customer['profile_image']) ? 'Uploads/' . htmlspecialchars($customer['profile_image']) : 'media/profile.png' ?>"
+                                            alt="<?= htmlspecialchars($customer['full_name']) ?>" class="customer-avatar">
+                                        <div>
+                                            <div class="customer-name-time">
+                                                <h4 class="customer-name"><?= htmlspecialchars($customer['full_name']) ?></h4>
+                                                <span
+                                                    class="accordion-time"><?= $customer['latest_sent_at'] ? timeAgo($customer['latest_sent_at']) : '' ?>
+                                                </span>
+                                            </div>
+                                            <p class="latest-message">
+                                                <?= htmlspecialchars(substr($customer['latest_message'] ?? 'No messages yet', 0, 30)) . (strlen($customer['latest_message'] ?? '') > 50 ? '...' : '') ?>
+                                            </p>
                                         </div>
-                                        <p class="latest-message">
-                                            <?= htmlspecialchars(substr($customer['latest_message'] ?? 'No messages yet', 0, 30)) . (strlen($customer['latest_message'] ?? '') > 50 ? '...' : '') ?>
-                                        </p>
                                     </div>
-                                </div>
-                            </button>
-                        </div>
-                    <?php endforeach; ?>
+                                </button>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                    <div id="no-messages"
+                        style="text-align:center; color:#f59e0b; font-weight:600; margin:32px 0; display:none;">
+                        No results found.
+                    </div>
                 </div>
             <?php endif; ?>
 
@@ -152,7 +181,9 @@ function timeAgo($datetime)
                             <img src="<?= !empty($selected_customer['profile_image']) ? 'uploads/' . htmlspecialchars($selected_customer['profile_image']) : 'media/profile.png' ?>"
                                 alt="<?= htmlspecialchars($selected_customer['full_name']) ?>" class="baker-avatar">
                             <div class="baker-chat-info">
-                               <h4 class="customer-name" onclick="toggleCustomerInfo()"><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
+                                <h4 class="customer-name" title="Click to view details" onclick="toggleCustomerInfo()">
+                                    <?= htmlspecialchars($selected_customer['full_name']) ?>
+                                </h4>
                             </div>
                             <button class="chat-close"><a href="customorder.php">&times;</a></button>
                         </div>
@@ -202,47 +233,92 @@ function timeAgo($datetime)
                 </div>
 
                 <!-- Customer Info Modal -->
-<div id="customerInfoModal" class="customer-info-modal" style="display: none;">
-    <div class="customer-info-container">
-        <div class="customer-info-header">
-            <h3>Customer Info</h3>
-            <button onclick="toggleCustomerInfo()" class="info-close">&times;</button>
-        </div>
-        <div class="customer-info-content">
-            <img src="<?= !empty($selected_customer['profile_image']) ? 'Uploads/' . htmlspecialchars($selected_customer['profile_image']) : 'media/profile.png' ?>"
-                 alt="<?= htmlspecialchars($selected_customer['full_name']) ?>" class="customer-info-avatar">
-            <h4><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
-            <?php if (!empty($selected_customer['email'])): ?>
-                <p><strong>Email:</strong> <?= htmlspecialchars($selected_customer['email']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($selected_customer['phone'])): ?>
-                <p><strong>Phone:</strong> <?= htmlspecialchars($selected_customer['phone']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($selected_customer['bio'])): ?>
-                <p><strong>Bio:</strong> <?= htmlspecialchars($selected_customer['bio']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($selected_customer['state'])): ?>
-                <p><strong>State:</strong> <?= htmlspecialchars($selected_customer['state']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($selected_customer['district'])): ?>
-                <p><strong>District:</strong> <?= htmlspecialchars($selected_customer['district']) ?></p>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
+                <div id="customerInfoModal" class="customer-info-modal" style="display: none;">
+                    <div class="customer-info-container">
+                        <div class="customer-info-header">
+                            <h3>Customer Info</h3>
+                            <button onclick="toggleCustomerInfo()" class="info-close">&times;</button>
+                        </div>
+                        <div class="customer-info-content">
+                            <img src="<?= !empty($selected_customer['profile_image']) ? 'Uploads/' . htmlspecialchars($selected_customer['profile_image']) : 'media/profile.png' ?>"
+                                alt="<?= htmlspecialchars($selected_customer['full_name']) ?>" class="customer-info-avatar">
+                            <h4><?= htmlspecialchars($selected_customer['full_name']) ?></h4>
+                            <?php if (!empty($selected_customer['email'])): ?>
+                                <p><strong>Email:</strong> <?= htmlspecialchars($selected_customer['email']) ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($selected_customer['phone'])): ?>
+                                <p><strong>Phone:</strong> <?= htmlspecialchars($selected_customer['phone']) ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($selected_customer['bio'])): ?>
+                                <p><strong>Bio:</strong> <?= htmlspecialchars($selected_customer['bio']) ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($selected_customer['state'])): ?>
+                                <p><strong>State:</strong> <?= htmlspecialchars($selected_customer['state']) ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($selected_customer['district'])): ?>
+                                <p><strong>District:</strong> <?= htmlspecialchars($selected_customer['district']) ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
             <?php endif; ?>
         </section>
     </main>
     <?php include 'globalfooter.php'; ?>
 
     <script>
-         function toggleCustomerInfo() {
-        const modal = document.getElementById('customerInfoModal');
-        modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
-    }
 
+        // ---Chat Count Function---
+        function updateChatCount() {
+            const msgs = document.querySelectorAll('.accordion-header');
+            let visibleCount = 0;
+            msgs.forEach(msg => {
+                if (msg.style.display !== 'none') visibleCount++;
+            });
+            const chatCountDiv = document.getElementById('chat-count');
+            if (chatCountDiv) {
+                chatCountDiv.textContent = visibleCount + ' Chat(s)';
+            }
+        }
+
+        // ---Message Search Function---
+        document.querySelector('.message-search-input').addEventListener('input', function (e) {
+            const searchValue = e.target.value.toLowerCase();
+            const msgs = document.querySelectorAll('.accordion-header');
+            const noMsgs = document.getElementById('no-messages');
+            let visibleCount = 0;
+
+            msgs.forEach(msg => {
+                const custName = msg.querySelector('.customer-name').textContent.toLowerCase();
+                const contentElem = msg.querySelector('.latest-message');
+                const content = contentElem ? contentElem.textContent.toLowerCase() : '';
+                const allMessages = msg.getAttribute('data-all-messages') || '';
+                if (
+                    custName.includes(searchValue) ||
+                    content.includes(searchValue) ||
+                    allMessages.includes(searchValue)
+                ) {
+                    msg.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    msg.style.display = 'none';
+                }
+            });
+            if (noMsgs) {
+                noMsgs.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+            updateChatCount();
+        });
+
+        // ---Toggle Customer Info Modal---
+        function toggleCustomerInfo() {
+            const modal = document.getElementById('customerInfoModal');
+            modal.style.display = modal.style.display === 'none' ? 'flex' : 'none';
+        }
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Update chat count
+            updateChatCount();
             const chatInput = document.getElementById('chatInput');
             const attachmentInput = document.getElementById('attachmentInput');
             const imagePreview = document.getElementById('imagePreview');

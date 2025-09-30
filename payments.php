@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['process_payment'])) {
 $order_details = null;
 if (isset($_POST['order_id']) || isset($_GET['order_id'])) {
     $order_id = intval($_POST['order_id'] ?? $_GET['order_id']);
-    
+
     // Fetch order with items
     $stmt = $conn->prepare("
         SELECT o.*, b.brand_name, u.full_name as baker_name, u.email as baker_email
@@ -141,7 +141,7 @@ if (isset($_POST['order_id']) || isset($_GET['order_id'])) {
     $stmt->bind_param("ii", $order_id, $customer_id);
     $stmt->execute();
     $order_details = $stmt->get_result()->fetch_assoc();
-    
+
     if ($order_details) {
         // Fetch order items
         $stmt = $conn->prepare("
@@ -165,6 +165,7 @@ if (!$order_details && !$success_message) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -178,7 +179,7 @@ if (!$order_details && !$success_message) {
 
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
-            background:  linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
+            background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -188,7 +189,7 @@ if (!$order_details && !$success_message) {
             margin: 0 auto;
             background: white;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -444,17 +445,17 @@ if (!$order_details && !$success_message) {
             .container {
                 margin: 10px;
             }
-            
+
             .content {
                 padding: 20px;
             }
-            
+
             .order-header {
                 flex-direction: column;
                 text-align: center;
                 gap: 10px;
             }
-            
+
             .baker-info {
                 text-align: center;
             }
@@ -485,18 +486,18 @@ if (!$order_details && !$success_message) {
                 </div>
 
                 <script>
-        let seconds = 3;
-        const countdownEl = document.getElementById('countdown');
+                    let seconds = 3;
+                    const countdownEl = document.getElementById('countdown');
 
-        const interval = setInterval(() => {
-            seconds--;
-            countdownEl.textContent = seconds;
-            if (seconds <= 0) {
-                clearInterval(interval);
-                window.location.href = 'customerorders.php';
-            }
-        }, 1000);
-    </script>
+                    const interval = setInterval(() => {
+                        seconds--;
+                        countdownEl.textContent = seconds;
+                        if (seconds <= 0) {
+                            clearInterval(interval);
+                            window.location.href = 'customerorders.php';
+                        }
+                    }, 1000);
+                </script>
             <?php endif; ?>
 
             <?php if ($order_details && !$success_message): ?>
@@ -504,7 +505,8 @@ if (!$order_details && !$success_message) {
                 <div class="order-summary">
                     <div class="order-header">
                         <div>
-                            <div class="order-number">Order #BJ<?= str_pad($order_details['order_id'], 6, '0', STR_PAD_LEFT) ?></div>
+                            <div class="order-number">Order
+                                #BJ<?= str_pad($order_details['order_id'], 6, '0', STR_PAD_LEFT) ?></div>
                             <div style="color: #6c757d; font-size: 0.9rem;">
                                 Placed on <?= date('d M Y, h:i A', strtotime($order_details['order_date'])) ?>
                             </div>
@@ -519,8 +521,8 @@ if (!$order_details && !$success_message) {
                         <?php foreach ($order_items as $item): ?>
                             <div class="item">
                                 <div class="item-image">
-                                    <img src="<?= $item['image'] ? 'uploads/' . $item['image'] : 'media/placeholder.jpg' ?>" 
-                                         alt="<?= htmlspecialchars($item['product_name']) ?>">
+                                    <img src="<?= $item['image'] ? 'uploads/' . $item['image'] : 'media/placeholder.jpg' ?>"
+                                        alt="<?= htmlspecialchars($item['product_name']) ?>">
                                 </div>
                                 <div class="item-info">
                                     <div class="item-name"><?= htmlspecialchars($item['product_name']) ?></div>
@@ -543,17 +545,18 @@ if (!$order_details && !$success_message) {
                     <div class="delivery-info">
                         <h4>Delivery Details</h4>
                         <p><strong>Address:</strong> <?= htmlspecialchars($order_details['delivery_address']) ?></p>
-                        <p><strong>Expected Delivery:</strong> <?= date('d M Y, h:i A', strtotime($order_details['delivery_date'])) ?></p>
+                        <p><strong>Expected Delivery:</strong>
+                            <?= date('d M Y, h:i A', strtotime($order_details['delivery_date'])) ?></p>
                     </div>
                 </div>
 
                 <!-- Payment Form -->
                 <div class="payment-section">
                     <h3 style="margin-bottom: 20px; color: #495057;">Choose Payment Method</h3>
-                    
+
                     <form method="POST" action="payments.php">
                         <input type="hidden" name="order_id" value="<?= $order_details['order_id'] ?>">
-                        
+
                         <div class="payment-methods">
                             <label class="payment-method" for="upi">
                                 <input type="radio" name="payment_method" value="upi" id="upi" required>
@@ -585,24 +588,29 @@ if (!$order_details && !$success_message) {
                         </div>
 
                         <!-- Net Banking Form (Hidden by default) -->
-                        <div id="netbanking-form" style="display: none; margin-top: 20px; margin-bottom: 20px; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px;">
+                        <div id="netbanking-form"
+                            style="display: none; margin-top: 20px; margin-bottom: 20px; padding: 15px; border: 1px solid #dee2e6; border-radius: 5px;">
                             <h4 style="color: #495057; margin-bottom: 15px;">Net Banking Details</h4>
                             <div style="margin-bottom: 15px;">
                                 <label for="cardholder-name">Cardholder Name</label>
-                                <input type="text" id="cardholder-name" name="holder_name" placeholder="Enter cardholder name">
+                                <input style="font-family: 'Segoe UI', Roboto, sans-serif;" type="text" id="cardholder-name"
+                                    name="holder_name" placeholder="Enter cardholder name">
                             </div>
                             <div style="margin-bottom: 15px;">
                                 <label for="card-number">Card Number</label>
-                                <input type="text" id="card-number" name="cardno" placeholder="Enter card number" maxlength="16">
+                                <input style="font-family: 'Segoe UI', Roboto, sans-serif;" type="text" id="card-number"
+                                    name="cardno" placeholder="Enter card number" maxlength="16">
                             </div>
                             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                                 <div style="flex: 1;">
                                     <label for="expiry-date">Expiry Date(YYYY-MM-DD)</label>
-                                    <input type="text" id="expiry-date" name="exp_date" placeholder="YYYY-MM-DD">
+                                    <input style="font-family: 'Segoe UI', Roboto, sans-serif;" type="text" id="expiry-date"
+                                        name="exp_date" placeholder="YYYY-MM-DD">
                                 </div>
                                 <div style="flex: 1;">
                                     <label for="cvv">CVV</label>
-                                    <input type="text" id="cvv" name="cvv" placeholder="CVV" maxlength="3">
+                                    <input style="font-family: 'Segoe UI', Roboto, sans-serif;" type="text" id="cvv"
+                                        name="cvv" placeholder="CVV" maxlength="3">
                                 </div>
                             </div>
                         </div>
@@ -623,7 +631,7 @@ if (!$order_details && !$success_message) {
     <script>
         // Toggle net banking form visibility
         document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
-            radio.addEventListener('change', function() {
+            radio.addEventListener('change', function () {
                 const netbankingForm = document.getElementById('netbanking-form');
                 if (this.value === 'netbanking' && this.checked) {
                     netbankingForm.style.display = 'block';
@@ -633,53 +641,53 @@ if (!$order_details && !$success_message) {
             });
         });
 
-    
-// Client-side validation for net banking form
-document.querySelector('form').addEventListener('submit', function(e) {
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
-    if (paymentMethod && paymentMethod.value === 'netbanking') {
-        const cardNumber = document.getElementById('card-number').value;
-        const cvv = document.getElementById('cvv').value;
-        const expiryDate = document.getElementById('expiry-date').value;
-        const holderName = document.getElementById('cardholder-name').value;
 
-        if (!holderName.trim()) {
-            e.preventDefault();
-            alert('Cardholder name is required.');
-            return;
-        }
-        if (!/^[0-9]{16}$/.test(cardNumber)) {
-            e.preventDefault();
-            alert('Card number must be 16 digits.');
-            return;
-        }
-        if (!/^[0-9]{3}$/.test(cvv)) {
-            e.preventDefault();
-            alert('CVV must be 3 digits.');
-            return;
-        }
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(expiryDate)) {
-            e.preventDefault();
-            alert('Expiry date must be in YYYY-MM-DD format.');
-            return;
-        }
-        // Ensure expiry date is not in the past
-        const [year, month, day] = expiryDate.split('-');
-        const expDate = new Date(year, month - 1, day);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        if (expDate < today) {
-            e.preventDefault();
-            alert('Expiry date cannot be in the past.');
-            return;
-        }
-    }
-});
+        // Client-side validation for net banking form
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (paymentMethod && paymentMethod.value === 'netbanking') {
+                const cardNumber = document.getElementById('card-number').value;
+                const cvv = document.getElementById('cvv').value;
+                const expiryDate = document.getElementById('expiry-date').value;
+                const holderName = document.getElementById('cardholder-name').value;
+
+                if (!holderName.trim()) {
+                    e.preventDefault();
+                    alert('Cardholder name is required.');
+                    return;
+                }
+                if (!/^[0-9]{16}$/.test(cardNumber)) {
+                    e.preventDefault();
+                    alert('Card number must be 16 digits.');
+                    return;
+                }
+                if (!/^[0-9]{3}$/.test(cvv)) {
+                    e.preventDefault();
+                    alert('CVV must be 3 digits.');
+                    return;
+                }
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(expiryDate)) {
+                    e.preventDefault();
+                    alert('Expiry date must be in YYYY-MM-DD format.');
+                    return;
+                }
+                // Ensure expiry date is not in the past
+                const [year, month, day] = expiryDate.split('-');
+                const expDate = new Date(year, month - 1, day);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (expDate < today) {
+                    e.preventDefault();
+                    alert('Expiry date cannot be in the past.');
+                    return;
+                }
+            }
+        });
 
 
-// Add visual feedback for payment method selection
+        // Add visual feedback for payment method selection
         document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-            radio.addEventListener('change', function() {
+            radio.addEventListener('change', function () {
                 // Remove selected class from all methods
                 document.querySelectorAll('.payment-method').forEach(method => {
                     method.classList.remove('selected');
@@ -691,4 +699,5 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
     </script>
 </body>
+
 </html>
