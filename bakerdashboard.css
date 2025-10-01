@@ -7,7 +7,7 @@
  body {
    font-family: 'Segoe UI', Roboto, sans-serif;
    line-height: 1.6;
-   background: linear-gradient(135deg, #fef7cd 0%, #fee996 100%);
+   background: linear-gradient(to bottom, #fef7cd 0%, #fee996 100%);
    min-height: 100vh;
    color: #1f2a38;
    padding-top: 80px;
@@ -15,7 +15,7 @@
 
  .container {
    max-width: 1300px;
-   margin: 0 auto;
+   margin: 30px auto 0 auto;
    padding: 0 20px;
  }
 
@@ -33,12 +33,26 @@
    display: flex;
    align-items: center;
    justify-content: center;
-   background: linear-gradient(135deg, #fef3c7, #fee996, #fef3c7);
+   background: linear-gradient(135deg, #fef3c7, #fee996, #fef7cd);
    background-image: url('https://images.unsplash.com/photo-1612886623977-192b32a0d789?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
    background-size: cover;
    background-position: center;
    background-repeat: no-repeat;
  }
+
+ .bhero::after {
+  position: absolute;
+  bottom: -50px;
+  left: 0px;
+  width: 100%;
+  content: " ";
+  background:
+    radial-gradient(circle at 50% 0%, #ffffff 25%, #e8d9a4 26%, #fff6c2 40%);
+  background-color: #ffffff;
+  background-size: 50px 100px;
+  height: 50px;
+  background-repeat: repeat-x;
+}
 
  .bhero-overlay {
    position: absolute;
