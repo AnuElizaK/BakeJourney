@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
           <a href="#services" class="nav-link">Services</a>
           <a href="#blog" class="nav-link">Blog</a>
           <a href="#contact" class="nav-link">Contact Us</a>
-          <a href="bakersignup.php?role=baker" class="nav-link nav-cta">Join as Baker</a>
+          <a href="bakersignup.php" class="nav-link nav-cta">Join as Baker</a>
           <a href="login.php" class="nav-link nav-cta">Login or Sign Up</a>
         </div>
 
