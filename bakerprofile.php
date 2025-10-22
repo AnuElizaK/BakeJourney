@@ -16,9 +16,10 @@ $user_id = $_SESSION['user_id'];
 
 // Fetch user details
 $stmt = $conn->prepare(
-  "SELECT u.*, b.*, AVG(br.rating) as rating, COUNT(br.review_id) as no_of_reviews
+  "SELECT u.*, b.*, AVG(br.rating) as rating, COUNT(br.review_id) as no_of_reviews, COUNT(DISTINCT o.order_id) AS completed_orders
   FROM users u, bakers b
   LEFT JOIN baker_reviews br ON b.baker_id = br.baker_id
+  LEFT JOIN orders o ON b.baker_id = o.baker_id AND o.order_status = 'delivered'
   WHERE u.user_id = b.user_id AND u.user_id = ?"
 );
 $stmt->bind_param("i", $user_id);
@@ -130,7 +131,7 @@ $user = $result->fetch_assoc();
 
         <div class="profile-stats">
           <div class="stat-card">
-            <span class="stat-number">200+</span>
+            <span class="stat-number"><?= htmlspecialchars($user['completed_orders'] ?? 0) ?>+</span>
             <span class="stat-label">Orders Completed</span>
           </div>
           <div class="stat-card">

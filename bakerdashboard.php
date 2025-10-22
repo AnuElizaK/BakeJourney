@@ -160,7 +160,7 @@ $orders_result = $stmt->get_result();
             </svg>
           </div>
           <div class="stat-value"><?= $orders_week ?></div>
-          <div class="stat-change">+5% increase</div>
+          <!-- <div class="stat-change">+5% increase</div> -->
         </div>
 
         <div class="stat-card">
@@ -171,7 +171,7 @@ $orders_result = $stmt->get_result();
             </svg>
           </div>
           <div class="stat-value">₹<?= number_format($revenue, 2) ?></div>
-          <div class="stat-change">+8% increase</div>
+          <!-- <div class="stat-change">+8% increase</div> -->
         </div>
 
         <div class="stat-card">
@@ -197,7 +197,7 @@ $orders_result = $stmt->get_result();
             </svg>
           </div>
           <div class="stat-value"><?= $total_customers ?></div>
-          <div class="stat-change">+3 new this week</div>
+          <!-- <div class="stat-change">+3 new this week</div> -->
         </div>
       </div>
 

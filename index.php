@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
   $subject = trim($_POST['subject'] ?? '');
   $message = trim($_POST['message'] ?? '');
 
-  // Basic validation
+  // Basic validation for feedback
   if ($name && $email && $subject && $message) {
     $stmt = $conn->prepare("INSERT INTO feedback (name, email, subject, message) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $name, $email, $subject, $message);
