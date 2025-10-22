@@ -217,8 +217,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <span class="stat-label">Reviews</span>
                         </div>
                         <div class="stat">
-                            <span class="stat-number"><?= htmlspecialchars($baker['experience']); ?>+</span>
-                            <span class="stat-label">Years Experience</span>
+                            <span class="stat-number"><?= htmlspecialchars($baker['experience']); ?></span>
+                            <span class="stat-label">Experience</span>
                         </div>
                     </div>
                     <div class="rating-section">

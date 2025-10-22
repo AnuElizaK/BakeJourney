@@ -612,8 +612,8 @@ $user = $result->fetch_assoc();
     } else {
       echo "<script>alert('❌ Failed to delete account. Please try again.');</script>";
     }
-    $stmt->close();
-    $conn->close();
+    $stmt->close(); //closes prepared stmts
+    $conn->close(); //closes db connection
   }
   ?>
 

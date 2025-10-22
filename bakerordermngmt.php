@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id']) && isset(
         $update_stmt = $conn->prepare("UPDATE orders SET order_status = ? WHERE order_id = ? AND baker_id = ?");
         $update_stmt->bind_param("sii", $new_status, $order_id, $baker_id);
         
+        //Redirects back to the page with a message (so that refreshing doesn’t re-submit the form)
         if ($update_stmt->execute()) {
             $message = '';
             switch($new_status) {
