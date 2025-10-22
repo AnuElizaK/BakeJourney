@@ -114,7 +114,6 @@ $bResult = $bkrStmt->get_result();
         style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
         No products found.
       </div>
-
       <div>
         <h4 class="btn-primary more" onclick="window.location.href='products.php'">
           See more →

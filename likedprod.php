@@ -13,6 +13,7 @@ header("Expires: Sat, 1 Jan 2000 00:00:00 GMT");
 header("Pragma: no-cache");
 
 $customer_id = $_SESSION['user_id'];
+
 // Fetch liked products for the logged-in user
 $stmt = $conn->prepare("
     SELECT p.*
@@ -101,7 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
-            position: relative;
             overflow: hidden;
             gap: 8px;
         }
@@ -443,8 +443,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_like'])) {
                                     echo htmlspecialchars($short);
                                     ?>
                                 </p>
-                                <a href="productinfopage.php?product_id=<?= $product['product_id']; ?>"
-                                    class="btn btn-primary">View Details</a>
+                                <div style="margin-top: auto; padding-top: auto;">
+                                    <a href="productinfopage.php?product_id=<?= $product['product_id']; ?>" class="btn btn-primary">View Details</a>
+                                </div>
                             </div>
                         </div>
                     <?php endwhile; ?>

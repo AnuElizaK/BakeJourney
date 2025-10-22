@@ -136,6 +136,10 @@ h2 {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
+.blog-post .post-content {
+    transition: all 0.3s ease;
+}
+
 .blog-post:hover .post-content {
     background: #ffffff;
 }

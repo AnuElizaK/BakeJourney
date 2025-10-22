@@ -114,6 +114,12 @@ h2 {
     gap: 1rem;
 }
 
+@media (max-width: 480px) {
+    .rating-section {
+        justify-content: center;
+    }
+}
+
 .stars {
     display: flex;
     gap: 2px;
@@ -427,10 +433,6 @@ h2 {
     .profile-specialty {
         font-weight: 500;
         font-size: 1rem;
-    }
-
-    .rating-section {
-        justify-content: center;
     }
 
     .contact-details {
@@ -960,7 +962,8 @@ h2 {
     border-radius: 3px;
 }
 
-.send-button, .attach-button {
+.send-button,
+.attach-button {
     width: 45px;
     height: 45px;
     border-radius: 50%;
@@ -977,9 +980,9 @@ h2 {
 }
 
 .image-preview {
-            margin-top: 5px;
-            max-width: 100%;
-        }
+    margin-top: 5px;
+    max-width: 100%;
+}
 
 @media (max-width: 480px) {
     .chat-container {
@@ -989,6 +992,7 @@ h2 {
         border-radius: 0;
     }
 }
+
 .baker-avatar {
     background-color: #ffffff;
     width: 50px;

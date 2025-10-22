@@ -222,10 +222,10 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                     <div class="blog-meta">
                         <div class="meta-item">
                             <div class="meta-value"><?php echo $total_comments; ?></div>
-                            <div class="meta-label">Comments</div>
+                            <div class="meta-label">Comment<?php echo $total_comments !== 1 ? 's' : ''; ?></div>
                         </div>
                         <div class="meta-item">
-                            <div class="meta-value"><?php echo htmlspecialchars(number_format($blog['read_time'], 1) . ' minutes'); ?></div>
+                            <div class="meta-value"><?php echo htmlspecialchars(number_format($blog['read_time'], 1) . ' minute' . ($blog['read_time'] !== 1 ? 's' : '')); ?></div>
                             <div class="meta-label">Read</div>
                         </div>
                     </div>

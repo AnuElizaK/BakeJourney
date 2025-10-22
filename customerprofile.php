@@ -43,6 +43,13 @@ $stmt->execute();
 $result = $stmt->get_result();
 $total_orders = $result->fetch_assoc()['total_orders'] ?? 0;
 
+// Fetch total liked products
+$stmt = $conn->prepare("SELECT COUNT(*) AS total_liked_products FROM product_likes WHERE customer_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$total_liked_products = $result->fetch_assoc()['total_liked_products'] ?? 0;
+
 // Fetch total spent (sum of total_amount for successful payments)
 $stmt = $conn->prepare("SELECT COALESCE(SUM(total_amount), 0) AS total_spent 
                         FROM orders 
@@ -145,8 +152,8 @@ $total_spent = $result->fetch_assoc()['total_spent'] ?? 0;
             <span class="stat-label">Total Orders</span>
           </div>
           <div class="stat-card following">
-            <span class="stat-number">3</span>
-            <span class="stat-label">Bakers You Follow</span>
+            <span class="stat-number"><?= $total_liked_products ?></span>
+            <span class="stat-label">Liked Products</span>
           </div>
           <div class="stat-card">
             <span class="stat-number">₹<?= number_format($total_spent, 2) ?></span>

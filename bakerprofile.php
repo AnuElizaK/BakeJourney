@@ -26,6 +26,20 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
+
+// Fetch product count
+$stmt = $conn->prepare("SELECT COUNT(*) AS product_count FROM products WHERE baker_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$product_count = $result->fetch_assoc()['product_count'] ?? 0;
+
+// Fetch blog count
+$stmt = $conn->prepare("SELECT COUNT(*) AS blog_count FROM blog WHERE user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$blog_count = $result->fetch_assoc()['blog_count'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -58,7 +72,6 @@ $user = $result->fetch_assoc();
             echo $initials;
           }
           ?>
-          <div class="ranking-badge">Top Baker</div>
         </div>
 
         <!-- Edit button and modal handled by JS -->
@@ -131,7 +144,7 @@ $user = $result->fetch_assoc();
 
         <div class="profile-stats">
           <div class="stat-card">
-            <span class="stat-number"><?= htmlspecialchars($user['completed_orders'] ?? 0) ?>+</span>
+            <span class="stat-number"><?= htmlspecialchars($user['completed_orders'] ?? 0) ?></span>
             <span class="stat-label">Orders Completed</span>
           </div>
           <div class="stat-card">
@@ -143,8 +156,12 @@ $user = $result->fetch_assoc();
             <span class="stat-label">Customer Reviews</span>
           </div>
           <div class="stat-card">
-            <span class="stat-number"><?php echo htmlspecialchars($user['no_of_reviews']); ?>+</span>
-            <span class="stat-label">Followers</span>
+            <span class="stat-number"><?= $product_count ?></span>
+            <span class="stat-label"><?= $product_count > 1 || $product_count === 0 ? 'Products' : 'Product' ?></span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number"><?= $blog_count ?></span>
+            <span class="stat-label">Blog <?= $blog_count > 1 || $blog_count === 0 ? 'Posts' : 'Post' ?></span>
           </div>
         </div>
       </div>

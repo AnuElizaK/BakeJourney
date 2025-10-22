@@ -267,7 +267,6 @@ function timeAgo($datetime)
     <?php include 'globalfooter.php'; ?>
 
     <script>
-
         // ---Chat Count Function---
         function updateChatCount() {
             const msgs = document.querySelectorAll('.accordion-header');
@@ -277,7 +276,7 @@ function timeAgo($datetime)
             });
             const chatCountDiv = document.getElementById('chat-count');
             if (chatCountDiv) {
-                chatCountDiv.textContent = visibleCount + ' Chat(s)';
+                chatCountDiv.textContent = visibleCount + ' Chat' + (visibleCount !== 1 ? 's' : '');
             }
         }
 
@@ -380,9 +379,6 @@ function timeAgo($datetime)
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             <?php endif; ?>
         });
-
-
-
     </script>
 
 </body>

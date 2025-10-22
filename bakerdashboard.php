@@ -6,7 +6,21 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== 'baker') {
   exit();
 }
 
-$baker_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
+
+//Single time baker_id lookup for multi-use (in products, orders and reviews, which reference bakers.baker_id)
+$baker_id = null;
+$bakerLookup = $conn->prepare("SELECT baker_id FROM bakers WHERE user_id = ?");
+$bakerLookup->bind_param("i", $user_id);
+$bakerLookup->execute();
+$bakerRow = $bakerLookup->get_result()->fetch_assoc();
+if ($bakerRow && !empty($bakerRow['baker_id'])) {
+  $baker_id = (int) $bakerRow['baker_id'];
+} else {
+  // If no baker record exists, default to 0 so queries don't error; log for debugging
+  error_log("bakerdashboard: baker record not found for user_id=" . $user_id);
+  $baker_id = 0;
+}
 
 // Overall Stats
 $stmt = $conn->prepare("
@@ -52,14 +66,14 @@ $total_customers = $stmt->get_result()->fetch_assoc()['total_customers'];
 // Profile Status
 // Check Profile Photo
 $stmt = $conn->prepare("SELECT profile_image FROM users WHERE user_id = ?");
-$stmt->bind_param("i", $baker_id);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $profile_pic = $stmt->get_result()->fetch_assoc()['profile_image'];
 $has_profile_image = !empty($profile_pic) && $profile_pic !== 'default.jpg';
 
 // Check Bio (Description)
 $stmt = $conn->prepare("SELECT bio FROM users WHERE user_id = ?");
-$stmt->bind_param("i", $baker_id);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $bio = $stmt->get_result()->fetch_assoc()['bio'];
 $has_bio = !empty($bio) && strlen(trim($bio)) > 0;
@@ -68,18 +82,19 @@ $has_bio = !empty($bio) && strlen(trim($bio)) > 0;
 $stmt = $conn->prepare("SELECT COUNT(*) as photo_count FROM products WHERE baker_id = ? AND image IS NOT NULL AND image != ''");
 $stmt->bind_param("i", $baker_id);
 $stmt->execute();
-$product_photo_count = $stmt->get_result()->fetch_assoc()['photo_count'];
+$row = $stmt->get_result()->fetch_assoc();
+$product_photo_count = isset($row['photo_count']) ? (int) $row['photo_count'] : 0;
 
 // Check Business Information
 $stmt = $conn->prepare("SELECT experience, order_lead_time, availability, custom_orders FROM bakers WHERE user_id = ?");
-$stmt->bind_param("i", $baker_id);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $business_info = $stmt->get_result()->fetch_assoc();
-$has_business_info = 
-    !empty($business_info['experience']) && strlen(trim($business_info['experience'])) > 0 &&
-    !empty($business_info['order_lead_time']) && strlen(trim($business_info['order_lead_time'])) > 0 &&
-    !empty($business_info['availability']) && strlen(trim($business_info['availability'])) > 0 &&
-    !empty($business_info['custom_orders']) && strlen(trim($business_info['custom_orders'])) > 0;
+$has_business_info =
+  !empty($business_info['experience']) && strlen(trim($business_info['experience'])) > 0 &&
+  !empty($business_info['order_lead_time']) && strlen(trim($business_info['order_lead_time'])) > 0 &&
+  !empty($business_info['availability']) && strlen(trim($business_info['availability'])) > 0 &&
+  !empty($business_info['custom_orders']) && strlen(trim($business_info['custom_orders'])) > 0;
 
 // Check Contact Information (only phone number as email is mandatory at signup)
 $stmt = $conn->prepare("SELECT phone FROM users WHERE user_id = ?");
@@ -87,7 +102,6 @@ $stmt->bind_param("i", $baker_id);
 $stmt->execute();
 $phone = $stmt->get_result()->fetch_assoc()['phone'];
 $has_contact_info = !empty($phone) && strlen(trim($phone)) > 0;
-
 
 // Orders preview
 $orders_fetch = "
@@ -237,19 +251,19 @@ $orders_result = $stmt->get_result();
 
       <div class="sales-info">
         <!-- Recent Orders -->
-        <?php while ($order = $orders_result->fetch_assoc()): ?>
-          <div class="content-card">
-            <?php if ($order == null): ?>
+        <div class="content-card">
+          <div class="card-header">
+            <h3>Recent Orders</h3>
+            <p class="card-description">Your latest customer orders</p>
+          </div>
+          <div class="card-content">
+            <?php if ($orders_result->num_rows === 0): ?>
               <div id="no-orders-message"
-                style="display:none; text-align:center; color:#f59e0b; font-weight:600; margin:32px 0;">
+                style="display: block; text-align:center; color:#6c757d; background-color: #f3f4f6; font-weight: 600; padding: 35px; border-radius: 12px;">
                 No recent orders found.
               </div>
             <?php else: ?>
-              <div class="card-header">
-                <h3>Recent Orders</h3>
-                <p class="card-description">Your latest customer orders</p>
-              </div>
-              <div class="card-content">
+              <?php while ($order = $orders_result->fetch_assoc()): ?>
                 <div class="orders-list">
                   <div class="order-item"
                     onclick="window.location.href='bakerordermngmt.php?order_id=<?= $order['order_id']; ?>'">
@@ -266,14 +280,14 @@ $orders_result = $stmt->get_result();
                     </div>
                   </div>
                 </div>
-                <div style="margin-top: auto; padding-top: 34px;">
-                  <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerordermngmt.php'">View
-                    All Orders</button>
-                </div>
-              </div>
+              <?php endwhile; ?>
+            <?php endif; ?>
+            <div style="margin-top: auto; padding-top: 34px;">
+              <button class="view-btn" style="width: 100%;" onclick="window.location.href='bakerordermngmt.php'">View
+                All Orders</button>
             </div>
-          <?php endif; ?>
-        <?php endwhile; ?>
+          </div>
+        </div>
 
         <!-- Profile Status -->
         <div class="content-card">
@@ -297,8 +311,8 @@ $orders_result = $stmt->get_result();
               </div>
               <div class="profile-item">
                 <span class="profile-label">Product Gallery</span>
-                <span class="profile-badge <?= $product_photo_count > 0 ? 'badge-partial' : 'badge-incomplete' ?>">
-                  <?= $product_photo_count > 0 ? $product_photo_count . ' photo' . ($product_photo_count > 1 ? 's' : '') : 'Incomplete' ?>
+                <span class="profile-badge <?= (int) $product_photo_count > 0 ? 'badge-partial' : 'badge-incomplete' ?>">
+                  <?= (int) $product_photo_count > 0 ? $product_photo_count . ' photo' . ($product_photo_count > 1 ? 's' : '') : '0 photos' ?>
                 </span>
               </div>
               <div class="profile-item">

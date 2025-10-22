@@ -233,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
               <span>Grow your baking business</span>
             </div>
           </div>
-          <button class="btn btn-primary btn-large" onclick="window.location.href='bakersignup.php'">
+          <button class="btn btn-primary btn-large cta-button-animated animate-gradient-flow" onclick="window.location.href='bakersignup.php'">
             Join as a Baker →
             </svg>
           </button>
@@ -261,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_feedback'])) {
               <span>Support small businesses</span>
             </div>
           </div>
-          <button class="btn btn-primary btn-large" onclick="window.location.href='customersignup.php'">
+          <button class="btn btn-primary btn-large cta-button-animated animate-gradient-flow" onclick="window.location.href='customersignup.php'">
             Sign Up Now →
             </svg>
           </button>
