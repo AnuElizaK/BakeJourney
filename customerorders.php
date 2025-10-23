@@ -193,11 +193,6 @@ if (isset($_GET['generate_bill']) && isset($_GET['order_id'])) {
             <button onclick='window.location.href=\"customerorders.php\"' class='btn btn-secondary'>← Back to Orders</button>
         </div>
     </div>
-    
-    <script>
-        // Auto print on load (optional)
-        // window.onload = function() { window.print(); }
-    </script>
 </body>
 </html>";
         exit;
