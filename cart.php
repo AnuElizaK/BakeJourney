@@ -96,7 +96,7 @@ foreach ($cart_items as $item) {
   $baker_groups[$item['baker_id']][] = $item;
 }
 
-// Handle order placement - FIXED FOR YOUR TABLE STRUCTURE
+// Handle order placement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
   $delivery_address = $_POST['delivery_address'] ?? '';
   $delivery_date = $_POST['delivery_date'] ?? '';
@@ -106,11 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     exit;
   }
 
-  // Start transaction
+  // Start transaction (run several queries and commit only if all succeed)
   $conn->autocommit(FALSE);
 
   try {
-    // Create separate orders for each baker (like Flipkart does with different sellers)
+    // Create separate orders for each baker 
     foreach ($baker_groups as $baker_id => $items) {
       // Calculate total for this baker's items
       $total_amount = 0;
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
         $item_stmt->bind_param("iiid", $order_id, $item['product_id'], $item['quantity'], $item['price']);
         $item_stmt->execute();
 
-        // Remove from cart
+        // Remove from cart after placing the order
         $delete_stmt = $conn->prepare("DELETE FROM cart WHERE cart_id = ?");
         $delete_stmt->bind_param("i", $item['cart_id']);
         $delete_stmt->execute();

@@ -256,10 +256,10 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                             <div class="meta-value"><?php echo $total_reviews; ?></div>
                             <div class="meta-label">Reviews</div>
                         </div>
-                        <div class="meta-item">
+                        <!-- <div class="meta-item">
                             <div class="meta-value">2.5</div>
                             <div class="meta-label">Hours Prep</div>
-                        </div>
+                        </div> -->
                         <div class="meta-item">
                             <div class="meta-value"><?php echo htmlspecialchars($product['weight'].' kg'); ?></div>
                             <div class="meta-label">Weight</div>

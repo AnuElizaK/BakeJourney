@@ -238,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 
-// Fetch orders with items - FIXED FOR YOUR TABLE STRUCTURE
+// Fetch orders with items
 $query = "
     SELECT o.order_id, o.customer_id, o.baker_id, o.order_date, o.total_amount,
            o.payment_status, o.order_status, o.delivery_date,
@@ -267,7 +267,7 @@ $completed_orders = 0;
 $total_spent = 0;
 
 while ($row = $result->fetch_assoc()) {
-    $order_id = $row['order_id'];
+    $order_id = $row['order_id']; //Each $row is one item in one order
     if (!isset($orders[$order_id])) {
         $orders[$order_id] = [
             'order_id' => $order_id,
@@ -280,7 +280,7 @@ while ($row = $result->fetch_assoc()) {
             'baker_name' => $row['baker_name'],
             'brand_name' => $row['brand_name'],
             'baker_id' => $row['baker_id'],
-            'items' => []
+            'items' => [] //An empty list where we’ll later add all the products belonging to this order
         ];
         $total_orders++;
 
@@ -437,8 +437,8 @@ while ($row = $result->fetch_assoc()) {
                             <!-- Order Actions -->
                             <div class="order-actions">
                                 <?php
-                                $order_time = strtotime($order['order_date']);
-                                $within_24hrs = (time() - $order_time) < 86400;
+                                $order_time = strtotime($order['order_date']); // Convert order date to timestamp
+                                $within_24hrs = (time() - $order_time) < 86400; // Check if order was placed within 24 hours
                                 $status = $order['order_status'];
                                 $paid = $order['payment_status'] === 'success';
                                 ?>

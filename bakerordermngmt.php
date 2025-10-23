@@ -109,7 +109,7 @@ function time_elapsed_string($datetime) {
 
 // Process orders and count stats
 $pending_count = $accepted_count = $completed_count = $total_count = 0;
-$orders_array = [];
+$orders_array = []; //empty array to store all orders
 
 while ($order = $orders_result->fetch_assoc()) {
     // Get items for this order
@@ -118,7 +118,7 @@ while ($order = $orders_result->fetch_assoc()) {
     
     while ($item = $items_result->fetch_assoc()) {
         $item['total'] = $item['quantity'] * $item['price'];
-        $items[] = $item;
+        $items[] = $item; //empty array to store all items
     }
     
     $order['items'] = $items;

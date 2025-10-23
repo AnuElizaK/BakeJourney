@@ -644,45 +644,6 @@ function renderTrackingSidebar($orderData = null)
                     </div>
                 </div>
 
-                <!-- Payment Action if needed -->
-                <?php if ($orderData['order_info']['order_status'] == 'accepted' && $orderData['order_info']['payment_status'] == 'pending'): ?>
-                    <div class="payment-prompt">
-                        <div class="prompt-content">
-                            <h4>🎉 Order Confirmed!</h4>
-                            <p>Your baker has accepted the order. Complete payment to proceed with preparation.</p>
-                            <form method="POST" action="payment.php" style="margin-top: 10px;">
-                                <input type="hidden" name="order_id" value="<?php echo $orderData['order_info']['order_id']; ?>">
-                                <input type="hidden" name="amount" value="<?php echo $orderData['order_info']['total_amount']; ?>">
-                                <button type="submit" name="action" value="pay" class="btn-payment-sidebar">
-                                    Pay Now: ₹<?php echo number_format($orderData['order_info']['total_amount'], 2); ?>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Order Items -->
-                <!-- <div class="order-items-status">
-                    <h4>Order Items</h4>
-                    <?php foreach ($orderData['items'] as $item): ?>
-                        <div class="item-status-row">
-                            <div class="item-image">
-                                <img src="<?php echo $item['image'] ? 'uploads/' . $item['image'] : 'media/placeholder.jpg'; ?>" 
-                                     alt="<?php echo htmlspecialchars($item['product_name']); ?>"
-                                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;">
-                            </div>
-                            <div class="item-info">
-                                <strong><?php echo htmlspecialchars($item['product_name']); ?></strong>
-                                <br><small>by <?php echo htmlspecialchars($orderData['bakers'][array_key_first($orderData['bakers'])]['brand_name'] ?? 'Baker'); ?></small>
-                                <br><small>Qty: <?php echo $item['quantity']; ?> × ₹<?php echo number_format($item['price'], 2); ?></small>
-                            </div>
-                            <div class="item-total">
-                                <strong>₹<?php echo number_format($item['quantity'] * $item['price'], 2); ?></strong>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div> -->
-
                 <!-- Tracking Steps -->
                 <div class="tracking-steps">
                     <h4 style="margin-bottom: 20px;">Order Progress</h4>
