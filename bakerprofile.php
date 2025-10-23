@@ -149,12 +149,14 @@ $blog_count = $result->fetch_assoc()['blog_count'] ?? 0;
           </div>
           <div class="stat-card">
             <span class="stat-number"><?php echo number_format($user['rating'], 1); ?></span>
-            <span class="stat-label">Customer rating</span>
+            <span class="stat-label">Customer rating </span>
           </div>
-          <div class="stat-card">
-            <span class="stat-number"><?php echo htmlspecialchars($user['no_of_reviews']); ?>+</span>
-            <span class="stat-label">Customer Reviews</span>
-          </div>
+          <a style="text-decoration: none;" href="bakerinfopage.php?baker_id=<?php echo $user['user_id']; ?>">
+            <div class="stat-card view-reviews">
+              <span class="stat-number"><?php echo htmlspecialchars($user['no_of_reviews']); ?>+</span>
+              <span class="stat-label">Customer Reviews (Click to View)</span>
+            </div>
+          </a>
           <div class="stat-card">
             <span class="stat-number"><?= $product_count ?></span>
             <span class="stat-label"><?= $product_count > 1 || $product_count === 0 ? 'Products' : 'Product' ?></span>

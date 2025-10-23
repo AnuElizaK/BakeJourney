@@ -117,6 +117,16 @@ h1, h2 {
   border-radius: 10px;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.view-reviews:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.view-reviews:hover .stat-label{
+  color: #d97706;
 }
 
 .stat-number {
