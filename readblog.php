@@ -268,7 +268,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
                     <div class="comment-item">
                         <div class="comment-header">
                             <div class="commenter-info">
-                                <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/baker.png' ?>"
+                                <img src="<?= !empty($rev['profile_image']) ? 'uploads/' . htmlspecialchars($rev['profile_image']) : 'media/profile.png' ?>"
                                     alt="<?php echo htmlspecialchars($rev['full_name']); ?>" class="commenter-avatar">
                                 <div>
                                     <div class="commenter-name"><?php echo htmlspecialchars($rev['full_name']); ?></div>

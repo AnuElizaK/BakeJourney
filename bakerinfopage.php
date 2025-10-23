@@ -340,7 +340,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'customer') {
             <?php if (!empty($products)): ?>
                 <div class="gallery-header">
                     <div class="gallery-title">Recent Creations</div>
-                    <div class="gallery-count"><?= count($products); ?> items</div>
+                    <div class="gallery-count"><?= count($products); ?> item <?= count($products) === 1 ? '':'s' ?></div>
                 </div>
                 <div class="image-gallery">
                     <?php foreach ($products as $product): ?>

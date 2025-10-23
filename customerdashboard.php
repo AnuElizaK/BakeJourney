@@ -24,11 +24,11 @@ $pResult = $prdStmt->get_result();
 // Fetch 8 bakers from the database
 // LEFT JOIN to include bakers with no reviews
 $bkrStmt = $conn->prepare("
-  SELECT *,AVG(br.rating) as rating
+  SELECT u.*, b.*, AVG(br.rating) AS rating
   FROM users u
   JOIN bakers b ON u.user_id = b.user_id
-  LEFT JOIN baker_reviews br ON b.baker_id = br.baker_id 
-  GROUP BY b.baker_id
+  LEFT JOIN baker_reviews br ON b.baker_id = br.baker_id
+  GROUP BY b.baker_id, u.user_id
   LIMIT 8
 ");
 $bkrStmt->execute();
@@ -259,9 +259,11 @@ $bResult = $bkrStmt->get_result();
         </ul>
 
         <div class="highlight-box">
-        <strong>Note:</strong> While our bakers strive to deliver to as many locations as possible, certain remote or restricted areas may not 
-        be reachable. It is also important to note that not all bakers may offer delivery services, so please check individual baker profiles 
-        for specific delivery options and areas served.
+          <strong>Note:</strong> While our bakers strive to deliver to as many locations as possible, certain remote or
+          restricted areas may not
+          be reachable. It is also important to note that not all bakers may offer delivery services, so please check
+          individual baker profiles
+          for specific delivery options and areas served.
         </div>
       </div>
     </div>
@@ -319,7 +321,8 @@ $bResult = $bkrStmt->get_result();
         </ul>
 
         <div class="highlight-box">
-          <strong>Note:</strong> While our bakers strive to accommodate all requests, certain complex designs or last-minute orders may
+          <strong>Note:</strong> While our bakers strive to accommodate all requests, certain complex designs or
+          last-minute orders may
           require additional lead time. We recommend booking your custom orders at least two weeks in advance to
           ensure availability and the best possible outcome.
         </div>
